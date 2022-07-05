@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: map_module.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: map_module.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+/**
+ * Módulo mapa, utilizado para crear y gestionar el mapa en nicho ecológico y comunidad ecológica.
+ *
+ * @namespace map_module
+ */
+var map_module = (function(url_geoserver, workspace, verbose, url_zacatuche) {
+
+    var map;
+
+    var _VERBOSE = verbose;
+
+    var _grid_d3, _grid_map;
+    var _grid_map_hash = d3.map([]);
+
+    var _DELETE_STATE_POINTS = false;
+
+    var _url_geoserver = url_geoserver,
+            _workspace = workspace;
+
+    var _url_zacatuche = url_zacatuche;
+
+    var _OSM_layer,
+            _grid_wms,
+            _species_layer,
+            _states_layer,
+            _eco_layer,
+            _markersLayer,
+            _baseMaps,
+            _overlayMaps,
+            _layer_control,
+            _specie_target;
+
+    // estilos para eliminar puntos
+    var _geojsonMarkerOptions = {
+        radius: 5,
+        fillColor: "#4F9F37",
+        color: "#488336",
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.6
+    },
+    _geojsonMarkerOptionsDelete = {
+        radius: 5,
+        fillColor: "#E10C2C",
+        color: "#833643",
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.6
+    },
+    _customOptions = {
+        'maxWidth': '500',
+        'className': 'custom'
+    };
+
+
+    // estilos para herrameintas de estados
+    var _geojsonStyleDefault = {
+        radius: 7,
+        fillColor: "#E2E613",
+        color: "#ACAE36",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.6
+    },
+    _geojsonHighlightStyle = {
+        radius: 7,
+        fillColor: "#16EEDC",
+        color: "#36AEA4",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.6
+    },
+    _geojsonMouseOverStyle = {
+        radius: 7,
+        fillColor: "#CED122",
+        color: "#8C8E3A",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.6
+    };
+
+    var _allowedPoints = d3.map([]),
+            _geojsonFeature = [],
+            _discardedPoints = d3.map([]),
+            _discardedPointsFilter = d3.map([]),
+            _computed_occ_cells = d3.map([]),
+            _computed_discarded_cells = d3.map([]);
+
+    var NUM_SECTIONS = 9;
+
+    var _display_module, _language_module, _histogram_module;
+
+    var _iTrans;
+
+    var _MODULO_NICHO = 0, _MODULO_NET = 1;
+
+    var _tipo_modulo;
+
+    // Es un layer ficticio que sirve para controlar el layer hecho en D3 con los eventos del componente que maneja los layers
+    var _lineLayer = L.Class.extend({
+        initialize: function() {
+            return;
+        },
+        onAdd: function(map) {
+            _grid_d3.style("display", "block");
+        },
+        onRemove: function(map) {
+            _grid_d3.style("display", "none");
+        }
+    });
+
+    var _switchD3Layer;
+
+    var _toastr = toastr;
+
+    var _range_limits_red = [];
+    var _range_limits_blue = [];
+    var _range_limits_total = [];
+    var _resultado_grid;
+
+
+
+    
+    
+    /**
+     * Método getter del controlador de capas.
+     *
+     * @function get_layerControl
+     * @public
+     * @memberof! map_module
+     * 
+     */
+    function get_layerControl() {
+        return _layer_control;
+    }
+
+    /**
+     * Método getter de la especie objetivo seleccionada.
+     *
+     * @function get_specieTarget
+     * @public
+     * @memberof! map_module
+     * 
+     */
+    function get_specieTarget() {
+        return _specie_target;
+    }
+
+
+    /**
+     * Método setter de la especie objetivo seleccionada.
+     *
+     * @function set_specieTarget
+     * @public
+     * @memberof! map_module
+     * 
+     * @param {json} specie_target - Json con la información de la especie objetivo seleccionada
+     */
+    // Asigna el valor de una especie seleccionada a una variable global del módulo.
+    function set_specieTarget(specie_target) {
+        _specie_target = specie_target;
+    }
+
+
+    /**
+     * Método getter de las ocurrencias de la especie objetivo consideradas para el análisis de nicho o comunidad ecológica.
+     *
+     * @function get_allowedPoints
+     * @public
+     * @memberof! map_module
+     * 
+     */
+    function get_allowedPoints() {
+        return _allowedPoints;
+    }
+
+
+    /**
+     * Método getter de las ocurrencias descartadas de la especie objetivo para el análisis de nicho o comunidad ecológica.
+     *
+     * @function get_allowedPoints
+     * @public
+     * @memberof! map_module
+     * 
+     */
+    function get_discardedPoints() {
+        return _discardedPoints;
+    }
+
+
+    /**
+     * Método getter de las ocurrencias descartadas por filtros de la especie objetivo para el análisis de nicho o comunidad ecológica.
+     *
+     * @function get_discardedPointsFilter
+     * @public
+     * @memberof! map_module
+     * 
+     */
+    function get_discardedPointsFilter() {
+        return _discardedPointsFilter;
+    }
+
+    /**
+     * Método getter de las celdas decartadas para el análisis de nicho o comunidad ecológica.
+     *
+     * @function get_discardedCellFilter
+     * @public
+     * @memberof! map_module
+     * 
+     */
+    function get_discardedCellFilter() {
+        return _computed_discarded_cells;
+    }
+
+    /**
+     * Método getter de las celdas consideradas para el análisis de nicho o comunidad ecológica.
+     *
+     * @function get_allowedCells
+     * @public
+     * @memberof! map_module
+     * 
+     */
+    function get_allowedCells() {
+        return _computed_occ_cells;
+    }
+
+    
+    /**
+     * Método getter del mapa utilizado en el análisis de nicho o comunidad ecológica.
+     *
+     * @function getMap
+     * @public
+     * @memberof! map_module
+     * 
+     */
+    function getMap() {
+        return map;
+    }
+
+
+    /**
+     * Método setter del controlador de nicho o comunidad ecológica.
+     *
+     * @function setDisplayModule
+     * @public
+     * @memberof! map_module
+     * 
+     * @param {object} display_module - Referencia al controlador de nicho o comunidad ecológica
+     */
+    function setDisplayModule(display_module) {
+        _display_module = display_module;
+    }
+   
+   
+   
+    // ******************************************************************* geojson-vt
+    var _tileIndex;
+    var _tileOptions = {
+        maxZoom: 20, // max zoom to preserve detail on
+        tolerance: 5, // simplification tolerance (higher means simpler)
+        extent: 4096, // tile extent (both width and height)
+        buffer: 64, // tile buffer on each side
+        debug: 0, // logging level (0 to disable, 1 or 2)
+
+        indexMaxZoom: 0, // max zoom in the initial tile index
+        indexMaxPoints: 100000, // max number of points per tile in the index
+    };
+    var _tileLayer, _tileBoudary;
+    var _pad;
+
+    function whenClicked(e) {
+        // e = event
+        console.log(e);
+        // You can make your ajax call declaration here
+        //$.ajax(... 
+    }
+
+    function onEachFeature(feature, layer) {
+
+        console.log("onEachFeature");
+        //bind click
+        layer.on({
+            click: whenClicked
+        });
+    }
+
+
+    /**
+     * Éste método realiza la creación del objeto mapa, configura el módulo de lenguaje, genera lso controles para interactur con el mapa y realiza petición de la malla.
+     *
+     * @function _mapConfigure
+     * @private
+     * @memberof! map_module
+     * 
+     * @param {object} language_module - Módulo lenguaje
+     * @param {integer} tipo_modulo - Tipo de módulo donde será asignado el mapa, nicho o comunidad ecológica  
+     * @param {object} histogram_module - Módulo histograma 
+     */
+    function _mapConfigure(language_module, tipo_modulo, histogram_module) {
+
+        _VERBOSE ? console.log("_mapConfigure") : _VERBOSE;
+
+        _tipo_modulo = tipo_modulo;
+
+        _histogram_module = histogram_module;
+
+        _language_module = language_module;
+        _iTrans = _language_module.getI18();
+
+
+        _toastr.options = {
+            "debug": false,
+            "onclick": null,
+            "fadeIn": 300,
+            "fadeOut": 1000,
+            "timeOut": 2000,
+            "extendedTimeOut": 2000,
+            "positionClass": "toast-bottom-center",
+            "preventDuplicates": true,
+            "progressBar": true
+        };
+
+
+        var milliseconds = new Date().getTime();
+        var url = _url_geoserver + "t=" + milliseconds;
+        var espacio_capa = _workspace + ":sp_grid_terrestre";
+
+        // normal osm map: http://{s}.tile.osm.org/{z}/{x}/{y}.png
+        // black and white map: http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png
+        // relieve: http://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png
+        // cartoDB: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+        _OSM_layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png');
+
+        // ******************************************************************* geojson-vt
+        _tileIndex = geojsonvt([], _tileOptions);
+        _tileLayer = L.canvasTiles()
+                .params({
+                    debug: false,
+                    padding: 5,
+                    onEachFeature: onEachFeature
+                })
+                .drawing(_drawingOnCanvas);
+
+//        var centro_mapa = (_tipo_modulo == _MODULO_NICHO) ? [30.5, -99] : [30.5, -102];
+//          var zoom_module = (_tipo_modulo == _MODULO_NICHO) ? 4 : 3;
+        var centro_mapa = (_tipo_modulo == _MODULO_NICHO) ? [23.5, -99] : [23.5, -102];
+        var zoom_module = (_tipo_modulo == _MODULO_NICHO) ? 5 : 4;
+
+        // ambos div tienen el id = 'map', tanto en nicho como en comunidad
+        map = L.map('map', {
+            center: centro_mapa,
+            zoom: zoom_module,
+            layers: [
+                _OSM_layer,
+                _tileLayer
+            ]
+        });
+
+        _baseMaps = {
+            "Open Street Maps": _OSM_layer
+        };
+        _overlayMaps = {
+            "Malla": _tileLayer
+//            ,"País": _tileBoudary
+        };
+        _layer_control = L.control.layers(_baseMaps, _overlayMaps).addTo(map);
+
+        map.scrollWheelZoom.disable();
+
+        if (_tipo_modulo == _MODULO_NICHO) {
+            // document.getElementById("tbl_hist").style.display = "none";
+            // document.getElementById("dShape").style.display = "none";
+            _addControls();
+        }
+
+        _loadD3GridMX();
+
+
+    }
+
+    var _zoom_level;
+    var _xhr = null;
+
+
+    /**
+     * Realiza la petición de la malla al servidor
+     *
+     * @function _loadD3GridMX
+     * @public
+     * @memberof! map_module
+     * 
+     */
+    // TODO: sincronizar meotodo para que sea realizado antes de que se busque una especie y de un error.
+    function _loadD3GridMX() {
+
+        _VERBOSE ? console.log("_loadD3GridMX") : _VERBOSE;
+
+        $.ajax({
+            url: _url_zacatuche + "/niche/especie",
+            type: 'post',
+            dataType: "json",
+            data: {
+                "qtype": "getGridGeoJsonMX"
+            },
+            // success : function (jsonc){
+            success: function(json) {
+
+                // Asegura que el grid este cargado antes de realizar una generacion por enlace
+                $("#loadData").prop("disabled", false);
+
+                _grid_map = json;
+
+                // importacion con otras APIs
+                // // Se comprime json del lado del servidor, se descomprime en el cliente
+                // json = JSONC.decompress(jsonc);
+                // // console.log(json);
+
+                // _loadD3GridEU();
+                colorizeFeatures(_grid_map, true);
+                _pad = 0;
+                _tileIndex = geojsonvt(_grid_map, _tileOptions);
+                _tileLayer.redraw();
+
+                // agrega listener para generar pop en celda
+                map.on('click', function(e) {
+                    console.log(e.latlng.lat + ", " + e.latlng.lng);
+
+                    if (_tipo_modulo == _MODULO_NICHO) {
+                        _display_module.showGetFeatureInfo(e.latlng.lat, e.latlng.lng);
+                    }
+
+                });
+
+            },
+            error: function() {
+                // alert("Existe un error en la conexión con el servidor, intente mas tarde");
+                console.log("abort");
+            }
+
+        });
+
+    }
+    
+    
+    /**
+     * Asigna color y borde a las celdas que componen la malla en nicho ecológico.
+     *
+     * @function colorizeFeatures
+     * @public
+     * @memberof! map_module
+     * 
+     * @param {json} grid_map_color - GeoJson de la malla
+     * @param {boolean} first - Bandera para conocer si es la primera carga de la malla
+     */
+    function colorizeFeatures(grid_map_color, first) {
+
+        _VERBOSE ? console.log("colorizeFeatures") : _VERBOSE;
+
+        if (first) {
+            console.log("first loaded");
+            for (var i = 0; i &lt; _grid_map.features.length; i++) {
+                _grid_map.features[i].properties.color = '';
+            }
+        }
+        else {
+            for (var i = 0; i &lt; _grid_map.features.length; i++) {
+
+                if (grid_map_color.has(_grid_map.features[i].properties.gridid)) {
+                    _grid_map.features[i].properties.opacity = 1;
+                    _grid_map.features[i].properties.color = grid_map_color.get(_grid_map.features[i].properties.gridid);  //'hsl(' + 360 * Math.random() + ', 50%, 50%)'; 
+                }
+                else {
+                    _grid_map.features[i].properties.color = 'rgba(255,0,0,0)';
+                    // _grid_map.features[i].properties.opacity = 0;
+                }
+            }
+        }
+
+        _tileLayer.redraw();
+
+    }
+
+
+    /**
+     * Asigna color y borde a las celdas que componen la malla en comunidad ecológica.
+     *
+     * @function colorizeFeaturesNet
+     * @public
+     * @memberof! map_module
+     * 
+     * @param {array} arg_gridid - Array con los ids de la malla
+     * @param {type} arg_count - Número de ocurrencias por celda contenidas en la malla
+     * @param {function} link_color_brewer - Función que asigna color a cada celda de la malla
+     */
+    function colorizeFeaturesNet(arg_gridid, arg_count, link_color_brewer) {
+
+        _VERBOSE ? console.log("colorizeFeaturesNet") : _VERBOSE;
+
+        console.log(_grid_map);
+
+
+        for (var i = 0; i &lt; _grid_map.features.length; i++) {
+
+
+            index_grid = arg_gridid.indexOf(_grid_map.features[i].properties.gridid);
+
+            if (index_grid != -1) {
+
+                _grid_map.features[i].properties.opacity = 1;
+                _grid_map.features[i].properties.color = link_color_brewer(arg_count[index_grid]);
+
+            }
+            else {
+
+                _grid_map.features[i].properties.color = 'rgba(255,0,0,0)';
+
+            }
+
+        }
+
+
+        _tileLayer.redraw();
+
+    }
+
+
+    /**
+     * Crea y configura la malla embebida en la capa del mapa.
+     *
+     * @function _drawingOnCanvas
+     * @private
+     * @memberof! map_module
+     * 
+     * @param {object} canvasOverlay - Objecto canvas donde esta contenida la malla
+     * @param {json} params - Json con los parámetros para configurar la malla
+     */
+    function _drawingOnCanvas(canvasOverlay, params) {
+
+        var bounds = params.bounds;
+        params.tilePoint.z = params.zoom,
+                elemLeft = params.canvas.offsetLeft,
+                elemTop = params.canvas.offsetTop;
+
+        var ctx = params.canvas.getContext('2d');
+        ctx.globalCompositeOperation = 'source-over';
+
+        ctx.canvas.addEventListener('click', function(event) {
+
+            var x = event.pageX - elemLeft,
+                    y = event.pageY - elemTop;
+
+//            console.log(event);
+//            console.log(x);
+//            console.log(y);
+
+        }, false);
+
+        var tile = _tileIndex.getTile(params.tilePoint.z, params.tilePoint.x, params.tilePoint.y);
+        if (!tile) {
+            return;
+        }
+
+        ctx.clearRect(0, 0, params.canvas.width, params.canvas.height);
+
+        var features = tile.features;
+
+        // borde de la malla
+        ctx.strokeStyle = 'rgba(255,0,0,0)';
+        // ctx.strokeStyle = 'grey'; // hace malla visible
+
+
+        for (var i = 0; i &lt; features.length; i++) {
+            var feature = features[i],
+                    type = feature.type;
+
+            // background de la celda
+            ctx.fillStyle = feature.tags.color ? feature.tags.color : 'rgba(255,0,0,0)';
+            ctx.beginPath();
+
+            for (var j = 0; j &lt; feature.geometry.length; j++) {
+                var geom = feature.geometry[j];
+
+                if (type === 1) {
+                    ctx.arc(geom[0] * ratio + _pad, geom[1] * ratio + _pad, 2, 0, 2 * Math.PI, false);
+                    continue;
+                }
+
+                for (var k = 0; k &lt; geom.length; k++) {
+                    var p = geom[k];
+                    var extent = 4096;
+
+                    var x = p[0] / extent * 256;
+                    var y = p[1] / extent * 256;
+                    if (k)
+                        ctx.lineTo(x + _pad, y + _pad);
+                    else
+                        ctx.moveTo(x + _pad, y + _pad);
+                }
+            }
+
+            if (type === 3 || type === 1) {
+                ctx.fill('evenodd');
+            }
+
+            ctx.stroke();
+        }
+
+    };
+
+
+    
+
+    /**
+     * Agrega capas al controlador de capas.
+     *
+     * @function addMapLayer
+     * @public
+     * @memberof! map_module
+     * 
+     * @param {object} layer - Capa para ser agregada al controlador de capas
+     * @param {String} name - Nombre de la capa
+     */
+    function addMapLayer(layer, name) {
+
+        _VERBOSE ? console.log("addMapLayer") : _VERBOSE;
+
+        map.addLayer(layer);
+        _layer_control.addOverlay(layer, name);
+
+    }
+
+
+    /**
+     * Elimina capas del controlador de capas.
+     *
+     * @function removeMapLayer
+     * @public
+     * @memberof! map_module
+     * 
+     * @param {object} layer - Capa para ser agregada al controlador de capas
+     * @param {String} name - Nombre de la capa
+     */
+    function removeMapLayer(layer, name) {
+
+        _VERBOSE ? console.log("removeMapLayer") : _VERBOSE;
+
+        map.removeLayer(layer);
+        _layer_control.removeLayer(layer);
+
+    }
+
+    /**
+     * Agrega controles a la instancia del mapa.
+     *
+     * @function addMapControl
+     * @public
+     * @memberof! map_module
+     * 
+     * @param {object} control - Objeto tipo control
+     */
+    function addMapControl(control) {
+
+        map.addControl(control);
+
+    }
+
+
+    /**
+     * Elimina controles a la instancia del mapa.
+     *
+     * @function removeMapControl
+     * @public
+     * @memberof! map_module
+     * 
+     * @param {object} control - Objeto tipo control
+     */
+    function removeMapControl(control) {
+
+        map.removeControl(control);
+
+    }
+
+    var _fisrtMap = true;
+
+
+
+    /**
+     * Despliega la tabla con los elementos que contiene la celda seleccioanda.
+     *
+     * @function showPopUp
+     * @public
+     * @memberof! map_module
+     * 
+     * @param {String} htmltable - Tabla estructurada en formato HTML con la información por celda del análisis de nicho ecológico
+     * @param {object} latlng - Objeto que contiene las coordenadas donde fue seleccionada la celda
+     */
+    function showPopUp(htmltable, latlng) {
+
+        _VERBOSE ? console.log("showPopUp") : _VERBOSE;
+
+        var popup = L.popup();
+        popup.setLatLng(latlng).setContent(htmltable).openOn(map);
+
+    }
+
+
+    /**
+     * Agrega control personalizado para la eliminación de puntos.
+     *
+     * @function _addControls
+     * @private
+     * @memberof! map_module
+     * 
+     */
+    function _addControls() {
+
+        _VERBOSE ? console.log("_addControls") : _VERBOSE;
+
+        PointDeleteControl = L.Control.extend({
+            options: {
+                position: 'topleft',
+            },
+            onAdd: function(map) {
+                var controlDiv = L.DomUtil.create('div', 'leaflet-control-command ');
+
+                L.DomEvent
+                        .addListener(controlDiv, 'click', L.DomEvent.stopPropagation)
+                        .addListener(controlDiv, 'click', L.DomEvent.preventDefault)
+                        .addListener(controlDiv, 'click', function() {
+                            _deletePoints();
+                        });
+
+                _VERBOSE ? console.log(_iTrans.prop('lb_borra_puntos')) : _VERBOSE;
+
+                var controlUI = L.DomUtil.create('div', 'leaflet-control-command-interior glyphicon glyphicon-erase', controlDiv);
+                controlUI.title = _iTrans.prop('lb_borra_puntos');
+                controlUI.id = "deletePointsButton";
+
+                return controlDiv;
+            }
+        });
+
+        L.control.command = function(options) {
+            return new PointDeleteControl(options);
+        };
+
+        map.addControl(new PointDeleteControl());
+
+    }
+
+
+    var _lin_inf = undefined;
+    var _lin_sup = undefined;
+    var _sin_fecha = undefined;
+
+
+    /**
+     * Busca las ocurrencias de una especie asignando filtros por fecha.
+     *
+     * @function busca_especie_filtros
+     * @public
+     * @memberof! map_module
+     * 
+     * @param {array} rango - Array con el rango de fechas
+     * @param {boolean} sfecha - Bandera para saber si serán considerados los registros sin fecha
+     */
+    function busca_especie_filtros(rango, sfecha) {
+
+        _VERBOSE ? console.log("busca_especie") : _VERBOSE;
+
+        _lin_inf = rango ? rango[0] : undefined;
+        _lin_sup = rango ? rango[1] : undefined;
+        _sin_fecha = sfecha;
+
+        busca_especie(true);
+
+        _toastr.info("Recalculando ocurrencias de especie");
+
+    }
+
+    /**
+     * Éste método obtiene las ocurrencias de una especie seleccionada en el análisis de nicho ecológico.
+     *
+     * @function busca_especie
+     * @public
+     * @memberof! map_module
+     * 
+     * @param {boolean} cfiltros - Bandera para saber si serán considerados los filtros temporales
+     */
+    function busca_especie(cfiltros) {
+
+        _VERBOSE ? console.log("busca_especie") : _VERBOSE;
+        
+        var milliseconds = new Date().getTime();
+        _sin_fecha = $("#chkFecha").is(':checked') ? true : false;
+
+        
+        $.ajax({
+            url: _url_zacatuche + "/niche/especie",
+            type: 'post',
+            dataType: "json",
+            data: {
+                "qtype": "getSpecies",
+                "id": _specie_target.spid,
+                "idtime": milliseconds,
+                "lim_inf": _lin_inf,
+                "lim_sup": _lin_sup,
+                "sfecha": _sin_fecha
+            },
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('X-Test-Header', 'test-value');
+                xhr.setRequestHeader("Accept", "text/json");
+            },
+            success: function(resp) {
+
+
+                d = resp.data;
+                
+                try {
+                    _markersLayer.clearLayers();
+                    _layer_control.removeLayer(_markersLayer);
+
+                } catch (e) {
+                    _VERBOSE ? console.log("primera vez") : _VERBOSE;
+                }
+
+
+
+                _discardedPoints = d3.map([]);			// puntos descartados por eliminacion
+
+                _allowedPoints = d3.map([]);			// puntos para analisis
+                _discardedPointsFilter = d3.map([]); 	// puntos descartados por filtros
+
+                _computed_occ_cells = d3.map([]);		// celdas para analisis
+                // _computed_discarded_cells = d3.map([]);	// celdas descartadas por filtros
+
+
+                // var computed_occ_cells_totals = d3.map([]);
+                var distinctPoints = d3.map([]);
+
+
+                if (d.length == 0) {
+                    _VERBOSE ? console.log("No hay registros de especie") : _VERBOSE;
+                    return;
+                }
+
+
+                // obtiene registros unicos en coordenadas
+                for (i = 0; i &lt; d.length; i++) {
+
+                    item_id = JSON.parse(d[i].json_geom).coordinates;
+
+                    // console.log(d[i].gridid);
+                    distinctPoints.set(item_id, d[i]);
+                    _computed_occ_cells.set(parseInt(d[i].gridid), d[i]);
+                }
+
+
+                occ_cell = _computed_occ_cells.values().length;
+                
+                $.each(distinctPoints.values(), function(index, item) {
+
+                    item_id = JSON.parse(item.json_geom).coordinates.toString();
+
+                    // this map is fill with the records in the database from an specie, so it discards repetive elemnts.
+                    _allowedPoints.set(item_id, {
+                        "type": "Feature",
+                        "properties": {"url": item.urlejemplar, "fecha": item.fechacolecta, "specie": _specie_target.label, "gridid": item.gridid},
+                        "geometry": JSON.parse(item.json_geom)
+                    });
+
+                });
+
+                
+                try {
+                    map.removeLayer(_switchD3Layer);
+                }
+                catch (e) {
+                    _VERBOSE ? console.log("layer no creado") : _VERBOSE;
+                }
+
+                _addPointLayer();
+
+                if (_tipo_modulo == _MODULO_NICHO) {
+
+                    _histogram_module.createBarChartFecha(distinctPoints.values());
+                }
+
+                _fillSpeciesData(_allowedPoints.values().length, occ_cell);
+
+                $("#deletePointsButton").attr("title", $.i18n.prop('lb_borra_puntos'));
+
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                _VERBOSE ? console.log("error: " + textStatus) : _VERBOSE;
+                _VERBOSE ? console.log(errorThrown) : _VERBOSE;
+                _VERBOSE ? console.log(jqXHR.responseText) : _VERBOSE;
+            }
+
+        });
+
+    };
+
+
+    /**
+     * Éste método despliega la información de la especie seleccionada en el análisis de nicho ecológico.
+     *
+     * @function _fillSpeciesData
+     * @private
+     * @memberof! map_module
+     * 
+     * @param {integer} occ - Número de ocurrencias de la especie
+     * @param {integer} occ_cell - Número de celdas ocupadas por la especie
+     */
+    function _fillSpeciesData(occ, occ_cell) {
+
+        _VERBOSE ? console.log("_specie_target") : _VERBOSE;
+
+        $("#lb_sum_reino_res").text(_specie_target.reino);
+        $("#lb_sum_phylum_res").text(_specie_target.phylum);
+        $("#lb_sum_clase_res").text(_specie_target.clase);
+        $("#lb_sum_orden_res").text(_specie_target.orden);
+        $("#lb_sum_familia_res").text(_specie_target.familia);
+        $("#lb_sum_genero_res").text(_specie_target.genero);
+        $("#lb_sum_especie_res").text(_specie_target.especie);
+
+
+        $("#num_occ").text(occ);
+        $("#num_occ_celda").text(occ_cell);
+
+    }
+
+    /**
+     * Éste método realiza la carga de una capa en el mapa con las ocurrencias de la especie objetivo seleccionada en el análisis de nicho ecológico.
+     *
+     * @function _addPointLayer
+     * @private
+     * @memberof! map_module
+     * 
+     */
+    function _addPointLayer() {
+
+        _VERBOSE ? console.log("_addPointLayer") : _VERBOSE;
+
+        _geojsonFeature = {"type": "FeatureCollection",
+            "features": _allowedPoints.values()};
+
+        _markersLayer = L.markerClusterGroup({maxClusterRadius: 30, chunkedLoading: true});
+
+        _species_layer = L.geoJson(_geojsonFeature, {
+            pointToLayer: function(feature, latlng) {
+
+                return L.circleMarker(latlng, _geojsonMarkerOptions);
+            },
+            onEachFeature: function(feature, layer) {
+                var message = _getMessagePopup(feature);
+                layer.bindPopup(message, _customOptions);
+            }
+
+        });
+
+        _markersLayer.addLayer(_species_layer);
+        map.addLayer(_markersLayer);
+
+        _layer_control.addOverlay(_markersLayer, _specie_target.label);
+    }
+
+    /**
+     * Éste método controla la eliminación de puntos de una capa de ocurrencias de la especie objetivo seleccionada en el análisis de nicho ecológico.
+     *
+     * @function _deletePoints
+     * @private
+     * @memberof! map_module
+     * 
+     */
+    function _deletePoints() {
+
+        _VERBOSE ? console.log("_deletePoints") : _VERBOSE;
+
+        if (!(_markersLayer))
+            return;
+
+
+        if (_DELETE_STATE_POINTS) {
+
+            try {
+                map.addLayer(_switchD3Layer);
+            } catch (e) {
+                _VERBOSE ? console.log("layer no creado") : _VERBOSE;
+            }
+
+            _DELETE_STATE_POINTS = false;
+
+            $("#deletePointsButton").css("backgroundColor", "#fff");
+
+            _markersLayer.getLayers().forEach(function(item) {
+
+                item.setStyle(_geojsonMarkerOptions);
+
+                item.off('click');
+
+                item.on('click', function() {
+
+                    L.DomEvent.stopPropagation;
+
+                    var popup = L.popup({className: 'custom'});
+                    // popup.className('custom');
+
+                    var message = _getMessagePopup(item.feature);
+                    popup.setLatLng([item.feature.geometry.coordinates[1], item.feature.geometry.coordinates[0]]).setContent(message).openOn(map);
+
+                });
+
+            });
+
+        }
+        else {
+
+            // remueve el layer del grid para poder eliminar puntos
+            try {
+                map.removeLayer(_switchD3Layer);
+            } catch (e) {
+                _VERBOSE ? console.log("layer no creado") : _VERBOSE;
+            }
+
+            _DELETE_STATE_POINTS = true;
+
+            $("#deletePointsButton").css("backgroundColor", "#BFADB6");
+
+            _markersLayer.getLayers().forEach(function(item) {
+
+                item.off('click');
+
+                item.on('click', function() {
+
+                    L.DomEvent.stopPropagation;
+
+                    item_id = item.feature.geometry.coordinates.toString();
+
+                    _discardedPoints.set(item_id, item);
+
+                    if (_allowedPoints.remove(item_id)) {
+                        _VERBOSE ? console.log("deleted") : _VERBOSE;
+                    }
+                    else {
+                        _VERBOSE ? console.log("Error: point not deleted") : _VERBOSE;
+                    }
+                    _markersLayer.removeLayer(item);
+
+                });
+
+                item.setStyle(_geojsonMarkerOptionsDelete);
+
+            });
+
+        }
+
+    }
+
+
+    /**
+     * Éste método despliega el mensaje informativo de la ocurrencia de la especie seleccionada en el análisis de nicho ecológico.
+     *
+     * @function _getMessagePopup
+     * @private
+     * @memberof! map_module
+     * 
+     * @param {object} feature - Objeto tipo punto de la ocucurrencia seleccionada para el análisis de nicho ecológico
+     */
+    function _getMessagePopup(feature) {
+
+        coordinates = parseFloat(feature.geometry.coordinates[1]).toFixed(2) + ", " + parseFloat(feature.geometry.coordinates[0]).toFixed(2)
+
+        var fecha = feature.properties.fecha == null ? "" : feature.properties.fecha;
+
+        var url = "";
+
+        if (feature.properties.url.startsWith("http://")) {
+            url = feature.properties.url.replace("http://", "");
+        }
+        else if (feature.properties.url.startsWith("https://")) {
+            url = feature.properties.url.replace("https://", "");
+        }
+        else {
+            url = feature.properties.url;
+        }
+        
+        var message = "INFORMACIÓN ESPECIE&lt;br/>Nombre: " + feature.properties.specie + "&lt;br/>Colecta: " + fecha + "&lt;br/>Coordenadas: " + coordinates + "&lt;br/>&lt;a target='_blank' class='enlace_sp' href='http://" + url + "'>" + _iTrans.prop("link_sp") + "&lt;/a>";
+        return message;
+    }
+
+
+   
+    /**
+     * Éste método realiza la partición en deciles y la asignación de escala de colores de un conjunto de celdas con valores de score asignado.
+     *
+     * @function createDecilColor
+     * @public
+     * @memberof! map_module
+     * 
+     * @param {json} json - Json con el conjunto de celdas y score asignado resultado del análisis de nicho ecológico
+     * @param {boolean} mapa_prob - Bandera para saber si el mapa despliega el color con probalidad por celda
+     */
+    function createDecilColor(json, mapa_prob) {
+
+        _VERBOSE ? console.log("createDecilColor") : _VERBOSE;
+        
+        var red_arg = [];
+        var blue_arg = [];
+        var prob_arg = [];
+        var t_chunks = [];
+        var prob_chunks = [];
+        var red_chunks = [];
+        var blue_chunks = [];
+
+
+        grid_color = d3.map([]);
+
+        if (!mapa_prob) {
+
+            _VERBOSE ? console.log("Sin probabilidad") : _VERBOSE;
+
+            $.each(json, function(index, d) {
+
+                d.tscore = parseFloat(d.tscore);
+
+                if (d.tscore >= 0) {
+                    red_arg.push(d)
+                }
+                else {
+                    blue_arg.push(d);
+                }
+
+            });
+
+            if (blue_arg.length > 0 &amp;&amp; red_arg.length > 0) {
+
+                _VERBOSE ? console.log("ambos") : _VERBOSE;
+
+
+
+                var min_json = d3.min(blue_arg.map(function(d) {
+                    return parseFloat(d.tscore)
+                }));
+                var max_json = d3.max(red_arg.map(function(d) {
+                    return parseFloat(d.tscore)
+                }));
+
+                _VERBOSE ? console.log("min_json: " + min_json) : _VERBOSE;
+                _VERBOSE ? console.log("max_json: " + max_json) : _VERBOSE;
+
+
+               
+
+                if (Math.abs(min_json) > Math.abs(max_json)) {
+
+                    _VERBOSE ? console.log("primero blue") : _VERBOSE;
+
+                    _resultado_grid = 0;
+
+                    // _VERBOSE ? console.log(blue_arg.length) : _VERBOSE;
+                    t_chunks = _getDividedChunks(blue_arg, red_arg, false, mapa_prob);
+                    blue_chunks = t_chunks[0];
+                    red_chunks = t_chunks[1];
+
+                    // red_chunks.reverse();
+
+
+                    // when blues go first the collection goes from min to max
+
+                }
+                else {
+
+                    _VERBOSE ? console.log("primero red") : _VERBOSE;
+
+                    _resultado_grid = 1;
+
+                    t_chunks = _getDividedChunks(red_arg, blue_arg, true, mapa_prob);
+                    red_chunks = t_chunks[0];
+                    blue_chunks = t_chunks[1];
+
+                    // when reds go first the collection goes from max to min
+                    red_chunks.reverse();
+                  
+                }
+
+            }
+            else if (blue_arg.length == 0 &amp;&amp; red_arg.length > 0) {
+
+                _VERBOSE ? console.log("positivos") : _VERBOSE;
+
+                t_chunks = _getDividedChunks(red_arg, [], true, mapa_prob);
+                red_chunks = t_chunks[0];
+                blue_chunks = t_chunks[1];
+
+                red_chunks.reverse();
+                
+            }
+            else if (blue_arg.length > 0 &amp;&amp; red_arg.length == 0) {
+
+                _VERBOSE ? console.log("negativos") : _VERBOSE;
+
+                t_chunks = _getDividedChunks(blue_arg, [], false, mapa_prob);
+                blue_chunks = t_chunks[0];
+                red_chunks = t_chunks[1];
+
+            }
+
+            _VERBOSE ? console.log(blue_chunks) : _VERBOSE;
+            _VERBOSE ? console.log(red_chunks) : _VERBOSE;
+
+
+
+            color_scale = colorbrewer.Reds[9];
+            $.each(red_chunks, function(index, value) {
+
+                value.forEach(function(d) {
+
+                    grid_color.set(d.gridid, color_scale[index]);
+
+                });
+
+            });
+
+            color_scale = colorbrewer.Blues[9];
+            $.each(blue_chunks, function(index, value) {
+
+                value.forEach(function(d) {
+
+                    grid_color.set(d.gridid, color_scale[index]);
+
+                });
+
+            });
+
+        }
+        else {
+
+
+            _VERBOSE ? console.log("Probabilidad") : _VERBOSE;
+
+            prob_arg = json;
+
+            console.log(colorbrewer.RdBu[11]);
+            var link_color = d3.scale.quantize().domain([1, 0]).range(colorbrewer.RdBu[11]);
+            
+
+            $.each(prob_arg, function(index, value) {
+
+                grid_color.set(value.gridid, link_color(parseFloat(value.tscore)));
+
+            });
+
+        }
+
+        _VERBOSE ? console.log(grid_color.values()) : _VERBOSE;
+
+        _cargaPaletaColor(mapa_prob);
+
+        return grid_color;
+
+    }
+
+    /**
+     * Éste método obtiene la escala de colores para la coloración del mapa
+     *
+     * @function _cargaPaletaColor
+     * @private
+     * @memberof! map_module
+     * 
+     * @param {boolean} mapa_prob - Bandera para saber si el mapa despliega el color con probalidad por celda
+     */
+    function _cargaPaletaColor(mapa_prob) {
+
+        _VERBOSE ? console.log("_cargaPaletaColor") : _VERBOSE;
+
+        $("#escala_color").empty();
+
+        // _VERBOSE ? console.log(_range_limits_red) : _VERBOSE;
+        _VERBOSE ? console.log(_range_limits_blue) : _VERBOSE;
+        // _VERBOSE ? console.log(_resultado_grid) : _VERBOSE;
+
+        var data = [];
+
+        var rojos = colorbrewer.Reds[9].slice();
+        ;
+        var azules = colorbrewer.Blues[9].slice();
+
+        // _VERBOSE ? console.log(colorbrewer.Reds[9]) : _VERBOSE;
+
+        if (mapa_prob) {
+            data = colorbrewer.RdBu[11];
+        }
+        else {
+            if (_range_limits_red.length > 0 &amp;&amp; _range_limits_blue.length > 0 &amp;&amp; _resultado_grid == 0) { // ambos, primero negativos
+
+                _range_limits_total = _range_limits_blue.reverse().concat(_range_limits_red);
+
+                data = d3.merge([rojos.reverse(), azules]);
+            }
+            else if (_range_limits_red.length > 0 &amp;&amp; _range_limits_blue.length > 0 &amp;&amp; _resultado_grid == 1) { // ambos, primero positivos
+
+                _range_limits_total = _range_limits_blue.reverse().concat(_range_limits_red.reverse());
+
+                data = d3.merge([rojos.reverse(), azules]);
+            }
+
+            else if (_range_limits_red.length > 0 &amp;&amp; _range_limits_blue.length == 0) {// solo positivos
+                _VERBOSE ? console.log("solo positivos") : _VERBOSE;
+
+                _range_limits_total = d3.merge([[{right_limit: 0, left_limit: 0}], _range_limits_red]);
+                data = d3.merge([rojos, ["#ffffff"]]);
+                // data = colorbrewer.Reds[9];
+            }
+
+            else if (_range_limits_red.length == 0 &amp;&amp; _range_limits_blue.length > 0) {// solo negativos
+                _VERBOSE ? console.log("solo negativos") : _VERBOSE;
+
+                _range_limits_total = d3.merge([_range_limits_blue.reverse(), [{right_limit: 0, left_limit: 0}]]);
+                data = d3.merge([["#ffffff"], azules]);
+                ;
+            }
+
+        }
+
+        console.log(_range_limits_total);
+        console.log(data);
+
+
+        gradient_data = [];
+
+        $.each(data, function(index, item) {
+
+            // console.log(parseFloat((index)/data.length*100).toFixed(2)+"%");
+            gradient_data.push({offset: parseFloat((index) / data.length * 100).toFixed(2) + "%", color: item});
+
+        });
+
+        // console.log(gradient_data);
+
+
+        var w = 70, h = 300;
+
+        var key = d3.select("#escala_color").append("svg")
+                .attr("width", w)
+                .attr("height", h);
+        // .attr("transform", "translate(10,0)");
+
+        var legend = key.append("defs")
+                .append("svg:linearGradient")
+                .attr("id", "gradient")
+                .attr("x1", "100%")
+                .attr("y1", "0%")
+                .attr("x2", "100%")
+                .attr("y2", "100%")
+                .attr("spreadMethod", "pad");
+
+
+        legend.selectAll("stop")
+                .data(gradient_data)
+                .enter().append("stop")
+                .attr("offset", function(d) {
+                    return d.offset;
+                })
+                .attr("stop-color", function(d) {
+                    return d.color;
+                });
+
+        key.append("rect")
+                .attr("width", w - 50)
+                .attr("height", h - 100)
+                .style("fill", "url(#gradient)")
+                .attr("transform", "translate(50,10)");
+
+
+        if (mapa_prob) {
+            var y = d3.scale.linear().range([h - 100, 0]).domain([1, 100]);
+        }
+        else {
+            var y = d3.scale.ordinal().rangeBands([h - 100, 0], .5);
+            y.domain(_range_limits_total.map(function(d) {
+                // console.log(d.right_limit);
+                return parseFloat(d.left_limit).toFixed(2);
+            }));
+        }
+
+        var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left");
+
+        var text_legend = mapa_prob ? "Porcentaje probabilidad" : "Score";
+
+        key.append("g")
+                .attr("class", "y axis")
+                .attr("transform", "translate(49,10)")
+                .call(yAxis)
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", -45)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text(text_legend);
+
+    }
+
+
+    /**
+     * Éste método obtiene los límites de las particiones realizadas por deciles que serán utilizadas para la asignación de color a las celdas.
+     *
+     * @function _cargaPaletaColor
+     * @private
+     * @memberof! map_module
+     * 
+     * @param {array} arg_1 - Array de valores positivos o negativos resultado del análisis de nicho ecológico.
+     * @param {array} arg_2 - Array de valores positivos o negativos resultado del análisis de nicho ecológico.
+     * @param {boolean} first_pos - Bandera para indicar que array de valores esta en el primer parámetro de la función, true para positivos y false para negativos
+     * @param {boolean} mapa_prob - Bandera para indicar si el análisis de nicho ecológico se hizo con probabilidad
+     */
+    function _getDividedChunks(arg_1, arg_2, first_pos, mapa_prob) {
+
+        _VERBOSE ? console.log("_getDividedChunks") : _VERBOSE;
+
+        _range_limits_red = [];
+        _range_limits_blue = [];
+        _range_limits_total = [];
+
+
+        // _VERBOSE ? console.log(arg_1.length) : _VERBOSE;
+        decil_length_1 = arg_1.length / NUM_SECTIONS;
+        module_1 = arg_1.length % NUM_SECTIONS;
+
+        // si esta completo
+        arg_result_1 = chunkify(arg_1, NUM_SECTIONS, true);
+        // arg_result_1 = _chunks(arg_1, decil_length_1, NUM_SECTIONS, module_1);
+
+
+        if (mapa_prob) {
+            [arg_result_1, []];
+        }
+
+        first = true;
+        r_limit = 0.0;
+
+        // getting boundaries of each decil
+        $.each(arg_result_1, function(index, decil) {
+
+            // se estan quedando elementos fuera, ya que no estan tocamdo el cero
+            if (first) {
+
+                first = false;
+
+                if (first_pos) {
+
+                    max_decil = d3.max(decil.map(function(d) {
+                        return parseFloat(d.tscore)
+                    }));
+                    r_limit = d3.min(decil.map(function(d) {
+                        return parseFloat(d.tscore)
+                    }));
+
+                    _range_limits_red.push({right_limit: max_decil, left_limit: r_limit});
+
+                }
+                else {
+                    max_decil = 0;
+                    r_limit = d3.min(decil.map(function(d) {
+                        return parseFloat(d.tscore)
+                    }));
+
+                    _range_limits_blue.push({right_limit: max_decil, left_limit: r_limit});
+                }
+
+
+
+            }
+            else if (index == NUM_SECTIONS - 1) {
+
+                if (first_pos) {
+                    max_decil = d3.max(decil.map(function(d) {
+                        return parseFloat(d.tscore)
+                    }));
+                    r_limit = 0;
+
+                    _range_limits_red.push({right_limit: max_decil, left_limit: r_limit});
+
+                }
+                else {
+                    max_decil = r_limit;
+                    r_limit = d3.min(decil.map(function(d) {
+                        return parseFloat(d.tscore)
+                    }));
+
+                    _range_limits_blue.push({right_limit: max_decil, left_limit: r_limit});
+                }
+
+
+
+            }
+            else {
+
+                // avoiding spaces between decil boundaries
+                max_decil = r_limit;
+                r_limit = d3.min(decil.map(function(d) {
+                    return parseFloat(d.tscore)
+                }));
+
+                if (first_pos) {
+                    _range_limits_red.push({right_limit: max_decil, left_limit: r_limit});
+                }
+                else {
+                    _range_limits_blue.push({right_limit: max_decil, left_limit: r_limit});
+                }
+
+            }
+
+        });
+
+
+        var range = first_pos ? _range_limits_red : _range_limits_blue;
+
+        if (arg_2.length > 0) {
+
+            // clustering items of the second array
+            arg_result_2 = [];
+
+            $.each(range, function(i, r_item) {
+
+                if (first_pos) {
+
+                    rlimit = r_item.right_limit * -1;
+                    llimit = r_item.left_limit * -1;
+
+                    _range_limits_blue.push({right_limit: llimit, left_limit: rlimit});
+
+                }
+                else {
+
+                    rlimit = r_item.right_limit * -1;
+                    llimit = r_item.left_limit * -1;
+
+                    _range_limits_red.push({right_limit: llimit, left_limit: rlimit});
+
+                }
+
+
+            });
+
+            var rangeinverse = first_pos ? _range_limits_blue : _range_limits_red;
+            if (first_pos) {
+                rangeinverse.reverse();
+            }
+            _VERBOSE ? console.log(rangeinverse) : _VERBOSE;
+
+
+            $.each(rangeinverse, function(i, limits) {
+
+                var decil_item = [];
+
+                $.each(arg_2, function(j, item) {
+
+                    // score = Math.abs(item.tscore);
+                    score = parseFloat(item.tscore);
+                    llimit = limits.left_limit;
+                    rlimit = limits.right_limit;
+
+                    // when the negative values (blues scale) is sent as arg_1, the boundaries must be changed
+                    if (first_pos) {
+
+                        if (score >= llimit &amp;&amp; score &lt; rlimit) {
+                            decil_item.push(item);
+                        }
+                    }
+                    else {
+
+                        if (score >= llimit &amp;&amp; score &lt; rlimit) {
+                            decil_item.push(item);
+                        }
+                    }
+
+                });
+
+                arg_result_2.push(decil_item);
+
+            });
+
+            return [arg_result_1, arg_result_2];
+
+        }
+
+        return [arg_result_1, []];
+
+    }
+    
+    
+    /**
+     * Éste método secciona el array de celdas y score realcionado en deciles
+     *
+     * @function _cargaPaletaColor
+     * @private
+     * @memberof! map_module
+     * 
+     * @param {array} a - Array de celdas y score relacionado
+     * @param {integer} n - Núemro de particiones
+     * @param {boolean} balanced - Bandera para indicar si las particiones serán balanceadas
+     */
+    function chunkify(a, n, balanced) {
+
+        console.log("chunkify");
+        console.log(a);
+
+        if (n &lt; 2)
+            return [a];
+
+        var len = a.length,
+                out = [],
+                i = 0,
+                size;
+        console.log("len: " + len);
+        console.log("n: " + n);
+
+        if (len % n === 0) {
+
+            console.log("caso uno");
+
+            size = Math.floor(len / n);
+
+            console.log("size: " + size);
+
+            while (i &lt; len) {
+                out.push(a.slice(i, i += size));
+            }
+        }
+
+        else if (balanced) {
+            console.log("caso dos");
+
+            while (i &lt; len) {
+                size = Math.ceil((len - i) / n--);
+                out.push(a.slice(i, i += size));
+            }
+        }
+
+        else {
+
+            console.log("caso tres");
+
+            n--;
+            size = Math.floor(len / n);
+            if (len % size === 0)
+                size--;
+            while (i &lt; size * n) {
+                out.push(a.slice(i, i += size));
+            }
+            out.push(a.slice(size * n));
+
+        }
+
+        return out;
+    }
+
+
+
+    /**
+     * Éste método inicializa la configuración del mapa
+     *
+     * @function startMap
+     * @public
+     * @memberof! map_module
+     * 
+     * @param {array} language_module - Módulo lenguaje
+     * @param {integer} tipo_modulo - Tipo de módulo donde será creado el mapa, nicho o comunidad ecológica
+     * @param {boolean} histogram_module - Módulo histograma
+     */
+    function startMap(language_module, tipo_modulo, histogram_module) {
+        _VERBOSE ? console.log("startMap") : _VERBOSE;
+        _mapConfigure(language_module, tipo_modulo, histogram_module);
+    }
+
+    return{
+        map: map,
+        busca_especie: busca_especie,
+        busca_especie_filtros: busca_especie_filtros,
+        set_specieTarget: set_specieTarget,
+        get_specieTarget: get_specieTarget,
+        get_allowedPoints: get_allowedPoints,
+        get_discardedPoints: get_discardedPoints,
+        get_discardedPointsFilter: get_discardedPointsFilter,
+        get_discardedCellFilter: get_discardedCellFilter,
+        get_allowedCells: get_allowedCells,
+        createDecilColor: createDecilColor,
+        setDisplayModule: setDisplayModule,
+        showPopUp: showPopUp,
+        get_layerControl: get_layerControl,
+        addMapLayer: addMapLayer,
+        removeMapLayer: removeMapLayer,
+        addMapControl: addMapControl,
+        removeMapControl: removeMapControl,
+        getMap: getMap,
+        colorizeFeatures: colorizeFeatures,
+        colorizeFeaturesNet: colorizeFeaturesNet,
+        startMap: startMap
+    }
+
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="histogram_module.html">histogram_module</a></li><li><a href="language_module.html">language_module</a></li><li><a href="map_module.html">map_module</a></li><li><a href="module_index.html">module_index</a></li><li><a href="module_net.html">module_net</a></li><li><a href="module_nicho.html">module_nicho</a></li><li><a href="net_module.html">net_module</a></li><li><a href="res_display_module.html">res_display_module</a></li><li><a href="res_display_net_module.html">res_display_net_module</a></li><li><a href="table_module.html">table_module</a></li><li><a href="validation_module.html">validation_module</a></li><li><a href="variable_module.html">variable_module</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue May 02 2017 02:54:14 GMT-0500 (CDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
