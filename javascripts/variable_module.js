@@ -148,9 +148,320 @@ var variable_module = (function (verbose, url_zacatuche) {
         //     return self.taxones;
         // }
 
+        self.getTreeTarget = function(){
+
+            _VERBOSE ? console.log("self.getTreeTarget") : _VERBOSE;
+
+            $("#agent_selected").change(function() {
+                let var_obj = $(this).val();
+                let diseases = document.getElementById("disease_selected");
+
+                switch (var_obj){
+                    case "Hospederos":
+                        fetch("http://10.90.0.42:4006/graphql/hospederos/",{
+                            method: "POST",
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ query: 'query { get_diseases_hospederos {name}}'}),
+                        })
+                            .then(res => res.json())
+                            .then((function(resp){
+                                console.log(resp);
+                                let data = resp ["data"]
+                                let disease = data["get_diseases_hospederos"]
+                                var select = document.getElementById("disease_selected")
+                                $('select option[value="dis_default"]').attr("selected",true);
+                                try {
+                                    let actual_modifiers =
+                                        $(".disease_opt").remove();
+                                } catch (error) {
+                                    console.log("no diseases")
+                                }
+
+                                for (let index = 0; index < disease.length; index++){
+                                    console.log(disease[index]["name"])
+                                    var opt = document.createElement('option');
+                                    opt.setAttribute("class", "disease_opt")
+                                    opt.value = disease[index]["name"];
+                                    opt.innerHTML = disease[index]["name"];
+                                    select.append(opt);
+                                }
+                               
+                                
+                            }));
+                        break;
+                    case "Vectores":
+                        fetch("http://10.90.0.42:4008/graphql/vectores/",{
+                            method: "POST",
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ query: 'query { get_diseases_vectores {name}}'}),
+                        })
+                            .then(res => res.json())
+                            .then((function(resp){
+                                console.log(resp);
+                                let data = resp ["data"]
+                                let disease = data["get_diseases_vectores"]
+                                var select = document.getElementById("disease_selected")
+                                $('select option[value="dis_default"]').attr("selected",true);
+                                try {
+                                    let actual_modifiers =
+                                        $(".disease_opt").remove();
+                                } catch (error) {
+                                    console.log("no diseases")
+                                }
+
+                                for (let index = 0; index < disease.length; index++){
+                                    console.log(disease[index]["name"])
+                                    var opt = document.createElement('option');
+                                    opt.setAttribute("class", "disease_opt")
+                                    opt.value = disease[index]["name"];
+                                    opt.innerHTML = disease[index]["name"];
+                                    select.append(opt);
+                                }
+                            }));
+
+                        break;
+                    case "Patogenos":
+                        fetch("http://10.90.0.42:4007/graphql/patogenos/",{
+                            method: "POST",
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ query: 'query { get_diseases_patogenos {name}}'}),
+                        })
+                            .then(res => res.json())
+                            .then((function(resp){
+                                console.log(resp);
+                                let data = resp ["data"]
+                                let disease = data["get_diseases_patogenos"]
+                                var select = document.getElementById("disease_selected")
+                                $('select option[value="dis_default"]').attr("selected",true);
+                                try {
+                                    let actual_modifiers =
+                                        $(".disease_opt").remove();
+                                } catch (error) {
+                                    console.log("no diseases")
+                                }
+
+                                for (let index = 0; index < disease.length; index++){
+                                    console.log(disease[index]["name"])
+                                    var opt = document.createElement('option');
+                                    opt.setAttribute("class", "disease_opt")
+                                    opt.value = disease[index]["name"];
+                                    opt.innerHTML = disease[index]["name"];
+                                    select.append(opt);
+                                }
+                            }));
+                        break;
+
+                    default:
+                        break;
+                }
+                
+
+            });
+
+            $('#disease_selected').change(function(e){
+
+                var agent_selected = $('#agent_selected').val()
+                var disease_text_selected = $("#disease_selected option:selected").text();
+
+                if (agent_selected == 'Hospederos')
+                    var _url = 'http://10.90.0.42:4006/graphql/hospederos/'
+                else if (agent_selected == 'Patogenos')
+                    var _url = "http://10.90.0.42:4007/graphql/patogenos/"
+                else
+                    var _url = "http://10.90.0.42:4008/graphql/vectores/"
+
+                let nodo = agent_selected.toLowerCase()
+
+                var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){reino phylum clase orden familia genero nombrecientifico}}"
+
+                console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                console.log(query)
+                console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+
+                $.ajax({
+                    url: _url,
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({query: query}),
+                    success: function(resp){
+                        
+                        console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                        console.log(resp)
+                        console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ') 
+
+                        if (agent_selected == 'Hospederos'){
+                            var species = resp.data.occurrences_by_taxon_hospederos;                                            
+                        }
+                        else if (agent_selected == 'Patogenos'){
+                            var species = resp.data.occurrences_by_taxon_patogenos;
+                        }else{
+                            var species = resp.data.occurrences_by_taxon_vectores;
+                        }
+                        
+                        data = [{ "id" : "animalia", "parent" : "#", "text" : "Animalia", 'state': {'opened': true, 'disabled' : true },
+                        "icon": "plugins/jstree/images/dna.png"}]
+                        
+                        var species_non_repeat = [];
+                        var species_names = [];
+                        
+                        species.forEach(specie=>{
+                            if(!species_names.includes(specie.nombrecientifico)){
+                                species_names.push(specie.nombrecientifico);
+                                species_non_repeat.push(specie);
+                            }
+                        })
+
+                        //console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                        //console.log(species_non_repeat)
+                        //console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+
+                        var arbol = {}
+                        var phylums = []
+                        species.forEach(specie=>{
+                            if(!phylums.includes(specie.phylum)){
+                                phylums.push(specie.phylum);
+                                data.push({ "id" : specie.phylum, "parent" : "animalia", "text" : specie.phylum, 'state': {'opened': true},"icon": "plugins/jstree/images/dna.png"})                                                
+                            }
+                        })
+
+                        console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                        console.log(phylums)                       
+                        console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+
+                        var phylums_obj = {}
+                        phylums.forEach(phylum=>{                                            
+                            var clases=[]
+                            species.forEach(specie=>{
+                                if(!clases.includes(specie.clase) && specie.phylum ===phylum){
+                                    clases.push(specie.clase);
+                                    data.push({ "id" : specie.clase , "parent" : specie.phylum  , "text" : specie.clase, 'state': {'opened': true},
+                                    "icon": "plugins/jstree/images/dna.png"})
+                                }
+                            })
+                            var clases_obj = {}
+                            clases.forEach(clase=>{
+                                var ordenes = []
+                                species.forEach(specie=>{
+                                    if(!ordenes.includes(specie.orden) && specie.clase === clase){
+                                        ordenes.push(specie.orden);
+                                        data.push({ "id" : specie.orden , "parent" : specie.clase  , "text" : specie.orden,'state': {'opened': true },
+                                        "icon": "plugins/jstree/images/dna.png"})
+                                    }
+                                })
+                                var ordenes_obj={}
+                                ordenes.forEach(orden=>{
+                                    var familias = []
+                                    species.forEach(specie=>{
+                                        if(!familias.includes(specie.familia) && specie.orden === orden){
+                                            familias.push(specie.familia);
+                                            data.push({ "id" : specie.familia , "parent" : specie.orden  , "text" : specie.familia, 'state': {'opened': true },
+                                            "icon": "plugins/jstree/images/dna.png" })
+                                        }
+                                    })
+                                    var familias_obj={}
+                                    familias.forEach(familia=>{
+                                        var generos = []
+                                        species.forEach(specie=>{
+                                            if(!generos.includes(specie.genero) && specie.familia === familia){
+                                                generos.push(specie.genero);
+                                                data.push({ "id" : specie.genero , "parent" : specie.familia  , "text" : specie.genero, 'state': {'opened': true },
+                                                "icon": "plugins/jstree/images/dna.png"})
+                                            }
+                                        }) 
+                                        var generos_obj ={}
+                                        generos.forEach(genero=>{
+                                            var nombrescientificos=[]
+                                            species.forEach(specie=>{
+                                                if(!nombrescientificos.includes(specie.nombrecientifico) && specie.genero === genero){
+                                                    nombrescientificos.push(specie.nombrecientifico);
+                                                    data.push({ "id" : specie.nombrecientifico , "parent" : specie.genero , "text" : specie.nombrecientifico, 'state': {'opened': true },
+                                                    "icon": "plugins/jstree/images/dna.png"})
+                                                }
+                                            })
+                                            generos_obj[genero] = nombrescientificos
+                                        })
+
+                                        familias_obj[familia]=generos_obj                                                     
+                                        
+                                    })
+                                    ordenes_obj[orden] = familias_obj
+
+                                })                                                
+                                clases_obj[clase] = ordenes_obj
+                            })
+                            phylums_obj[phylum] = clases_obj
+                            arbol['Animalia']=phylums_obj
+                            
+
+                        })
+                        
+                        console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                        console.log("arbol es")
+                        console.log(data)
+                        console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+
+                        $('#jstree_variables_species_target').jstree("destroy").empty();
+                        $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
+                        $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVar);
+                        $("#jstree_variables_species_target").on('loaded.jstree', self.loadNodes);
 
 
+                        var icon = "plugins/jstree/images/dna.png"                                         
+                        
+                        
+                        $('#jstree_variables_species_target').jstree({
+                            'plugins': ["wholerow", "checkbox"],                            
+                            'core': {
+                                'data': data,
+                                'themes': {
+                                    'name': 'proton',
+                                    'responsive': true
+                                },
+                                'check_callback': true
+                            }
+                        });
+                        
+                        console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                        console.log(Object.keys(arbol['Animalia']))
+                        console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
 
+                        Object.keys(arbol["Animalia"]).forEach(phylum=>{
+
+                            console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                            console.log(phylum)
+                            
+                            Object.keys(arbol["Animalia"][phylum]).forEach(clase=>{
+
+                                console.log("  " + clase)
+                                
+                                Object.keys(arbol["Animalia"][phylum][clase]).forEach(orden=>{
+
+                                    console.log("     " + orden)
+
+                                    Object.keys(arbol["Animalia"][phylum][clase][orden]).forEach(familia=>{
+
+                                        console.log("       " + familia)
+                                        Object.keys(arbol["Animalia"][phylum][clase][orden][familia]).forEach(genero=>{
+                                            console.log("       " + genero)
+                                            arbol["Animalia"][phylum][clase][orden][familia][genero].forEach(nombre=>{
+                                                console.log("           " + nombre)
+                                            })
+                                        })
+                                    })
+                                })
+                            })
+                        }) 
+
+                        
+
+                    }
+                })
+                console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                
+            })
+        }
+
+        self.getTreeTarget()
 
         // Evento generado cuando se selecciona un grupo de variables climáticas, realiza la carga del árbol de selección del grupo seleccionado.
         self.loadTreeVarRaster = function () {
@@ -247,7 +558,6 @@ var variable_module = (function (verbose, url_zacatuche) {
             });
 
         }
-
 
         self.getTreeVarRaster = function (e, d) {
 
@@ -716,6 +1026,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .addClass('btn btn-primary glyphicon glyphicon-plus pull-left no-mg-top')
                         .click(function (e) {
 
+                            console.log('>>>>>>>>>>>>>> este es mi id ' + id)
+
                             self.addOtherGroup('jstree_variables_species_' + id, self.arrayVarSelected, 'Bio', 'treeAddedPanel_' + id, _TYPE_BIO);
                             $('#jstree_variables_species_' + id).jstree("destroy").empty();
                             $('#jstree_variables_species_' + id).off('open_node.jstree', self.getTreeVar);
@@ -937,10 +1249,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                     console.log(uniqueObjArray)
 
-
                     let data = uniqueObjArray
-
-
 
                     var current_node = $('#jstree_variables_species_' + id).jstree(true).get_node($("#root"));
                     //current_node.prop('title', );
@@ -1035,8 +1344,6 @@ var variable_module = (function (verbose, url_zacatuche) {
             })
 
         }
-
-
 
         // Evento generado cuando se realiza la acción de abrir una rama del árbol de selección, realiza la carga de los elementos que componen la rama a la cual se desea tener acceso.
         self.getTreeVar = function (e, d) {
@@ -1858,6 +2165,11 @@ var variable_module = (function (verbose, url_zacatuche) {
 
         _initializeVarComponents(language_module, tipo_modulo, map_module);
     }
+
+
+    function getTreeTargetFunction(agent_selected, disease_text_selected) {
+
+        }
 
     return{
         startVar: startVar,
