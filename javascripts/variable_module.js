@@ -298,8 +298,10 @@ var variable_module = (function (verbose, url_zacatuche) {
                             var species = resp.data.occurrences_by_taxon_vectores;
                         }
                         
-                        data = [{ "id" : "animalia", "parent" : "#", "text" : "Animalia", 'state': {'opened': true, 'disabled' : true },
-                        "icon": "plugins/jstree/images/dna.png"}]
+                        //data = [{ "id" : "animalia", "parent" : "#", "text" : "Animalia", 'state': {'opened': true, 'disabled' : true },
+                        //"icon": "plugins/jstree/images/dna.png"}]
+
+                        data = []
                         
                         var species_non_repeat = [];
                         var species_names = [];
@@ -320,7 +322,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         species.forEach(specie=>{
                             if(!phylums.includes(specie.phylum)){
                                 phylums.push(specie.phylum);
-                                data.push({ "id" : specie.phylum, "parent" : "animalia", "text" : specie.phylum, 'state': {'opened': true},"icon": "plugins/jstree/images/dna.png"})                                                
+                                data.push({ "id" : specie.phylum, "parent" : "#", "text" : specie.phylum, 'state': {'opened': true,  'selected': true},"icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 3}})                                                
                             }
                         })
 
@@ -334,8 +336,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                             species.forEach(specie=>{
                                 if(!clases.includes(specie.clase) && specie.phylum ===phylum){
                                     clases.push(specie.clase);
-                                    data.push({ "id" : specie.clase , "parent" : specie.phylum  , "text" : specie.clase, 'state': {'opened': true},
-                                    "icon": "plugins/jstree/images/dna.png"})
+                                    data.push({ "id" : specie.clase , "parent" : specie.phylum  , "text" : specie.clase, 'state': {'opened': false},
+                                    "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 4}})
                                 }
                             })
                             var clases_obj = {}
@@ -344,8 +346,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 species.forEach(specie=>{
                                     if(!ordenes.includes(specie.orden) && specie.clase === clase){
                                         ordenes.push(specie.orden);
-                                        data.push({ "id" : specie.orden , "parent" : specie.clase  , "text" : specie.orden,'state': {'opened': true },
-                                        "icon": "plugins/jstree/images/dna.png"})
+                                        data.push({ "id" : specie.orden , "parent" : specie.clase  , "text" : specie.orden,'state': {'opened': false},
+                                        "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 5}})
                                     }
                                 })
                                 var ordenes_obj={}
@@ -354,8 +356,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                                     species.forEach(specie=>{
                                         if(!familias.includes(specie.familia) && specie.orden === orden){
                                             familias.push(specie.familia);
-                                            data.push({ "id" : specie.familia , "parent" : specie.orden  , "text" : specie.familia, 'state': {'opened': true },
-                                            "icon": "plugins/jstree/images/dna.png" })
+                                            data.push({ "id" : specie.familia , "parent" : specie.orden  , "text" : specie.familia, 'state': {'opened': false},
+                                            "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 6}})
                                         }
                                     })
                                     var familias_obj={}
@@ -364,8 +366,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                                         species.forEach(specie=>{
                                             if(!generos.includes(specie.genero) && specie.familia === familia){
                                                 generos.push(specie.genero);
-                                                data.push({ "id" : specie.genero , "parent" : specie.familia  , "text" : specie.genero, 'state': {'opened': true },
-                                                "icon": "plugins/jstree/images/dna.png"})
+                                                data.push({ "id" : specie.genero , "parent" : specie.familia  , "text" : specie.genero, 'state': {'opened': false},
+                                                "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 7}})
                                             }
                                         }) 
                                         var generos_obj ={}
@@ -374,8 +376,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                                             species.forEach(specie=>{
                                                 if(!nombrescientificos.includes(specie.nombrecientifico) && specie.genero === genero){
                                                     nombrescientificos.push(specie.nombrecientifico);
-                                                    data.push({ "id" : specie.nombrecientifico , "parent" : specie.genero , "text" : specie.nombrecientifico, 'state': {'opened': true },
-                                                    "icon": "plugins/jstree/images/dna.png"})
+                                                    data.push({ "id" : specie.nombrecientifico , "parent" : specie.genero , "text" : specie.nombrecientifico, 'state': {'opened': false},
+                                                    "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 8}})
                                                 }
                                             })
                                             generos_obj[genero] = nombrescientificos
