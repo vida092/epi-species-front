@@ -469,6 +469,8 @@ var module_nicho = (function () {
 
             var groupDatasetTotal = _componente_target.getGroupDatasetTotal()
 
+            
+
             console.log(groupDatasetTotal)
 
             if(groupDatasetTotal.length == 0){
@@ -511,7 +513,8 @@ var module_nicho = (function () {
 
             // _map_module_nicho.loadD3GridMX(val_process, grid_res, footprint_region, _taxones);
 
-            _map_module_nicho.busca_especie_grupo(_taxones, footprint_region, val_process, grid_res, disease, agent);
+
+            _map_module_nicho.busca_especie_grupo(_taxones, 1, val_process, grid_res, "nicho" , disease, agent);
 
         });
 

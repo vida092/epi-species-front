@@ -846,7 +846,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
                      });
 
                      // metodo del módulo de NICHO para cargar las especies
-                     busca_especie_grupo(taxones, region_selected, val_process, grid_res)
+                     busca_especie_grupo(taxones, region_selected, val_process, grid_res, "nicho", _DISEASE_SELECTED, _AGENT_SELECTED)
 
                  }
                  else{
@@ -2097,7 +2097,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
      * @param {array} taxones - Array con taxones seleccionados
      */
 
-     function busca_especie_grupo(taxones, region = 1, val_process = false, grid_res = "state", fuente = "nicho") {
+     function busca_especie_grupo(taxones, region = 1, val_process = false, grid_res = "state", fuente = "nicho", disease, agent) {
 
             _VERBOSE ? console.log("busca_especie_grupo") : _VERBOSE;
 
@@ -2106,7 +2106,11 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         console.log("grid_res: " + grid_res)
         console.log("_REGION_SELECTED: " + _REGION_SELECTED)
         console.log("region: " + region)
-        
+        _DISEASE_SELECTED = disease;
+        _AGENT_SELECTED = agent;
+        console.log("_DISEASE_SELECTED" + disease)
+        console.log("_AGENT_SELECTED" + _AGENT_SELECTED)
+
         _taxones = taxones
 
         console.log(_taxones)
