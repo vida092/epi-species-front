@@ -696,11 +696,13 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
         let query = 'query{get_mesh(grid_res: "' + _grid_res + '"){cve simplified_geom}}'
         console.log(query)
+        console.log("aquí está el query ------------------------------------")
+        // query{get_mesh(grid_res: "mun"){cve simplified_geom}}
 
 
          $.ajax({
                  method: "POST",
-                 url : "http://10.90.0.42:4003/graphql/mesh/",
+                 url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
                  contentType: "application/json",
                  data: JSON.stringify({query: query}),
              success: function (resp) {
@@ -2216,12 +2218,14 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
            "region": region
         }
 
-        if (_AGENT_SELECTED == 'Hospederos')
-            var _url = 'http://10.90.0.42:4006/graphql/hospederos/'
-        else if (_AGENT_SELECTED == 'Patogenos')
-            var _url = "http://10.90.0.42:4007/graphql/patogenos/"
-        else
-            var _url = "http://10.90.0.42:4008/graphql/vectores/"
+        // if (_AGENT_SELECTED == 'Hospederos')
+        //     var _url = 'http://10.90.0.42:4006/graphql/hospederos/'
+        // else if (_AGENT_SELECTED == 'Patogenos')
+        //     var _url = "http://10.90.0.42:4007/graphql/patogenos/"
+        // else
+        //     var _url = "http://10.90.0.42:4008/graphql/vectores/"
+
+        var _url = "https://covid19.c3.unam.mx/gateway/api/nodes/"
 
         let nodo = _AGENT_SELECTED.toLowerCase()
 

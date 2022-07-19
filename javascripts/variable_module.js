@@ -158,7 +158,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                 switch (var_obj){
                     case "Hospederos":
-                        fetch("http://10.90.0.42:4006/graphql/hospederos/",{
+                        fetch("https://covid19.c3.unam.mx/gateway/api/nodes/",{
                             method: "POST",
                             headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({ query: 'query { get_diseases_hospederos {name}}'}),
@@ -190,7 +190,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                             }));
                         break;
                     case "Vectores":
-                        fetch("http://10.90.0.42:4008/graphql/vectores/",{
+                        fetch("https://covid19.c3.unam.mx/gateway/api/nodes/",{
                             method: "POST",
                             headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({ query: 'query { get_diseases_vectores {name}}'}),
@@ -221,7 +221,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                         break;
                     case "Patogenos":
-                        fetch("http://10.90.0.42:4007/graphql/patogenos/",{
+                        fetch("https://covid19.c3.unam.mx/gateway/api/nodes/",{
                             method: "POST",
                             headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({ query: 'query { get_diseases_patogenos {name}}'}),
@@ -263,12 +263,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                 var agent_selected = $('#agent_selected').val()
                 var disease_text_selected = $("#disease_selected option:selected").text();
 
-                if (agent_selected == 'Hospederos')
-                    var _url = 'http://10.90.0.42:4006/graphql/hospederos/'
-                else if (agent_selected == 'Patogenos')
-                    var _url = "http://10.90.0.42:4007/graphql/patogenos/"
-                else
-                    var _url = "http://10.90.0.42:4008/graphql/vectores/"
+                var _url = "https://covid19.c3.unam.mx/gateway/api/nodes/"
 
                 let nodo = agent_selected.toLowerCase()
 
@@ -551,7 +546,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                             $('#jstree_variables_bioclim_' + id).jstree("create_node", current_node, newNode, 'last', false, false);
                         }
 
-                        $("#jstree_variables_bioclim_" + id).jstree(true).set_icon(current_node.id, "./plugins/jstree/images/dna.png");
+                        // $("#jstree_variables_bioclim_" + id).jstree(true).set_icon(current_node.id, "./plugins/jstree/images/dna.png");
 
                     });
 
@@ -890,12 +885,14 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 console.log("_AGENT_SELECTED: " + _AGENT_SELECTED);
                                 console.log("_DISEASE_SELECTED: " + _DISEASE_SELECTED);
 
-                                if (_AGENT_SELECTED == 'Hospederos')
-                                    var _url = 'http://10.90.0.42:4006/graphql/hospederos/'
-                                else if (_AGENT_SELECTED == 'Patogenos')
-                                    var _url = "http://10.90.0.42:4007/graphql/patogenos/"
-                                else
-                                    var _url = "http://10.90.0.42:4008/graphql/vectores/"
+                                // if (_AGENT_SELECTED == 'Hospederos')
+                                //     var _url = 'http://10.90.0.42:4006/graphql/hospederos/'
+                                // else if (_AGENT_SELECTED == 'Patogenos')
+                                //     var _url = "http://10.90.0.42:4007/graphql/patogenos/"
+                                // else
+                                //     var _url = "http://10.90.0.42:4008/graphql/vectores/"
+
+                                var _url = "https://covid19.c3.unam.mx/gateway/api/nodes/"
 
                                 let nodo = _AGENT_SELECTED.toLowerCase()
 

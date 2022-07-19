@@ -2826,12 +2826,13 @@ var res_display_module = (function (verbose, url_zacatuche) {
         }
         else{
 
-                if (_AGENT_SELECTED == 'Hospederos')
-                    var _url = 'http://10.90.0.42:4006/graphql/hospederos/'
-                else if (_AGENT_SELECTED == 'Patogenos')
-                    var _url = "http://10.90.0.42:4007/graphql/patogenos/"
-                else
-                    var _url = "http://10.90.0.42:4008/graphql/vectores/"
+                // if (_AGENT_SELECTED == 'Hospederos')
+                //     var _url = 'http://10.90.0.42:4006/graphql/hospederos/'
+                // else if (_AGENT_SELECTED == 'Patogenos')
+                //     var _url = "http://10.90.0.42:4007/graphql/patogenos/"
+                // else
+                //     var _url = "http://10.90.0.42:4008/graphql/vectores/"
+                var _url = "https://covid19.c3.unam.mx/gateway/api/nodes/"
 
                 let nodo = _AGENT_SELECTED.toLowerCase()
 
