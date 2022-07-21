@@ -2119,7 +2119,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
             console.log(item)
 
             $("#btn_variable_" + item).text($.i18n.prop('btn_variable') + " ");
-            // $("#btn_variable_" + item).append('<span class="caret"></span>');
+            $("#btn_variable_" + item).append('<span class="caret"></span>');
 
             $("#btn_variable_bioclim_" + item).text($.i18n.prop('btn_variable_bioclim') + " ");
             $("#btn_variable_bioclim_" + item).append('<span class="caret"></span>');

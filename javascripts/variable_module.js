@@ -1737,6 +1737,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                         // _VERBOSE ? console.log("remove item") : _VERBOSE;
                                         d3.select(this.parentNode).remove();
                                         var gpo_deleted;
+                                        a
 
                                         $.each(self.groupDatasetTotal, function (index, obj) {
                                             if (obj.groupid == d.groupid) {
@@ -1748,6 +1749,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                         _VERBOSE ? console.log(gpo_deleted) : _VERBOSE;
 
                                         self.updateVarSelArray(gpo_deleted, _BORRADO);
+                                        
 
                                     });
 
@@ -1926,6 +1928,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         // _VERBOSE ? console.log("remove item") : _VERBOSE;
                         d3.select(this.parentNode).remove();
                         var gpo_deleted;
+                        
 
                         $.each(self.groupDatasetTotal, function (index, obj) {
                             if (obj.groupid == d.groupid) {
@@ -1965,6 +1968,17 @@ var variable_module = (function (verbose, url_zacatuche) {
             if (operacion == _BORRADO) {
 
                 _VERBOSE ? console.log("elemento borrado") : _VERBOSE;
+                $('#jstree_variables_species_target').jstree({
+                    'plugins': ["wholerow", "checkbox"],                            
+                    'core': {
+                        'data': data,
+                        'themes': {
+                            'name': 'proton',
+                            'responsive': true
+                        },
+                        'check_callback': true
+                    }
+                });
 
                 $.each(self.var_sel_array, function (index, gpo_var) {
 
@@ -1993,6 +2007,7 @@ var variable_module = (function (verbose, url_zacatuche) {
         self.cleanVariables = function (idTree, idDivContainer, typeVar) {
 
             _VERBOSE ? console.log("self.cleanVariables") : _VERBOSE;
+            $('#disease_selected').val("dis_default")
 
             $('#' + idDivContainer).empty();
 
