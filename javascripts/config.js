@@ -1,4 +1,4 @@
-var url_front = "http://127.0.0.1:8000";
+var url_front = "/geoportal_v0.1.html";
 var url_api = "https://epispecies.c3.unam.mx/api/dev/";
 
 var url_nicho = url_front + "/geoportal_v0.1.html";
