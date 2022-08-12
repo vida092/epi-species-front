@@ -270,7 +270,7 @@ var module_nicho = (function () {
 
         $("#disease_selected").change(function (e) {
             
-            console.log("Cambiando a " + ($("#disease_selected").val()));
+            console.log("Cambiaste a " + ($("#disease_selected").val()));
 
             _DISEASE_SELECTED = ($("#disease_selected").val());
             _DISEASE_TEXT_SELECTED = $("#disease_selected option:selected").text();
