@@ -271,7 +271,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                 console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
                 console.log(query)
-                console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                
 
                 $.ajax({
                     url: _url,
@@ -308,10 +308,6 @@ var variable_module = (function (verbose, url_zacatuche) {
                             }
                         })
 
-                        //console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
-                        //console.log(species_non_repeat)
-                        //console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
-
                         var arbol = {}
                         var phylums = []
                         species.forEach(specie=>{
@@ -321,9 +317,9 @@ var variable_module = (function (verbose, url_zacatuche) {
                             }
                         })
 
-                        console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                        
                         console.log(phylums)                       
-                        console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                        
 
                         var phylums_obj = {}
                         phylums.forEach(phylum=>{                                            
@@ -541,8 +537,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 "children": default_son
                             };
 
-                            // console.log("nodes-loadTreeVarRaster ");
-                            // console.log(newNode);
+                            console.log("nodes-loadTreeVarRaster --------------------");
+                            console.log(newNode);
                             $('#jstree_variables_bioclim_' + id).jstree("create_node", current_node, newNode, 'last', false, false);
                         }
 
@@ -745,20 +741,21 @@ var variable_module = (function (verbose, url_zacatuche) {
                 .addClass('nav nav-tabs nav-variables')
                 .appendTo(nav_selection);
 
-        // sea gregan los tabs disponibles
+        // sea agregan los tabs disponibles
         $.each(tags, function (i) {
             var name_class = 'nav-variables';
 
             if (i == 0) {
                 name_class = 'active nav-variables';
             }
+            if(id=="fuente"){
             var li = $('<li/>')
                     .addClass(name_class)
                     .appendTo(nav_items)
                     .click(function (e) {
                         $('.nav-tabs a[href="' + e.target.getAttribute('href') + '"]').tab('show');
                         e.preventDefault();
-                    });
+                    });}
 
             var aaa = $('<a/>')
                     .attr('id', tags[i] + "_" + id)
@@ -795,10 +792,12 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .appendTo(tab_content);
 
                 // div que contiene el dropdown-button de tipos taxonomicos y textfiled para insertar valores
+                if (id === "fuente"){
                 var drop_item = $('<div/>')
                         .attr('id', 'tuto_taxon_sp_' + id)
                         .addClass('input-group dropdown_group')
                         .appendTo(tab_pane);
+                    }
 
                 var btn_div = $('<div/>')
                         .addClass('input-group-btn')
@@ -863,6 +862,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
 
 
+
                 var input_sp = $('<input/>')
                         .attr('id', 'text_variable' + "_" + id)
                         .attr('type', 'text')
@@ -871,70 +871,76 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .addClass('form-control')
                         .autocomplete({
                             source: function (request, response) {
+                                console.log(varfield)
+
+                                switch(varfield){
+    
+                            case "Clase":
+                                console.log("clase valida");
+                                var query = "query{all_snib_covariables(limit: 1, filter: \" clasevalida LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){clasevalida}} "
+                                console.log(query)
+                                var el = "clasevalida"
+                                break;
+                            case "Orden":
+                                console.log("orden valido");
+                                var query = "query{all_snib_covariables(limit: 1, filter: \" ordenvalido LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){ordenvalido}} "
+                                console.log(query)
+                                var el = "ordenvalido"
+                                break;
+                            case "Familia":
+                                console.log("familia valida");
+                                var query = "query{all_snib_covariables(limit: 1, filter: \" familiavalida LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){familiavalida}} "
+                                console.log(query)
+                                var el = "familiavalida"
+                                break;
+                            case "Género":
+                                console.log("genero valido");
+                                var query = "query{all_snib_covariables(limit: 1, filter: \" generovalido LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){generovalido}} "
+                                console.log(query)
+                                var el = "generovalido"
+                                break;
+                            default:
+                                console.log("Especie ")
+                                var query = "query{all_snib_covariables(limit: 1, filter: \" especievalida LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){especievalida}} "
+                                console.log(query)
+                                var el = "especievalida"
+                                break; 
+                        }           
 
                                _VERBOSE ? console.log($("#footprint_region_select").val()) : _VERBOSE;
 
                                 _REGION_SELECTED = ($("#footprint_region_select").val() !== null && $("#footprint_region_select").val() !== undefined) ? parseInt($("#footprint_region_select").val()) : _REGION_SELECTED;
-                                _GRID_RES = $("#grid_resolution").val();
-                                _DISEASE_SELECTED = $("#disease_selected").val()
-                                _AGENT_SELECTED = $("#agent_selected").val();
-
-
-                                console.log("REGION_SELECTED: " + _REGION_SELECTED);
-                                console.log("_GRID_RES: " + _GRID_RES);
-                                console.log("_AGENT_SELECTED: " + _AGENT_SELECTED);
-                                console.log("_DISEASE_SELECTED: " + _DISEASE_SELECTED);
-
-                                // if (_AGENT_SELECTED == 'Hospederos')
-                                //     var _url = 'http://10.90.0.42:4006/graphql/hospederos/'
-                                // else if (_AGENT_SELECTED == 'Patogenos')
-                                //     var _url = "http://10.90.0.42:4007/graphql/patogenos/"
-                                // else
-                                //     var _url = "http://10.90.0.42:4008/graphql/vectores/"
-
+                                _GRID_RES = $("#grid_resolution").val();                                
                                 var _url = "https://covid19.c3.unam.mx/gateway/api/nodes/"
-
-                                let nodo = _AGENT_SELECTED.toLowerCase()
-
-                                var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ varfield.toLowerCase().replace(/é/gi,"e") +' LIKE \''+ request.term.charAt(0).toUpperCase() +
-                                    request.term.slice(1) +'%\' "){'+ varfield.toLowerCase().replace(/é/gi,"e") +'}}'
-
                                 let lst = []
-
                                 console.log(query)
-
                                 $.ajax({
                                     method: "POST",
                                     url: _url,
                                     contentType: "application/json",
                                     data: JSON.stringify({query: query}),
                                     success: function (resp) {
-                                        let list  = resp["data"]
-                                        console.log(resp)
-                                        response($.map(resp.data, function (item) {
-                                            let uniqueObjArray = [
-                                                ...new Map(item.map((item) => [item["name"], item])).values(),
-                                            ];
-
-                                            //uniqueObjArray.forEach(function(obj) {
-                                              //  obj.reinovalido = obj.reino;
-                                                // delete obj.reino;
-                                            // });
-
-                                            console.log(uniqueObjArray)
+                                        let au = resp.data.all_snib_covariables
+                                        
+                                        console.log(au[0])                                        
+                                        response($.map(resp.data.all_snib_covariables, function (item) {                                            
+                                            var arrayObj = Object.keys(au[0]).map(function(key){
+                                                return au[0][key];
+                                            });
+                                            
+                                            console.log(arrayObj)
 
 
-                                            for (let i = 0; i < uniqueObjArray.length; i++) {
-                                                var opt = uniqueObjArray[i]
+                                            for (let i = 0; i < arrayObj.length; i++) {
+                                                var opt = arrayObj[i]
 
 
                                                 _VERBOSE ? console.log(opt) : _VERBOSE;
                                                 console.log(self.varfilter_selected[1]);
-
-
+                                                
                                                 return {
-                                                    label: opt[self.varfilter_selected[1]],
-                                                    id: opt[self.varfilter_selected[1]]
+                                                    label: opt,
+                                                    id: opt
                                                 };
                                             }
 
@@ -946,30 +952,128 @@ var variable_module = (function (verbose, url_zacatuche) {
 
 
                             },
-                            minLength: 2,
+                            minLength: 3,
                             change: function (event, ui) {
-                                // if (!ui.item) {
-                                //     $("#text_variable" + "_" + id).val("");
-                                // }
+                                if (!ui.item) {
+                                    
+                                    $("#text_variable" + "_" + id).val("");
+
+                                }
                             },
                             select: function (event, ui) {
 
-                                console.log(ui);
+                                console.log(ui.item.id + " seleccionado");
+                                let lst = ["clasevalida ", "ordenvalido ", "familiavalida ", "generovalido ", "especievalida " ]
+                                
 
-                                $('#jstree_variables_species_' + id).jstree("destroy").empty();
-                                $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
-                                $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
-                                $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
+                                switch(varfield){
+                                    case 'Clase':
+                                        console.log("la raiz empieza en " + lst[0]);
+                                        var query = "query{all_snib_covariables(limit: 2000, filter: \" clasevalida = '"  + ui.item.id + "'\"){clasevalida " + lst[1]+ lst[2] + lst[3] + lst[4] + "}}"
+                                        console.log(query)
+                                        $.ajax({
+                                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                                            method: "POST",
+                                            contentType: "application/json",
+                                            data: JSON.stringify({query: query}),
+                                            success: function(resp){
+                                                console.log("empieza a generar el arbol ")
+                                                let info = resp.data.all_snib_covariables
+                                                console.log(info)
+                                            }
+                                        })
+                                
+                                        break;
+                                    case 'Orden':
+                                        console.log("elemento a agregar es " + lst[1]);
+                                        var query = "query{all_snib_covariables(limit: 200, filter: \" ordenvalido = '"  + ui.item.id + "'\"){" + lst[1]+ lst[2] + lst[3] + lst[4] + "}}"
+                                        console.log(query)
+                                        $.ajax({
+                                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                                            method: "POST",
+                                            contentType: "application/json",
+                                            data: JSON.stringify({query: query}),
+                                            success: function(resp){
+                                                console.log("empieza a generar el arbol en orden valido")
+                                                let info = resp.data.all_snib_covariables
+                                                console.log(info)
+                                            }
+                                        })
+                                        break;
+                                    case 'Familia':
+                                        console.log("elemento a agregar es " + lst[2]);
+                                        var query = "query{all_snib_covariables(limit: 200, filter: \" familiavalida = '"  + ui.item.id + "'\"){"+ lst[2] + lst[3] + lst[4] + "}}"
+                                        console.log(query)
+                                        $.ajax({
+                                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                                            method: "POST",
+                                            contentType: "application/json",
+                                            data: JSON.stringify({query: query}),
+                                            success: function(resp){
+                                                console.log("empieza a generar el arbol en " + lst[2])
+                                                let info = resp.data.all_snib_covariables
+                                                console.log(info)
+                                            }
+                                        })                                        
+                                        break;
+                                    case 'Género':
+                                        console.log("elemento a agregar es " + lst[3]);
+                                        var query = "query{all_snib_covariables(limit: 200, filter: \" generovalido = '"  + ui.item.id + "'\"){" + lst[3] + lst[4] + "}}"
+                                        console.log(query)  
+                                        $.ajax({
+                                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                                            method: "POST",
+                                            contentType: "application/json",
+                                            data: JSON.stringify({query: query}),
+                                            success: function(resp){
+                                                console.log("empieza a generar el arbol en " + lst[3])
+                                                let info = resp.data.all_snib_covariables
+                                                console.log(info)
+                                            }
+                                        })                                      
+                                        break;
+                                    case 'Especie':
+                                        console.log("elemento a agregar es " + lst[4]);
+                                        var query = "query{all_snib_covariables(limit: 200, filter: \" especievalida = '"  + ui.item.id + "'\"){" + lst[4] + "}}"
+                                        console.log(query) 
+                                        $.ajax({
+                                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                                            method: "POST",
+                                            contentType: "application/json",
+                                            data: JSON.stringify({query: query}),
+                                            success: function(resp){
+                                                console.log("empieza a generar el arbol en " + lst[4])
+                                                let info = resp.data.all_snib_covariables
+                                                console.log(info)
+                                            }
+                                        })                                       
+                                        break;
+                                    default:
+                                        console.log("error");
+                                        break;
+                                }
+                                
 
-                                self.value_vartree = ui.item.id;
-                                self.field_vartree = self.varfilter_selected[0];
-                                self.parent_field_vartree = self.varfilter_selected[1];
-                                self.level_vartree = self.varfilter_selected[2];
+
+                                console.log("algoooo")
+
+
+                                
+
+                                // $('#jstree_variables_species_' + id).jstree("destroy").empty();
+                                // $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
+                                // $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
+                                // $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
+
+                                // self.value_vartree = ui.item.id;
+                                // self.field_vartree = self.varfilter_selected[0];
+                                // self.parent_field_vartree = self.varfilter_selected[1];
+                                // self.level_vartree = self.varfilter_selected[2];
 
                                // _VERBOSE ? console.log("nivel") : _VERBOSE;
-                               _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
+                               // _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
 
-                               var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/dist/themes/default/throbber.gif"
+                               // var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/dist/themes/default/throbber.gif"
 
                                // _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
 
