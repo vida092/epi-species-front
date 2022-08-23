@@ -839,7 +839,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 varfield = e.target.text;
 
                                _VERBOSE ? console.log(varfield) : _VERBOSE;
-                               _VERBOSE ? console.log(self.varfilter_selected) : _VERBOSE;
+                               
 
                                 $("#btn_variable" + "_" + id).text(varfield + " ");
                                 $("#btn_variable" + "_" + id).append('<span class="caret"></span>');
@@ -877,33 +877,28 @@ var variable_module = (function (verbose, url_zacatuche) {
     
                             case "Clase":
                                 console.log("clase valida");
-                                var query = "query{all_snib_covariables(limit: 1, filter: \" clasevalida LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){clasevalida}} "
-                                console.log(query)
-                                var el = "clasevalida"
+                                var query = "query{all_snib_covariables(limit: 1, filter: \" clasevalida LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){clasevalida}} "                                
+                                var el = "clasevalida "                                
                                 break;
                             case "Orden":
                                 console.log("orden valido");
                                 var query = "query{all_snib_covariables(limit: 1, filter: \" ordenvalido LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){ordenvalido}} "
-                                console.log(query)
-                                var el = "ordenvalido"
+                                var el = "ordenvalido "
                                 break;
                             case "Familia":
                                 console.log("familia valida");
                                 var query = "query{all_snib_covariables(limit: 1, filter: \" familiavalida LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){familiavalida}} "
-                                console.log(query)
-                                var el = "familiavalida"
+                                var el = "familiavalida "
                                 break;
                             case "Género":
                                 console.log("genero valido");
                                 var query = "query{all_snib_covariables(limit: 1, filter: \" generovalido LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){generovalido}} "
-                                console.log(query)
-                                var el = "generovalido"
+                                var el = "generovalido "
                                 break;
                             default:
                                 console.log("Especie ")
                                 var query = "query{all_snib_covariables(limit: 1, filter: \" especievalida LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){especievalida}} "
-                                console.log(query)
-                                var el = "especievalida"
+                                var el = "especievalida "
                                 break; 
                         }           
 
@@ -914,6 +909,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 var _url = "https://covid19.c3.unam.mx/gateway/api/nodes/"
                                 let lst = []
                                 console.log(query)
+                                console.log("---------*********-----------")
+                                console.log(el)
                                 $.ajax({
                                     method: "POST",
                                     url: _url,
@@ -963,112 +960,435 @@ var variable_module = (function (verbose, url_zacatuche) {
                             select: function (event, ui) {
 
                                 console.log(ui.item.id + " seleccionado");
+                                console.log(self.varfilter_selected[1])
                                 let lst = ["clasevalida ", "ordenvalido ", "familiavalida ", "generovalido ", "especievalida " ]
-                                
+                                if(self.varfilter_selected[1] === "clase"){
+                                    var button_val = lst[0]
+                                    var query = "query{all_snib_covariables(limit:2000, filter:\""+ button_val +" ='"+ ui.item.id +"'\"){clasevalida ordenvalido familiavalida generovalido especievalida}}"
+                                    $.ajax({
+                                        url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                                        method: "POST",
+                                        contentType: "application/json",
+                                        data: JSON.stringify({query: query}),
+                                        success: function(resp){                
+                                            var sel = resp.data.all_snib_covariables
+                                            console.log(sel)
+                                            var data_cov=[]
+                                            var species_names = [];
+                                            sel.forEach(specie=>{
+                                                if(!species_names.includes(specie.especievalida)){
+                                                    species_names.push(specie.especievalida)                                                                                                      
+                                                }
+                                            })
 
-                                switch(varfield){
-                                    case 'Clase':
-                                        console.log("la raiz empieza en " + lst[0]);
-                                        var query = "query{all_snib_covariables(limit: 2000, filter: \" clasevalida = '"  + ui.item.id + "'\"){clasevalida " + lst[1]+ lst[2] + lst[3] + lst[4] + "}}"
-                                        console.log(query)
-                                        $.ajax({
-                                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
-                                            method: "POST",
-                                            contentType: "application/json",
-                                            data: JSON.stringify({query: query}),
-                                            success: function(resp){
-                                                console.log("empieza a generar el arbol ")
-                                                let info = resp.data.all_snib_covariables
-                                                console.log(info)
-                                            }
-                                        })
-                                
-                                        break;
-                                    case 'Orden':
-                                        console.log("elemento a agregar es " + lst[1]);
-                                        var query = "query{all_snib_covariables(limit: 200, filter: \" ordenvalido = '"  + ui.item.id + "'\"){" + lst[1]+ lst[2] + lst[3] + lst[4] + "}}"
-                                        console.log(query)
-                                        $.ajax({
-                                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
-                                            method: "POST",
-                                            contentType: "application/json",
-                                            data: JSON.stringify({query: query}),
-                                            success: function(resp){
-                                                console.log("empieza a generar el arbol en orden valido")
-                                                let info = resp.data.all_snib_covariables
-                                                console.log(info)
-                                            }
-                                        })
-                                        break;
-                                    case 'Familia':
-                                        console.log("elemento a agregar es " + lst[2]);
-                                        var query = "query{all_snib_covariables(limit: 200, filter: \" familiavalida = '"  + ui.item.id + "'\"){"+ lst[2] + lst[3] + lst[4] + "}}"
-                                        console.log(query)
-                                        $.ajax({
-                                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
-                                            method: "POST",
-                                            contentType: "application/json",
-                                            data: JSON.stringify({query: query}),
-                                            success: function(resp){
-                                                console.log("empieza a generar el arbol en " + lst[2])
-                                                let info = resp.data.all_snib_covariables
-                                                console.log(info)
-                                            }
-                                        })                                        
-                                        break;
-                                    case 'Género':
-                                        console.log("elemento a agregar es " + lst[3]);
-                                        var query = "query{all_snib_covariables(limit: 200, filter: \" generovalido = '"  + ui.item.id + "'\"){" + lst[3] + lst[4] + "}}"
-                                        console.log(query)  
-                                        $.ajax({
-                                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
-                                            method: "POST",
-                                            contentType: "application/json",
-                                            data: JSON.stringify({query: query}),
-                                            success: function(resp){
-                                                console.log("empieza a generar el arbol en " + lst[3])
-                                                let info = resp.data.all_snib_covariables
-                                                console.log(info)
-                                            }
-                                        })                                      
-                                        break;
-                                    case 'Especie':
-                                        console.log("elemento a agregar es " + lst[4]);
-                                        var query = "query{all_snib_covariables(limit: 200, filter: \" especievalida = '"  + ui.item.id + "'\"){" + lst[4] + "}}"
-                                        console.log(query) 
-                                        $.ajax({
-                                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
-                                            method: "POST",
-                                            contentType: "application/json",
-                                            data: JSON.stringify({query: query}),
-                                            success: function(resp){
-                                                console.log("empieza a generar el arbol en " + lst[4])
-                                                let info = resp.data.all_snib_covariables
-                                                console.log(info)
-                                            }
-                                        })                                       
-                                        break;
-                                    default:
-                                        console.log("error");
-                                        break;
+                                            var arbol = {}
+                                            var clases = []
+                                            sel.forEach(specie=>{
+                                                var ordenes=[]
+                                                if(!clases.includes(specie.clasevalida)){
+                                                    clases.push(specie.clasevalida)
+                                                    data_cov.push({ "id" : specie.clasevalida, "parent" : "#", "text" : specie.clasevalida, 'state': {'opened': true,  'selected': true},"icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 1, "type": 0}})                                                  
+                                                }                                                
+                                            })
+                                            
+
+                                            var clases_obj = {}
+                                            clases.forEach(clase=>{
+                                                var ordenes = []
+                                                sel.forEach(specie=>{
+                                                    if(!ordenes.includes(specie.ordenvalido) && specie.clasevalida === clase){
+                                                        ordenes.push(specie.ordenvalido)
+                                                        data_cov.push({ "id" : specie.ordenvalido , "parent" : specie.clasevalida  , "text" : specie.ordenvalido,'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 2, "type": 0}})
+                                                    }
+                                                })
+                                                
+                                                var ordenes_obj = {}
+                                                ordenes.forEach(orden=>{
+                                                    var familias=[]
+                                                    sel.forEach(specie=>{
+                                                        if(!familias.includes(specie.familiavalida) && specie.ordenvalido === orden){
+                                                            familias.push(specie.familiavalida)
+                                                            data_cov.push({ "id" : specie.familiavalida , "parent" : specie.ordenvalido  , "text" : specie.familiavalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 3, "type": 0}})
+                                                        }
+                                                    })
+
+                                                    var familias_obj={}
+                                                    familias.forEach(familia=>{
+                                                        var generos = []
+                                                        sel.forEach(specie=>{
+                                                            if(!generos.includes(specie.generovalido)&& specie.familiavalida === familia){
+                                                                generos.push(specie.generovalido)
+                                                                data_cov.push({ "id" : specie.generovalido , "parent" : specie.familiavalida  , "text" : specie.generovalido, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 3, "type": 0}})
+                                                            }
+                                                        })
+                                                        var generos_obj = {}
+                                                        generos.forEach(genero=>{
+                                                            var especievalida = []
+                                                            sel.forEach(specie=>{
+                                                                if(!especievalida.includes(specie.especievalida) && specie.generovalido === genero){
+                                                                    especievalida.push(specie.especievalida);
+                                                                    data_cov.push({ "id" : specie.especievalida , "parent" : specie.generovalido , "text" : specie.especievalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 5, "type": 0}})
+                                                                }
+                                                            })
+                                                            generos_obj[genero] = especievalida
+                                                        })
+                                                        familias_obj[familia]=generos_obj
+                                                    })
+                                                    ordenes_obj[orden] = familias_obj
+                                                })
+                                                clases_obj[clase]=ordenes_obj
+                                                console.log(clases_obj)
+                                            })
+                                            console.log(data_cov)
+                                            console.log("jstree_variables_species_fuente")
+                                            $('#jstree_variables_species_' + id).jstree("destroy").empty();
+                                            $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
+                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
+                                            $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
+
+                                            self.value_vartree = ui.item.id;
+                                            self.field_vartree = self.varfilter_selected[0];
+                                            self.parent_field_vartree = self.varfilter_selected[1];
+                                            self.level_vartree = self.varfilter_selected[2];
+
+                                           _VERBOSE ? console.log("nivel") : _VERBOSE;
+                                           _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
+
+                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/dist/themes/default/throbber.gif"
+
+                                           _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
+                                            $('#jstree_variables_species_' + id).jstree({
+                                                'plugins': ["wholerow", "checkbox"],
+                                                'core': {
+                                                    'data': data_cov,
+                                                    'themes': {
+                                                        'name': 'proton',
+                                                        'responsive': true
+                                                    },
+                                                    'check_callback': true
+                                                }
+                                            });   
+                                        }
+                                    })
+                                }else if(self.varfilter_selected[1] === "orden"){
+                                    var button_val = lst[1]
+                                    var query = "query{all_snib_covariables(limit:2000, filter:\""+ button_val +" ='"+ ui.item.id +"'\"){ordenvalido familiavalida generovalido especievalida}}"
+                                    $.ajax({
+                                        url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                                        method: "POST",
+                                        contentType: "application/json",
+                                        data: JSON.stringify({query: query}),
+                                        success: function(resp){                
+                                            var sel = resp.data.all_snib_covariables
+                                            console.log(sel)
+                                            var data_cov=[]
+                                            var species_names = [];
+                                            sel.forEach(specie=>{
+                                                if(!species_names.includes(specie.especievalida)){
+                                                    species_names.push(specie.especievalida)                                                                                                      
+                                                }
+                                            })
+                                            console.log(species_names)
+                                            var ordenes = []
+                                            sel.forEach(specie=>{
+                                                if(!ordenes.includes(specie.ordenvalido)){
+                                                    ordenes.push(specie.ordenvalido)
+                                                    data_cov.push({ "id" : specie.ordenvalido, "parent" : "#", "text" : specie.ordenvalido, 'state': {'opened': true,  'selected': true},"icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 1, "type": 0}})
+                                                }
+                                            })
+                                            console.log("************ ordenes ************")
+                                            console.log(ordenes)
+
+                                            var ordenes_obj = {}
+                                            ordenes.forEach(orden=>{
+                                                var familias = []
+                                                sel.forEach(specie=>{
+                                                    if(!familias.includes(specie.familiavalida) && specie.ordenvalido === orden){
+                                                        familias.push(specie.familiavalida)
+                                                        data_cov.push({ "id" : specie.familiavalida , "parent" : specie.ordenvalido  , "text" : specie.familiavalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 2, "type": 0}})
+                                                    }
+                                                })
+                                                var familias_obj = {}
+                                                familias.forEach(familia=>{
+                                                    var generos = []
+                                                    sel.forEach(specie=>{
+                                                        if(!generos.includes(specie.generovalido) && specie.familiavalida === familia){
+                                                            generos.push(specie.generovalido);
+                                                            data_cov.push({ "id" : specie.generovalido , "parent" : specie.familiavalida  , "text" : specie.generovalido, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 3, "type": 0}})
+                                                        }
+                                                   })
+                                                    var generos_obj = {}
+                                                    generos.forEach(genero=>{
+                                                        var especievalida=[]
+                                                        sel.forEach(specie=>{
+                                                            if(!especievalida.includes(specie.especievalida) && specie.generovalido === genero){
+                                                                especievalida.push(specie.especievalida)
+                                                                data_cov.push({ "id" : specie.especievalida , "parent" : specie.generovalido , "text" : specie.especievalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 4, "type": 0}})
+                                                            }
+                                                        })
+                                                        generos_obj[genero] = especievalida 
+                                                    })
+                                                    familias_obj[familia] = generos_obj
+                                                    
+                                                })
+                                                ordenes_obj[orden]=familias_obj                                                           
+                                            })
+                                            console.log(ordenes_obj)
+                                            console.log(data_cov)
+                                            console.log("jstree_variables_species_fuente")
+                                            $('#jstree_variables_species_' + id).jstree("destroy").empty();
+                                            $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
+                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
+                                            $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
+
+                                            self.value_vartree = ui.item.id;
+                                            self.field_vartree = self.varfilter_selected[0];
+                                            self.parent_field_vartree = self.varfilter_selected[1];
+                                            self.level_vartree = self.varfilter_selected[2];
+
+                                           _VERBOSE ? console.log("nivel") : _VERBOSE;
+                                           _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
+
+                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/dist/themes/default/throbber.gif"
+
+                                           _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
+                                            $('#jstree_variables_species_' + id).jstree({
+                                                'plugins': ["wholerow", "checkbox"],
+                                                'core': {
+                                                    'data': data_cov,
+                                                    'themes': {
+                                                        'name': 'proton',
+                                                        'responsive': true
+                                                    },
+                                                    'check_callback': true
+                                                }
+                                            }); 
+                                            
+                                        } 
+                                })
+                                    
+                                }else if(self.varfilter_selected[1] === "familia"){
+                                    var button_val = lst[2]
+                                    var query = "query{all_snib_covariables(limit:2000, filter:\""+ button_val +" ='"+ ui.item.id +"'\"){familiavalida generovalido especievalida}}"
+                                    $.ajax({
+                                        url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                                        method: "POST",
+                                        contentType: "application/json",
+                                        data: JSON.stringify({query: query}),
+                                        success: function(resp){                
+                                            var sel = resp.data.all_snib_covariables
+                                            console.log(sel)
+                                            var data_cov=[]
+                                            var species_names = [];
+                                            sel.forEach(specie=>{
+                                                if(!species_names.includes(specie.especievalida)){
+                                                    species_names.push(specie.especievalida)                                                                                                      
+                                                }
+                                            })
+                                            var familias=[];
+                                            sel.forEach(specie=>{
+                                                if(!familias.includes(specie.familiavalida)){
+                                                    familias.push(specie.familiavalida)
+                                                    data_cov.push({ "id" : specie.familiavalida , "parent" : "#"  , "text" : specie.familiavalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 1, "type": 0}})
+
+                                                }
+                                            })
+                                            console.log("********** familias *************")
+                                            var familias_obj = {}
+                                            familias.forEach(familia=>{
+                                                var generos = []
+                                                sel.forEach(specie=>{
+                                                    if(!generos.includes(specie.generovalido) && specie.familiavalida === familia){
+                                                        generos.push(specie.generovalido)
+                                                        data_cov.push({ "id" : specie.generovalido , "parent" : specie.familiavalida  , "text" : specie.generovalido, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 2, "type": 0}})
+                                                    }
+                                                })
+                                                var generos_obj = {}
+                                                generos.forEach(genero=>{
+                                                    var especievalida=[]
+                                                    sel.forEach(specie=>{
+                                                        if(!especievalida.includes(specie.especievalida) && specie.generovalido === genero){
+                                                            especievalida.push(specie.especievalida)
+                                                            data_cov.push({ "id" : specie.especievalida , "parent" : specie.generovalido , "text" : specie.especievalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 3, "type": 0}})
+                                                        }
+                                                    })
+                                                    generos_obj[genero] = especievalida
+                                                })
+                                                familias_obj[familia]=generos_obj                                                
+                                            })
+                                            
+                                            console.log(familias_obj)
+                                            console.log(data_cov)
+                                            console.log("jstree_variables_species_fuente")
+                                            $('#jstree_variables_species_' + id).jstree("destroy").empty();
+                                            $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
+                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
+                                            $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
+
+                                            self.value_vartree = ui.item.id;
+                                            self.field_vartree = self.varfilter_selected[0];
+                                            self.parent_field_vartree = self.varfilter_selected[1];
+                                            self.level_vartree = self.varfilter_selected[2];
+
+                                           _VERBOSE ? console.log("nivel") : _VERBOSE;
+                                           _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
+
+                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/dist/themes/default/throbber.gif"
+
+                                           _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
+                                            $('#jstree_variables_species_' + id).jstree({
+                                                'plugins': ["wholerow", "checkbox"],
+                                                'core': {
+                                                    'data': data_cov,
+                                                    'themes': {
+                                                        'name': 'proton',
+                                                        'responsive': true
+                                                    },
+                                                    'check_callback': true
+                                                }
+                                            }); 
+                                        }
+                                })
+
+                                }else if(self.varfilter_selected[1] === "genero"){
+                                    var button_val = lst[3]
+                                    var query = "query{all_snib_covariables(limit:2000, filter:\""+ button_val +" ='"+ ui.item.id +"'\"){generovalido especievalida}}"
+                                    $.ajax({
+                                        url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                                        method: "POST",
+                                        contentType: "application/json",
+                                        data: JSON.stringify({query: query}),
+                                        success: function(resp){                
+                                            var sel = resp.data.all_snib_covariables
+                                            console.log(sel)
+                                            var data_cov=[]
+                                            var species_names = [];
+                                            sel.forEach(specie=>{
+                                                if(!species_names.includes(specie.especievalida)){
+                                                    species_names.push(specie.especievalida)                                                                                                      
+                                                }
+                                            })
+                                            var generos = []
+                                            sel.forEach(specie=>{
+                                                if(!generos.includes(specie.generovalido)){
+                                                    generos.push(specie.generovalido)
+                                                    data_cov.push({ "id" : specie.generovalido , "parent" : "#"  , "text" : specie.generovalido, 'state': {'opened': false},  "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 1, "type": 0}})
+                                                }
+                                            })
+                                            
+                                            console.log(generos)
+                                            var generos_obj = {}
+                                            generos.forEach(genero=>{
+                                                var especievalida = []
+                                                sel.forEach(specie=>{
+                                                    if(!especievalida.includes(specie.especievalida) && specie.generovalido){
+                                                        especievalida.push(specie.especievalida)
+                                                        data_cov.push({ "id" : specie.especievalida , "parent" : specie.generovalido , "text" : specie.especievalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 8, "type": 0}})
+                                                    }
+                                                })
+                                                generos_obj[genero]= especievalida
+                                            })
+
+                                            console.log(data_cov)
+                                            console.log("**********arbol**********")
+                                            console.log("jstree_variables_species_fuente")
+                                            $('#jstree_variables_species_' + id).jstree("destroy").empty();
+                                            $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
+                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
+                                            $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
+
+                                            self.value_vartree = ui.item.id;
+                                            self.field_vartree = self.varfilter_selected[0];
+                                            self.parent_field_vartree = self.varfilter_selected[1];
+                                            self.level_vartree = self.varfilter_selected[2];
+
+                                           _VERBOSE ? console.log("nivel") : _VERBOSE;
+                                           _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
+
+                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/dist/themes/default/throbber.gif"
+
+                                           _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
+                                            $('#jstree_variables_species_' + id).jstree({
+                                                'plugins': ["wholerow", "checkbox"],
+                                                'core': {
+                                                    'data': data_cov,
+                                                    'themes': {
+                                                        'name': 'proton',
+                                                        'responsive': true
+                                                    },
+                                                    'check_callback': true
+                                                }
+                                            }); 
+
+
+                                        }
+                                })
+                                }else{
+                                    var button_val = lst[4]
+                                    var query = "query{all_snib_covariables(limit:2000, filter:\""+ button_val +" ='"+ ui.item.id +"'\"){especievalida}}"
+                                    $.ajax({
+                                        url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                                        method: "POST",
+                                        contentType: "application/json",
+                                        data: JSON.stringify({query: query}),
+                                        success: function(resp){                
+                                            var sel = resp.data.all_snib_covariables
+                                            console.log(sel)
+                                            var data_cov = [{ "id" : "raiz" , "parent" :"#", "text" : "raiz", 'state': {'opened': false},  "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 1, "type": 0}}]
+                                            var species_names = [];
+                                            sel.forEach(specie=>{
+                                                if(!species_names.includes(specie.especievalida)){
+                                                    species_names.push(specie.especievalida)
+                                                    data_cov.push(data_cov.push({ "id" : specie.especievalida , "parent" :"raiz", "text" : specie.especievalida, 'state': {'opened': false},  "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 2, "type": 0}}))                                                                                                   
+                                                }
+                                            })
+                                            console.log(data_cov)
+                                            console.log("**********arbol**********")
+                                            console.log("jstree_variables_species_fuente")
+                                            $('#jstree_variables_species_' + id).jstree("destroy").empty();
+                                            $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
+                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
+                                            $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
+
+                                            // self.value_vartree = ui.item.id;
+                                            // self.field_vartree = self.varfilter_selected[0];
+                                            // self.parent_field_vartree = self.varfilter_selected[1];
+                                            // self.level_vartree = self.varfilter_selected[2];
+
+                                           // _VERBOSE ? console.log("nivel") : _VERBOSE;
+                                           // _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
+
+                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/dist/themes/default/throbber.gif"
+
+                                           // _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
+                                            $('#jstree_variables_species_' + id).jstree({
+                                                'plugins': ["wholerow", "checkbox"],
+                                                'core': {
+                                                    'data': data_cov,
+                                                    'themes': {
+                                                        'name': 'proton',
+                                                        'responsive': true
+                                                    },
+                                                    'check_callback': true
+                                                }
+                                            }); 
+
+
+                                        }
+                                })
+
                                 }
-                                
+                                console.log(query)
 
+                               //  $('#jstree_variables_species_' + id).jstree("destroy").empty();
+                               //  $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
+                               //  $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
+                               //  $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
 
-                                console.log("algoooo")
-
-
-                                
-
-                                // $('#jstree_variables_species_' + id).jstree("destroy").empty();
-                                // $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
-                                // $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
-                                // $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
-
-                                // self.value_vartree = ui.item.id;
-                                // self.field_vartree = self.varfilter_selected[0];
-                                // self.parent_field_vartree = self.varfilter_selected[1];
-                                // self.level_vartree = self.varfilter_selected[2];
+                               //  self.value_vartree = ui.item.id;
+                               //  self.field_vartree = self.varfilter_selected[0];
+                               //  self.parent_field_vartree = self.varfilter_selected[1];
+                               //  self.level_vartree = self.varfilter_selected[2];
 
                                // _VERBOSE ? console.log("nivel") : _VERBOSE;
                                // _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
