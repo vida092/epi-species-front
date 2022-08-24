@@ -110,9 +110,10 @@ var variable_module = (function (verbose, url_zacatuche) {
         var tags = abio_tab ? ['a_taxon', 'a_raster', 'a_socio'] : ['a_taxon'];
 
 
-        var sp_items = ['a_item_reino', 'a_item_phylum', 'a_item_clase', 'a_item_orden', 'a_item_familia', 'a_item_genero','a_item_especie'];
-        var sp_parent_field = ['reino', 'phylum', 'clase', 'orden', 'familia', 'genero','epitetoespecifico','epitetoinfraespecifico'];
-        var sp_data_field = ['phylum', 'clase', 'orden', 'familia', 'genero','epitetoespecifico','epitetoinfraespecifico']; //'especievalidabusqueda'
+        var sp_items = [ 'a_item_clase', 'a_item_orden', 'a_item_familia', 'a_item_genero','a_item_especie'];
+
+        var sp_parent_field = [ 'clase', 'orden', 'familia', 'genero','epitetoespecifico','epitetoinfraespecifico'];
+        var sp_data_field = [ 'clase', 'orden', 'familia', 'genero','epitetoespecifico','epitetoinfraespecifico']; //'especievalidabusqueda'
         var NUM_ABIO = 20;
         var NIVEL_REINO = 2
         var NIVEL_PHYLUM = 3
@@ -155,6 +156,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             $("#agent_selected").change(function() {
                 let var_obj = $(this).val();
                 let diseases = document.getElementById("disease_selected");
+
 
                 switch (var_obj){
                     case "Hospederos":
@@ -499,7 +501,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                             "id": var_selected,
                             attr: {"bid": var_selected, "parent": text_raster, "level": level_root, "type": _TYPE_CLIMA},
                             'state': {'opened': true, 'disabled' : true },
-                            "icon": "plugins/jstree/dist/themes/default/throbber.gif"
+                            "icon": "plugins/jstree/images/dna.png"
                         }];
 
                     $("#jstree_variables_bioclim_" + id).jstree({
@@ -578,7 +580,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             var max_level = 3;
 
-            $("#jstree_variables_bioclim_" + id).jstree(true).set_icon(d.node.id, "./plugins/jstree/dist/themes/default/throbber.gif");
+            $("#jstree_variables_bioclim_" + id).jstree(true).set_icon(d.node.id, "./plugins/jstree/images/dna.png");
             _REGION_SELECTED = ($("#footprint_region_select").val() !== null && $("#footprint_region_select").val() !== undefined) ? parseInt($("#footprint_region_select").val()) : _REGION_SELECTED;
             _GRID_RES = $("#grid_resolution").val();
 
@@ -987,7 +989,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                                 var ordenes=[]
                                                 if(!clases.includes(specie.clasevalida)){
                                                     clases.push(specie.clasevalida)
-                                                    data_cov.push({ "id" : specie.clasevalida, "parent" : "#", "text" : specie.clasevalida, 'state': {'opened': true,  'selected': true},"icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 1, "type": 0}})                                                  
+                                                    data_cov.push({ "id" : specie.clasevalida, "parent" : "#", "text" : specie.clasevalida, 'state': {'opened': true,  'selected': true},"icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 5, "type": 0}})                                                  
                                                 }                                                
                                             })
                                             
@@ -998,7 +1000,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                                 sel.forEach(specie=>{
                                                     if(!ordenes.includes(specie.ordenvalido) && specie.clasevalida === clase){
                                                         ordenes.push(specie.ordenvalido)
-                                                        data_cov.push({ "id" : specie.ordenvalido , "parent" : specie.clasevalida  , "text" : specie.ordenvalido,'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 2, "type": 0}})
+                                                        data_cov.push({ "id" : specie.ordenvalido , "parent" : specie.clasevalida  , "text" : specie.ordenvalido,'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 6, "type": 0}})
                                                     }
                                                 })
                                                 
@@ -1008,7 +1010,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                                     sel.forEach(specie=>{
                                                         if(!familias.includes(specie.familiavalida) && specie.ordenvalido === orden){
                                                             familias.push(specie.familiavalida)
-                                                            data_cov.push({ "id" : specie.familiavalida , "parent" : specie.ordenvalido  , "text" : specie.familiavalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 3, "type": 0}})
+                                                            data_cov.push({ "id" : specie.familiavalida , "parent" : specie.ordenvalido  , "text" : specie.familiavalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 7, "type": 0}})
                                                         }
                                                     })
 
@@ -1018,7 +1020,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                                         sel.forEach(specie=>{
                                                             if(!generos.includes(specie.generovalido)&& specie.familiavalida === familia){
                                                                 generos.push(specie.generovalido)
-                                                                data_cov.push({ "id" : specie.generovalido , "parent" : specie.familiavalida  , "text" : specie.generovalido, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 3, "type": 0}})
+                                                                data_cov.push({ "id" : specie.generovalido , "parent" : specie.familiavalida  , "text" : specie.generovalido, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 8, "type": 0}})
                                                             }
                                                         })
                                                         var generos_obj = {}
@@ -1027,7 +1029,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                                             sel.forEach(specie=>{
                                                                 if(!especievalida.includes(specie.especievalida) && specie.generovalido === genero){
                                                                     especievalida.push(specie.especievalida);
-                                                                    data_cov.push({ "id" : specie.especievalida , "parent" : specie.generovalido , "text" : specie.especievalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 5, "type": 0}})
+                                                                    data_cov.push({ "id" : specie.especievalida , "parent" : specie.generovalido , "text" : specie.especievalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 9, "type": 0}})
                                                                 }
                                                             })
                                                             generos_obj[genero] = especievalida
@@ -1054,7 +1056,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                            _VERBOSE ? console.log("nivel") : _VERBOSE;
                                            _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
 
-                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/dist/themes/default/throbber.gif"
+                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "./plugins/jstree/images/dna.png"
 
                                            _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
                                             $('#jstree_variables_species_' + id).jstree({
@@ -1149,7 +1151,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                            _VERBOSE ? console.log("nivel") : _VERBOSE;
                                            _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
 
-                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/dist/themes/default/throbber.gif"
+                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/images/dna.png"
 
                                            _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
                                             $('#jstree_variables_species_' + id).jstree({
@@ -1233,7 +1235,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                            _VERBOSE ? console.log("nivel") : _VERBOSE;
                                            _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
 
-                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/dist/themes/default/throbber.gif"
+                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/images/dna.png"
 
                                            _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
                                             $('#jstree_variables_species_' + id).jstree({
@@ -1305,7 +1307,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                            _VERBOSE ? console.log("nivel") : _VERBOSE;
                                            _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
 
-                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/dist/themes/default/throbber.gif"
+                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/images/dna.png"
 
                                            _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
                                             $('#jstree_variables_species_' + id).jstree({
@@ -1358,7 +1360,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                            // _VERBOSE ? console.log("nivel") : _VERBOSE;
                                            // _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
 
-                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/dist/themes/default/throbber.gif"
+                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/images/dna.png"
 
                                            // _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
                                             $('#jstree_variables_species_' + id).jstree({
@@ -1785,7 +1787,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             var next_nivel = 0;
             var parent_field = "";
 
-            $("#jstree_variables_species_" + id).jstree(true).set_icon(d.node.id, "./plugins/jstree/dist/themes/default/throbber.gif");
+            $("#jstree_variables_species_" + id).jstree(true).set_icon(d.node.id, "plugins/jstree/images/dna.png");
 
             if (d.node.original.attr.nivel == 2) {
                 parent_field = "reino"
