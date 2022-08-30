@@ -490,8 +490,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                 success: function(data){
                     var awc = data.data.all_worldclim_covariables
                     //console.log(awc)
-                    data = [{ "id" : "WorlClim", "parent" : "#", "text" : "WorldClim", 'state': {'opened': false},'attr': {'nivel': 1, "type": 0} },
-                            { "id" : "Alt1", "parent" : "#", "text" : "Alt2", 'state': {'opened': false},'attr': {'nivel': 1, "type": 0} }]
+                    data = [{ "id" : "WorlClim", "parent" : "#", "text" : "WorldClim","icon": "plugins/jstree/images/world.png", 'state': {'opened': false},'attr': {'nivel': 1, "type": 0} },
+                            { "id" : "Alt1", "parent" : "#", "text" : "Alt2", "icon": "plugins/jstree/images/world.png", 'state': {'opened': false},'attr': {'nivel': 1, "type": 0} }]
                     var intervals=[]
                     awc.forEach(element => {
                       if(!intervals.includes(element.interval)){
@@ -506,14 +506,14 @@ var variable_module = (function (verbose, url_zacatuche) {
                       }
                     })
                     labels.forEach(element=>{
-                      data.push({"id": element, "parent":"WorlClim", "text":element,'state': {'opened': false},
+                      data.push({"id": element, "parent":"WorlClim", "text":element,'state': {'opened': false}, "icon": "plugins/jstree/images/clima.png",
                                                      'attr': {'nivel': 2, "type": 0}})
                     })
 
                     awc.forEach(element=>{
                       labels.forEach(label=>{
                         if(intervals.includes(element.interval) && element.label===label){
-                          data.push({"id":element.interval, "parent":element.label, "text":element.interval, 'state': {'opened': false},
+                          data.push({"id":element.interval, "parent":element.label, "text":element.interval, 'state': {'opened': false}, "icon": "plugins/jstree/images/termometro.png",
                                                      'attr': {'nivel': 3, "type": 0}})
                         }
                       })
