@@ -107,7 +107,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
         // se comentan variables topograficas por expansión de terreno
 
-        var tags = abio_tab ? ['a_taxon', 'a_raster', 'a_socio'] : ['a_taxon'];
+        var tags = abio_tab ? ['a_taxon', 'a_raster', "a_raster2", 'a_socio'] : ['a_taxon'];
 
 
         var sp_items = [ 'a_item_clase', 'a_item_orden', 'a_item_familia', 'a_item_genero','a_item_especie'];
@@ -315,13 +315,13 @@ var variable_module = (function (verbose, url_zacatuche) {
                         species.forEach(specie=>{
                             if(!phylums.includes(specie.phylum)){
                                 phylums.push(specie.phylum);
-                                data.push({ "id" : specie.phylum, "parent" : "#", "text" : specie.phylum, 'state': {'opened': true,  'selected': true},"icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 3, "type": 0}})                                                
+                                data.push({ "id" : specie.phylum, "parent" : "#", "text" : specie.phylum, 'state': {'opened': true,  'selected': false},"icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 3, "type": 0}})                                                
                             }
                         })
 
                         
                         console.log(phylums)                       
-                        
+                            
 
                         var phylums_obj = {}
                         phylums.forEach(phylum=>{                                            
@@ -1049,7 +1049,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                                 var ordenes=[]
                                                 if(!clases.includes(specie.clasevalida)){
                                                     clases.push(specie.clasevalida)
-                                                    data_cov.push({ "id" : specie.clasevalida, "parent" : "#", "text" : specie.clasevalida, 'state': {'opened': true,  'selected': true},"icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 5, "type": 0}})                                                  
+                                                    data_cov.push({ "id" : specie.clasevalida, "parent" : "#", "text" : specie.clasevalida, 'state': {'opened': true,  'selected': false},"icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 5, "type": 0}})                                                  
                                                 }                                                
                                             })
                                             
@@ -1155,7 +1155,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                             sel.forEach(specie=>{
                                                 if(!ordenes.includes(specie.ordenvalido)){
                                                     ordenes.push(specie.ordenvalido)
-                                                    data_cov.push({ "id" : specie.ordenvalido, "parent" : "#", "text" : specie.ordenvalido, 'state': {'opened': true,  'selected': true},"icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 1, "type": 0}})
+                                                    data_cov.push({ "id" : specie.ordenvalido, "parent" : "#", "text" : specie.ordenvalido, 'state': {'opened': true,  'selected': false},"icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 1, "type": 0}})
                                                 }
                                             })
                                             console.log("************ ordenes ************")
@@ -1611,11 +1611,13 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                 // generando tab panel para variables climaticas
 //                _VERBOSE ? console.log(tags[i]) : _VERBOSE;
+                
 
                 var tab_pane = $('<div/>')
                         .attr('id', 'tab' + i + "_" + id)
                         .addClass('tab-pane')
-                        .appendTo(tab_content);
+                        .appendTo(tab_content)
+                        
 
 
 

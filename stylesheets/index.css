@@ -107,10 +107,11 @@ header .logo{
 }
 header #logoPINCC{
     background-color: rgba(195,195,195,.25);
-    background-image: url(https://www.pincc.unam.mx/wp-content/uploads/2021/04/cropped-logo_pincc_alta.png);
-    background-size:4em;
+    background-image: url(/images/pincc.jpg);
+    background-size:5em;
     width: 5em;
 }
+
 header #logoC3{
     background-color: rgba(195,195,195,.25);
     background-image: url(https://chilam.c3.unam.mx/wp-content/themes/chilam/images/logos/c3-g.svg);
@@ -122,6 +123,13 @@ header #logoChilam{
     background-size:15rem;
     width: 15.5rem;
 }
+
+header #logoCAyCC{
+    background-image: url(/images/CAyCC.png);
+    background-size:14rem;
+    width: 15.5rem;
+}
+
 header #logoCIC{
     background-color: rgba(195,195,195,.5);
     background-image: url(https://chilam.c3.unam.mx/wp-content/themes/chilam/images/logos/cic-g.svg);
