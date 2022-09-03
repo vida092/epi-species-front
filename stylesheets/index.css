@@ -107,7 +107,7 @@ header .logo{
 }
 header #logoPINCC{
     background-color: rgba(195,195,195,.25);
-    background-image: url(/images/pincc.jpg);
+    background-image: url(images/pincc.jpg);
     background-size:5em;
     width: 5em;
 }
@@ -125,7 +125,7 @@ header #logoChilam{
 }
 
 header #logoCAyCC{
-    background-image: url(/images/CAyCC.png);
+    background-image: url(images/CAyCC.png);
     background-size:14rem;
     width: 15.5rem;
 }
