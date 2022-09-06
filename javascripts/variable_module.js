@@ -107,7 +107,8 @@ var variable_module = (function (verbose, url_zacatuche) {
 
         // se comentan variables topograficas por expansión de terreno
 
-        var tags = abio_tab ? ['a_taxon', 'a_raster', "a_raster2", 'a_socio'] : ['a_taxon'];
+        //var tags = abio_tab ? ['a_taxon', 'a_raster', 'a_raster2', 'a_socio'] : ['a_taxon'];
+        var tags = ['a_taxon', 'a_raster', 'a_raster2', 'a_socio'];
 
 
         var sp_items = [ 'a_item_clase', 'a_item_orden', 'a_item_familia', 'a_item_genero','a_item_especie'];
@@ -390,10 +391,10 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                         })
                         
-                        console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                        
                         console.log("arbol es")
                         console.log(data)
-                        console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                        
 
                         $('#jstree_variables_species_target').jstree("destroy").empty();
                         $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
@@ -451,7 +452,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                     }
                 })
-                console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                
                 
             })
         }
@@ -481,7 +482,6 @@ var variable_module = (function (verbose, url_zacatuche) {
             console.log("REGION_SELECTED: " + _REGION_SELECTED);
             console.log("_GRID_RES: " + _GRID_RES);
             var query = "query{  all_worldclim_covariables(limit: 1000, filter: \"\"){id label interval layer icat}}"
-
             $.ajax({
                 url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
                 method: "POST",
@@ -538,6 +538,65 @@ var variable_module = (function (verbose, url_zacatuche) {
                 }
 
             })
+            query2 ="query{all_censo_inegi_2020_covariables(limit: 2000, filter:\"\"){id name interval bin code}}"
+            $.ajax({
+                url:"https://covid19.c3.unam.mx/gateway/api/nodes/",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({query: query2}),
+                success: function(resp){
+                    var sei = resp.data.all_censo_inegi_2020_covariables
+                    data = [{"id":"inegi", "parent": "#", "text": "CENSO INEGI 2020", 'state': {'opened': false}, "icon": "plugins/jstree/images/rep.png",
+                    'attr': {'nivel': 1, "type": 0} }]
+                    var intervals=[]
+                    sei.forEach(element=>{
+                        if(!intervals.includes(element.interval)){
+                            intervals.push(element.interval)
+                        }
+                    })
+                    var names=[]
+                    sei.forEach(element=>{
+                    if(!names.includes(element.name)){
+                        names.push(element.name)            
+                    }
+                    })
+                    names.forEach(element=>{
+                    data.push({"id": element, "parent":"inegi", "text":element, 'state': {'opened': false}, "icon": "plugins/jstree/images/group.png",
+                    'attr': {'nivel': 1, "type": 0}})
+                    })
+
+                    sei.forEach(element=>{
+                    names.forEach(name=>{
+                        if(intervals.includes(element.interval) && element.name===name){
+                        data.push({"id":element.interval, "parent":element.name, "text":element.interval, 'state': {'opened': false}, "icon": "plugins/jstree/images/percent.png",
+                        'attr': {'nivel': 1, "type": 0}})
+                        }
+                    })
+                    })
+                    console.log("*//*/*/*/*/*/*/*/*/*/*/*/")
+                    console.log(data)
+                    $('#treeVariableSociofuente').jstree("destroy").empty();
+                    $('#treeVariableSociofuente').jstree({
+                        'plugins': ["wholerow", "checkbox"],
+                        'core': {
+                            'data': data,
+                            'themes': {
+                                'name': 'proton',
+                                'responsive': true
+                            },
+                            'check_callback': true
+                        }
+                      });
+                    $(function () { $('#treeVariableSociofuente').jstree(); });
+                    $("#treeVariableSociofuente").on('changed.jstree', self.getChangeTreeVarRaster);
+                    $('#treeVariableSociofuente').on('open_node.jstree', self.getTreeVarRaster);
+                    //treeVariableSocio_fuente
+                    
+
+
+                }
+            })
+
 
             // $.ajax({
             //     url: _url_zacatuche + "/niche/especie/getRasterVariables",
@@ -803,19 +862,21 @@ var variable_module = (function (verbose, url_zacatuche) {
 
         // sea agregan los tabs disponibles
         $.each(tags, function (i) {
+            
             var name_class = 'nav-variables';
+            if(id=="fuente"){
 
             if (i == 0) {
                 name_class = 'active nav-variables';
             }
-            if(id=="fuente"){
+            
             var li = $('<li/>')
                     .addClass(name_class)
                     .appendTo(nav_items)
                     .click(function (e) {
                         $('.nav-tabs a[href="' + e.target.getAttribute('href') + '"]').tab('show');
                         e.preventDefault();
-                    });}
+                    });
 
             var aaa = $('<a/>')
                     .attr('id', tags[i] + "_" + id)
@@ -823,34 +884,34 @@ var variable_module = (function (verbose, url_zacatuche) {
                     .attr('data-toggle', 'tab' + i + "_" + id)
                     .text(_iTrans.prop(tags[i]))
                     .appendTo(li);
+                }
         });
 
 
 
         // div que alamcena el cuerpo de los tabs
+
         var tab_content = $('<div/>')
-                .attr('id', "tab_content_" + id)
+                .attr('id', "tab_content_" + id )
                 .addClass('tab-content')
                 .appendTo(nav_selection);
-
-
-
-
-
-
+        
 
         // agregando contenido de cada tab
         $.each(tags, function (i) {
-
+            console.log("*/*/*/*/*//*/*/*/*/*/*/*/*/*/*/*")
+            console.log(i)
             if (i === 0) {
                 // generando tab panel para variables taxonomicas
-//                _VERBOSE ? console.log(tags[i]) : _VERBOSE;
-
-                // div del tab[i]_id
+                //_VERBOSE ? console.log(tags[i]) : _VERBOSE;
+                //div del tab[i]_id               
                 var tab_pane = $('<div/>')
                         .attr('id', 'tab' + i + "_" + id)
                         .addClass('tab-pane active')
                         .appendTo(tab_content);
+                //div id="tab_content_fuente" & class="tab-content"
+                
+                
 
                 // div que contiene el dropdown-button de tipos taxonomicos y textfiled para insertar valores
                 if (id === "fuente"){
@@ -1396,21 +1457,21 @@ var variable_module = (function (verbose, url_zacatuche) {
                                         success: function(resp){                
                                             var sel = resp.data.all_snib_covariables
                                             console.log(sel)
-                                            var data_cov = [{ "id" : "raiz" , "parent" :"#", "text" : "raiz", 'state': {'opened': false},  "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 1, "type": 0}}]
+                                            var data_cov = [{ "id" : "raiz" , "parent" :"#", "text" : "raiz", 'state': {'opened': false},  "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 7, "type": 0}}]
                                             var species_names = [];
                                             sel.forEach(specie=>{
                                                 if(!species_names.includes(specie.especievalida)){
                                                     species_names.push(specie.especievalida)
-                                                    data_cov.push(data_cov.push({ "id" : specie.especievalida , "parent" :"raiz", "text" : specie.especievalida, 'state': {'opened': false},  "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 2, "type": 0}}))                                                                                                   
+                                                    data_cov.push(data_cov.push({ "id" : specie.especievalida , "parent" :"raiz", "text" : specie.especievalida, 'state': {'opened': false},  "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 8, "type": 0}}))                                                                                                   
                                                 }
                                             })
                                             console.log(data_cov)
                                             console.log("**********arbol**********")
                                             console.log("jstree_variables_species_fuente")
-                                            $('#jstree_variables_species_' + id).jstree("destroy").empty();
-                                            $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
-                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
-                                            $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
+                                            // $('#jstree_variables_species_' + id).jstree("destroy").empty();
+                                            // $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
+                                            // $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
+                                            // // $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
 
                                             // self.value_vartree = ui.item.id;
                                             // self.field_vartree = self.varfilter_selected[0];
@@ -1420,7 +1481,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                            // _VERBOSE ? console.log("nivel") : _VERBOSE;
                                            // _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
 
-                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/images/dna.png"
+                                           //var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/images/dna.png"
 
                                            // _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
                                             $('#jstree_variables_species_' + id).jstree({
@@ -1610,7 +1671,6 @@ var variable_module = (function (verbose, url_zacatuche) {
             else if (i === 1) {
 
                 // generando tab panel para variables climaticas
-//                _VERBOSE ? console.log(tags[i]) : _VERBOSE;
                 
 
                 var tab_pane = $('<div/>')
@@ -1669,6 +1729,100 @@ var variable_module = (function (verbose, url_zacatuche) {
                 self.loadTreeVarRaster();
 
             }
+
+            else if (i===2){
+                var tab_pane = $('<div/>')
+                        .attr('id', 'tab' + i + "_" + id)
+                        .addClass('tab-pane')
+                        .appendTo(tab_content)
+
+                var tree_nav_container = $('<div/>')
+                        .addClass('row nav_species_container')
+                        .appendTo(tab_pane);
+
+
+                var btn_add = $('<button/>')
+                        .attr('id', 'add_group_bioclim' + "_" + id)
+                        .attr('type', 'button')
+                        .addClass('btn btn-primary glyphicon glyphicon-plus pull-left')
+                        .click(function (e) {
+
+                            self.addOtherGroup('jstree_variables_bioclim_' + id, self.arrayBioclimSelected, 'Raster', 'treeAddedPanel_' + id, _TYPE_ABIO);
+                            e.preventDefault();
+
+                        })
+                        .appendTo(tab_pane);
+
+                var btn_add = $('<button/>')
+                        .attr('id', 'clean_var_bioclim' + "_" + id)
+                        .attr('type', 'button')
+                        .addClass('btn btn-primary glyphicon glyphicon-trash pull-left')
+                        .click(function (e) {
+
+                            self.arrayBioclimSelected = [];
+                            // self.groupbioclimvar_dataset = [];
+                            self.cleanVariables('jstree_variables_bioclim_' + id, 'treeAddedPanel_' + id, _TYPE_ABIO);
+                            e.preventDefault();
+
+                        })
+                        .appendTo(tab_pane);
+
+                
+                
+                
+
+            }
+
+            else if (i===3){
+                var tab_pane = $('<div/>')
+                        .attr('id', 'tab' + i + "_" + id)
+                        .addClass('tab-pane')
+                        .appendTo(tab_content)
+                        var tree_nav_container = $('<div/>')
+                        .addClass('row nav_species_container')
+                        .appendTo(tab_pane);
+
+
+                var btn_add = $('<button/>')
+                        .attr('id', 'add_group_bioclim' + "_" + id)
+                        .attr('type', 'button')
+                        .addClass('btn btn-primary glyphicon glyphicon-plus pull-left')
+                        .click(function (e) {
+
+                            self.addOtherGroup('jstree_variables_bioclim_' + id, self.arrayBioclimSelected, 'Raster', 'treeAddedPanel_' + id, _TYPE_ABIO);
+                            e.preventDefault();
+
+                        })
+                        .appendTo(tab_pane);
+
+                var btn_add = $('<button/>')
+                        .attr('id', 'clean_var_bioclim' + "_" + id)
+                        .attr('type', 'button')
+                        .addClass('btn btn-primary glyphicon glyphicon-trash pull-left')
+                        .click(function (e) {
+
+                            self.arrayBioclimSelected = [];
+                            // self.groupbioclimvar_dataset = [];
+                            self.cleanVariables('jstree_variables_bioclim_' + id, 'treeAddedPanel_' + id, _TYPE_ABIO);
+                            e.preventDefault();
+
+                        })
+                        .appendTo(tab_pane);
+
+                var div_tree = $('<div/>')
+                        .attr('id', "treeVariableSocio" + id)
+                        .addClass('myScrollableBlockVar')
+                        .appendTo(tree_nav_container);
+
+                var tree = $('<div/>')
+                        .attr('id', "jstree_variables_species_" + id)
+                        .appendTo(div_tree);
+
+                
+
+            }
+
+
 
         });
 
