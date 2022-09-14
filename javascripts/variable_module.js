@@ -538,64 +538,65 @@ var variable_module = (function (verbose, url_zacatuche) {
                 }
 
             })
-            query2 ="query{all_censo_inegi_2020_covariables(limit: 2000, filter:\"\"){id name interval bin code}}"
-            $.ajax({
-                url:"https://covid19.c3.unam.mx/gateway/api/nodes/",
-                method: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({query: query2}),
-                success: function(resp){
-                    var sei = resp.data.all_censo_inegi_2020_covariables
-                    data = [{"id":"inegi", "parent": "#", "text": "CENSO INEGI 2020", 'state': {'opened': false}, "icon": "plugins/jstree/images/rep.png",
-                    'attr': {'nivel': 1, "type": 0} }]
-                    var intervals=[]
-                    sei.forEach(element=>{
-                        if(!intervals.includes(element.interval)){
-                            intervals.push(element.interval)
-                        }
-                    })
-                    var names=[]
-                    sei.forEach(element=>{
-                    if(!names.includes(element.name)){
-                        names.push(element.name)            
-                    }
-                    })
-                    names.forEach(element=>{
-                    data.push({"id": element, "parent":"inegi", "text":element, 'state': {'opened': false}, "icon": "plugins/jstree/images/group.png",
-                    'attr': {'nivel': 1, "type": 0}})
-                    })
+            
+            // query2 ="query{all_censo_inegi_2020_covariables(limit: 2000, filter:\"\"){id name interval bin code}}"
+            // $.ajax({
+            //     url:"https://covid19.c3.unam.mx/gateway/api/nodes/",
+            //     method: "POST",
+            //     contentType: "application/json",
+            //     data: JSON.stringify({query: query2}),
+            //     success: function(resp){
+            //         var sei = resp.data.all_censo_inegi_2020_covariables
+            //         data = [{"id":"inegi", "parent": "#", "text": "CENSO INEGI 2020", 'state': {'opened': false}, "icon": "plugins/jstree/images/rep.png",
+            //         'attr': {'nivel': 1, "type": 0} }]
+            //         var intervals=[]
+            //         sei.forEach(element=>{
+            //             if(!intervals.includes(element.interval)){
+            //                 intervals.push(element.interval)
+            //             }
+            //         })
+            //         var names=[]
+            //         sei.forEach(element=>{
+            //         if(!names.includes(element.name)){
+            //             names.push(element.name)            
+            //         }
+            //         })
+            //         names.forEach(element=>{
+            //         data.push({"id": element, "parent":"inegi", "text":element, 'state': {'opened': false}, "icon": "plugins/jstree/images/group.png",
+            //         'attr': {'nivel': 1, "type": 0}})
+            //         })
 
-                    sei.forEach(element=>{
-                    names.forEach(name=>{
-                        if(intervals.includes(element.interval) && element.name===name){
-                        data.push({"id":element.interval, "parent":element.name, "text":element.interval, 'state': {'opened': false}, "icon": "plugins/jstree/images/percent.png",
-                        'attr': {'nivel': 1, "type": 0}})
-                        }
-                    })
-                    })
-                    console.log("*//*/*/*/*/*/*/*/*/*/*/*/")
-                    console.log(data)
-                    $('#treeVariableSociofuente').jstree("destroy").empty();
-                    $('#treeVariableSociofuente').jstree({
-                        'plugins': ["wholerow", "checkbox"],
-                        'core': {
-                            'data': data,
-                            'themes': {
-                                'name': 'proton',
-                                'responsive': true
-                            },
-                            'check_callback': true
-                        }
-                      });
-                    $(function () { $('#treeVariableSociofuente').jstree(); });
-                    $("#treeVariableSociofuente").on('changed.jstree', self.getChangeTreeVarRaster);
-                    $('#treeVariableSociofuente').on('open_node.jstree', self.getTreeVarRaster);
-                    //treeVariableSocio_fuente
+            //         sei.forEach(element=>{
+            //         names.forEach(name=>{
+            //             if(intervals.includes(element.interval) && element.name===name){
+            //             data.push({"id":element.interval, "parent":element.name, "text":element.interval, 'state': {'opened': false}, "icon": "plugins/jstree/images/percent.png",
+            //             'attr': {'nivel': 1, "type": 0}})
+            //             }
+            //         })
+            //         })
+            //         // console.log("*//*/*/*/*/*/*/*/*/*/*/*/")
+            //         // console.log(data)
+            //         $('#treeVariableSociofuente').jstree("destroy").empty();
+            //         $('#treeVariableSociofuente').jstree({
+            //             'plugins': ["wholerow", "checkbox"],
+            //             'core': {
+            //                 'data': data,
+            //                 'themes': {
+            //                     'name': 'proton',
+            //                     'responsive': true
+            //                 },
+            //                 'check_callback': true
+            //             }
+            //           });
+            //         $(function () { $('#treeVariableSociofuente').jstree(); });
+            //         $("#treeVariableSociofuente").on('changed.jstree', self.getChangeTreeVarRaster);
+            //         $('#treeVariableSociofuente').on('open_node.jstree', self.getTreeVarRaster);
+                    
                     
 
 
-                }
-            })
+            //     }
+            // })
 
 
             // $.ajax({
@@ -899,8 +900,6 @@ var variable_module = (function (verbose, url_zacatuche) {
 
         // agregando contenido de cada tab
         $.each(tags, function (i) {
-            console.log("*/*/*/*/*//*/*/*/*/*/*/*/*/*/*/*")
-            console.log(i)
             if (i === 0) {
                 // generando tab panel para variables taxonomicas
                 //_VERBOSE ? console.log(tags[i]) : _VERBOSE;
@@ -997,34 +996,33 @@ var variable_module = (function (verbose, url_zacatuche) {
                             source: function (request, response) {
                                 console.log(varfield + "seleccionado")
 
-                                switch(varfield){
-    
-                            case "Clase":
-                                console.log("clase valida");
-                                var query = "query{all_snib_covariables(limit: 1, filter: \" clasevalida LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){clasevalida}} "                                
-                                                               
-                                break;
-                            case "Orden":
-                                console.log("orden valido");
-                                var query = "query{all_snib_covariables(limit: 1, filter: \" ordenvalido LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){ordenvalido}} "
-                                
-                                break;
-                            case "Familia":
-                                console.log("familia valida");
-                                var query = "query{all_snib_covariables(limit: 1, filter: \" familiavalida LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){familiavalida}} "
-                                
-                                break;
-                            case "Género":
-                                console.log("genero valido");
-                                var query = "query{all_snib_covariables(limit: 1, filter: \" generovalido LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){generovalido}} "
-                                
-                                break;
-                            default:
-                                console.log("Especie ")
-                                var query = "query{all_snib_covariables(limit: 1, filter: \" especievalida LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){especievalida}} "
-                                
-                                break; 
-                        }           
+                                switch(varfield){    
+                                case "Clase":
+                                    console.log("clase valida");
+                                    var query = "query{all_snib_covariables(limit: 1, filter: \" clasevalida LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){clasevalida}} "                                
+                                                                
+                                    break;
+                                case "Orden":
+                                    console.log("orden valido");
+                                    var query = "query{all_snib_covariables(limit: 1, filter: \" ordenvalido LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){ordenvalido}} "
+                                    
+                                    break;
+                                case "Familia":
+                                    console.log("familia valida");
+                                    var query = "query{all_snib_covariables(limit: 1, filter: \" familiavalida LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){familiavalida}} "
+                                    
+                                    break;
+                                case "Género":
+                                    console.log("genero valido");
+                                    var query = "query{all_snib_covariables(limit: 1, filter: \" generovalido LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){generovalido}} "
+                                    
+                                    break;
+                                default:
+                                    console.log("Especie ")
+                                    var query = "query{all_snib_covariables(limit: 1, filter: \" especievalida LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){especievalida}} "
+                                    
+                                    break; 
+                                }           
 
                                _VERBOSE ? console.log($("#footprint_region_select").val()) : _VERBOSE;
 
@@ -1216,7 +1214,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                             sel.forEach(specie=>{
                                                 if(!ordenes.includes(specie.ordenvalido)){
                                                     ordenes.push(specie.ordenvalido)
-                                                    data_cov.push({ "id" : specie.ordenvalido, "parent" : "#", "text" : specie.ordenvalido, 'state': {'opened': true,  'selected': false},"icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 1, "type": 0}})
+                                                    data_cov.push({ "id" : specie.ordenvalido, "parent" : "#", "text" : specie.ordenvalido, 'state': {'opened': true,  'selected': false},"icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 5, "type": 0}})
                                                 }
                                             })
                                             console.log("************ ordenes ************")
@@ -1228,7 +1226,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                                 sel.forEach(specie=>{
                                                     if(!familias.includes(specie.familiavalida) && specie.ordenvalido === orden){
                                                         familias.push(specie.familiavalida)
-                                                        data_cov.push({ "id" : specie.familiavalida , "parent" : specie.ordenvalido  , "text" : specie.familiavalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 2, "type": 0}})
+                                                        data_cov.push({ "id" : specie.familiavalida , "parent" : specie.ordenvalido  , "text" : specie.familiavalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 6, "type": 0}})
                                                     }
                                                 })
                                                 var familias_obj = {}
@@ -1237,7 +1235,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                                     sel.forEach(specie=>{
                                                         if(!generos.includes(specie.generovalido) && specie.familiavalida === familia){
                                                             generos.push(specie.generovalido);
-                                                            data_cov.push({ "id" : specie.generovalido , "parent" : specie.familiavalida  , "text" : specie.generovalido, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 3, "type": 0}})
+                                                            data_cov.push({ "id" : specie.generovalido , "parent" : specie.familiavalida  , "text" : specie.generovalido, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 7, "type": 0}})
                                                         }
                                                    })
                                                     var generos_obj = {}
@@ -1246,7 +1244,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                                         sel.forEach(specie=>{
                                                             if(!especievalida.includes(specie.especievalida) && specie.generovalido === genero){
                                                                 especievalida.push(specie.especievalida)
-                                                                data_cov.push({ "id" : specie.especievalida , "parent" : specie.generovalido , "text" : specie.especievalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 4, "type": 0}})
+                                                                data_cov.push({ "id" : specie.especievalida , "parent" : specie.generovalido , "text" : specie.especievalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 8, "type": 0}})
                                                             }
                                                         })
                                                         generos_obj[genero] = especievalida 
@@ -1312,7 +1310,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                             sel.forEach(specie=>{
                                                 if(!familias.includes(specie.familiavalida)){
                                                     familias.push(specie.familiavalida)
-                                                    data_cov.push({ "id" : specie.familiavalida , "parent" : "#"  , "text" : specie.familiavalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 1, "type": 0}})
+                                                    data_cov.push({ "id" : specie.familiavalida , "parent" : "#"  , "text" : specie.familiavalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 6, "type": 0}})
 
                                                 }
                                             })
@@ -1323,7 +1321,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                                 sel.forEach(specie=>{
                                                     if(!generos.includes(specie.generovalido) && specie.familiavalida === familia){
                                                         generos.push(specie.generovalido)
-                                                        data_cov.push({ "id" : specie.generovalido , "parent" : specie.familiavalida  , "text" : specie.generovalido, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 2, "type": 0}})
+                                                        data_cov.push({ "id" : specie.generovalido , "parent" : specie.familiavalida  , "text" : specie.generovalido, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 7, "type": 0}})
                                                     }
                                                 })
                                                 var generos_obj = {}
@@ -1332,7 +1330,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                                     sel.forEach(specie=>{
                                                         if(!especievalida.includes(specie.especievalida) && specie.generovalido === genero){
                                                             especievalida.push(specie.especievalida)
-                                                            data_cov.push({ "id" : specie.especievalida , "parent" : specie.generovalido , "text" : specie.especievalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 3, "type": 0}})
+                                                            data_cov.push({ "id" : specie.especievalida , "parent" : specie.generovalido , "text" : specie.especievalida, 'state': {'opened': false}, "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 8, "type": 0}})
                                                         }
                                                     })
                                                     generos_obj[genero] = especievalida
@@ -1395,7 +1393,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                             sel.forEach(specie=>{
                                                 if(!generos.includes(specie.generovalido)){
                                                     generos.push(specie.generovalido)
-                                                    data_cov.push({ "id" : specie.generovalido , "parent" : "#"  , "text" : specie.generovalido, 'state': {'opened': false},  "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 1, "type": 0}})
+                                                    data_cov.push({ "id" : specie.generovalido , "parent" : "#"  , "text" : specie.generovalido, 'state': {'opened': false},  "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 7, "type": 0}})
                                                 }
                                             })
                                             
@@ -1468,22 +1466,22 @@ var variable_module = (function (verbose, url_zacatuche) {
                                             console.log(data_cov)
                                             console.log("**********arbol**********")
                                             console.log("jstree_variables_species_fuente")
-                                            // $('#jstree_variables_species_' + id).jstree("destroy").empty();
-                                            // $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
-                                            // $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
-                                            // // $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
+                                            $('#jstree_variables_species_' + id).jstree("destroy").empty();
+                                            $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
+                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
+                                            $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
 
-                                            // self.value_vartree = ui.item.id;
-                                            // self.field_vartree = self.varfilter_selected[0];
-                                            // self.parent_field_vartree = self.varfilter_selected[1];
-                                            // self.level_vartree = self.varfilter_selected[2];
+                                            self.value_vartree = ui.item.id;
+                                            self.field_vartree = self.varfilter_selected[0];
+                                            self.parent_field_vartree = self.varfilter_selected[1];
+                                            self.level_vartree = self.varfilter_selected[2];
 
-                                           // _VERBOSE ? console.log("nivel") : _VERBOSE;
-                                           // _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
+                                           _VERBOSE ? console.log("nivel") : _VERBOSE;
+                                           _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
 
-                                           //var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/images/dna.png"
+                                           var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/images/dna.png"
 
-                                           // _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
+                                           _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
                                             $('#jstree_variables_species_' + id).jstree({
                                                 'plugins': ["wholerow", "checkbox"],
                                                 'core': {
@@ -1501,44 +1499,44 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 })
 
                                 }
-                                console.log(query)
+                                
 
-                                $('#jstree_variables_species_' + id).jstree("destroy").empty();
-                                $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
-                                $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
-                                $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
+                            //     $('#jstree_variables_species_' + id).jstree("destroy").empty();
+                            //     $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
+                            //     $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
+                            //     $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
 
-                                self.value_vartree = ui.item.id;
-                                self.field_vartree = self.varfilter_selected[0];
-                                self.parent_field_vartree = self.varfilter_selected[1];
-                                self.level_vartree = self.varfilter_selected[2];
+                            //     self.value_vartree = ui.item.id;
+                            //     self.field_vartree = self.varfilter_selected[0];
+                            //     self.parent_field_vartree = self.varfilter_selected[1];
+                            //     self.level_vartree = self.varfilter_selected[2];
 
-                               _VERBOSE ? console.log("nivel") : _VERBOSE;
-                               _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
+                            //    _VERBOSE ? console.log("nivel") : _VERBOSE;
+                            //    _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
 
-                               var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/dist/themes/default/throbber.gif"
+                            //    var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/dist/themes/default/throbber.gif"
 
-                               _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
+                            //    _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
 
-                                var tree_reinos = [{
-                                        "text": self.value_vartree,
-                                        "id": "root",
-                                        "attr": {"nivel": self.level_vartree, "type": _TYPE_TAXON},
-                                        'state': {'opened': true},
-                                        "icon": icon
-                                    }];
+                            //     var tree_reinos = [{
+                            //             "text": self.value_vartree,
+                            //             "id": "root",
+                            //             "attr": {"nivel": self.level_vartree, "type": _TYPE_TAXON},
+                            //             'state': {'opened': true},
+                            //             "icon": icon
+                            //         }];
 
-                                $('#jstree_variables_species_' + id).jstree({
-                                    'plugins': ["wholerow", "checkbox"],
-                                    'core': {
-                                        'data': tree_reinos,
-                                        'themes': {
-                                            'name': 'proton',
-                                            'responsive': true
-                                        },
-                                        'check_callback': true
-                                    }
-                                });
+                            //     $('#jstree_variables_species_' + id).jstree({
+                            //         'plugins': ["wholerow", "checkbox"],
+                            //         'core': {
+                            //             'data': tree_reinos,
+                            //             'themes': {
+                            //                 'name': 'proton',
+                            //                 'responsive': true
+                            //             },
+                            //             'check_callback': true
+                            //         }
+                            //     });
 
                             }
 
@@ -1780,7 +1778,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .appendTo(tab_content)
                         var tree_nav_container = $('<div/>')
                         .addClass('row nav_species_container')
-                        .appendTo(tab_pane);
+                        .appendTo(tab_pane);               
 
 
                 var btn_add = $('<button/>')
@@ -1789,7 +1787,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .addClass('btn btn-primary glyphicon glyphicon-plus pull-left')
                         .click(function (e) {
 
-                            self.addOtherGroup('jstree_variables_bioclim_' + id, self.arrayBioclimSelected, 'Raster', 'treeAddedPanel_' + id, _TYPE_ABIO);
+                            self.addOtherGroup('treeVariableSociofuente', self.arrayBioclimSelected, 'Raster', 'treeAddedPanel_' + id, _TYPE_ABIO);
                             e.preventDefault();
 
                         })
@@ -1803,7 +1801,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                             self.arrayBioclimSelected = [];
                             // self.groupbioclimvar_dataset = [];
-                            self.cleanVariables('jstree_variables_bioclim_' + id, 'treeAddedPanel_' + id, _TYPE_ABIO);
+                            self.cleanVariables('treeVariableSociofuente', 'treeAddedPanel_' + id, _TYPE_ABIO);
                             e.preventDefault();
 
                         })
@@ -1815,11 +1813,68 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .appendTo(tree_nav_container);
 
                 var tree = $('<div/>')
-                        .attr('id', "jstree_variables_species_" + id)
+                        //.attr('id', "jstree_variables_species_" + id)
+                        .attr('id', "jstree_variables_socio_" + id)
                         .appendTo(div_tree);
-
                 
-
+                        query2 ="query{all_censo_inegi_2020_covariables(limit: 2000, filter:\"\"){id name interval bin code}}"
+                        $.ajax({
+                            url:"https://covid19.c3.unam.mx/gateway/api/nodes/",
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({query: query2}),
+                            success: function(resp){
+                                var sei = resp.data.all_censo_inegi_2020_covariables
+                                data = [{"id":"inegi", "parent": "#", "text": "CENSO INEGI 2020", 'state': {'opened': false}, "icon": "plugins/jstree/images/rep.png",
+                                'attr': {'nivel': 1, "type": 0} }]
+                                var intervals=[]
+                                sei.forEach(element=>{
+                                    if(!intervals.includes(element.interval)){
+                                        intervals.push(element.interval)
+                                    }
+                                })
+                                var names=[]
+                                sei.forEach(element=>{
+                                if(!names.includes(element.name)){
+                                    names.push(element.name)            
+                                }
+                                })
+                                names.forEach(element=>{
+                                data.push({"id": element, "parent":"inegi", "text":element, 'state': {'opened': false}, "icon": "plugins/jstree/images/group.png",
+                                'attr': {'nivel': 1, "type": 0}})
+                                })
+            
+                                sei.forEach(element=>{
+                                names.forEach(name=>{
+                                    if(intervals.includes(element.interval) && element.name===name){
+                                    data.push({"id":element.interval, "parent":element.name, "text":element.interval, 'state': {'opened': false}, "icon": "plugins/jstree/images/percent.png",
+                                    'attr': {'nivel': 1, "type": 0}})
+                                    }
+                                })
+                                })
+                                // console.log("*//*/*/*/*/*/*/*/*/*/*/*/")
+                                // console.log(data)
+                                $('#treeVariableSociofuente').jstree("destroy").empty();
+                                $('#treeVariableSociofuente').jstree({
+                                    'plugins': ["wholerow", "checkbox"],
+                                    'core': {
+                                        'data': data,
+                                        'themes': {
+                                            'name': 'proton',
+                                            'responsive': true
+                                        },
+                                        'check_callback': true
+                                    }
+                                  });
+                                $(function () { $('#treeVariableSociofuente').jstree(); });
+                                $("#treeVariableSociofuente").on('changed.jstree', self.getChangeTreeVarRaster);
+                                $('#treeVariableSociofuente').on('open_node.jstree', self.getTreeVarRaster);
+                                
+                                
+            
+            
+                            }
+                        })
             }
 
 
@@ -1836,7 +1891,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             _VERBOSE ? console.log("self.loadNodes") : _VERBOSE;
 
             // se incrementa level para  asignar el nivel adecuado a los hijos de la raiz
-            // la funcion es llamda dos veces, por tantro se decidio utilizar el arreglo + 1, en lufar de utilzar la variable global "level_vartree"
+            // la funcion es llamda dos veces, por tantro se decidio utilizar el arreglo + 1, en lugar de utilzar la variable global "level_vartree"
             self.level_vartree = parseInt(self.varfilter_selected[2]) + 1;
            _VERBOSE ? console.log("level_vartree: " + self.level_vartree) : _VERBOSE;
 
@@ -1861,19 +1916,21 @@ var variable_module = (function (verbose, url_zacatuche) {
            console.log("_GRID_RES: " + _GRID_RES);
            console.log("_AGENT_SELECTED" + _AGENT_SELECTED);
 
-            if (_AGENT_SELECTED == 'Hospederos')
-                var _url = 'http://10.90.0.42:4006/graphql/hospederos/'
-            else if (_AGENT_SELECTED == 'Patogenos')
-                var _url = "http://10.90.0.42:4007/graphql/patogenos/"
-            else
-                var _url = "http://10.90.0.42:4008/graphql/vectores/"
+            // if (_AGENT_SELECTED == 'Hospederos')
+            //     var _url = 'http://10.90.0.42:4006/graphql/hospederos/'
+            // else if (_AGENT_SELECTED == 'Patogenos')
+            //     var _url = "http://10.90.0.42:4007/graphql/patogenos/"
+            // else
+            //     var _url = "http://10.90.0.42:4008/graphql/vectores/"
 
+            var _url="https://covid19.c3.unam.mx/gateway/api/nodes/"
             let nodo = _AGENT_SELECTED.toLowerCase()
 
             let field_t = field_r.normalize('NFD').replace(/[\u0300-\u036f]/g,"");
 
             let query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ varfield.toLowerCase().replace(/é/gi,"e") +' = \'' + self.value_vartree +'\' "){'+ field_r.replace(/é/gi,"e") +'}}'
             console.log(query)
+            console.log("*****------*******-------***")
 
             $.ajax({
                 method: "POST",
@@ -2052,12 +2109,13 @@ var variable_module = (function (verbose, url_zacatuche) {
             console.log("REGION_SELECTED: " + _REGION_SELECTED);
             console.log("_GRID_RES: " + _GRID_RES);
 
-            if (_AGENT_SELECTED == 'Hospederos')
-                var _url = 'http://10.90.0.42:4006/graphql/hospederos/'
-            else if (_AGENT_SELECTED == 'Patogenos')
-                var _url = "http://10.90.0.42:4007/graphql/patogenos/"
-            else
-                var _url = "http://10.90.0.42:4008/graphql/vectores/"
+            // if (_AGENT_SELECTED == 'Hospederos')
+            //     var _url = 'http://10.90.0.42:4006/graphql/hospederos/'
+            // else if (_AGENT_SELECTED == 'Patogenos')
+            //     var _url = "http://10.90.0.42:4007/graphql/patogenos/"
+            // else
+            //     var _url = "http://10.90.0.42:4008/graphql/vectores/"
+            var _url="https://covid19.c3.unam.mx/gateway/api/nodes/"
 
             let nodo = _AGENT_SELECTED.toLowerCase()
 
@@ -2441,10 +2499,6 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             }
 
-
-//            console.log(gpoName);
-//            console.log(idDivContainer);
-//            console.log(typeVar);
 
             if (arraySelected.length === 0)
                 return;

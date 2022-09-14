@@ -1147,7 +1147,7 @@ var module_nicho = (function () {
         _VERBOSE ? console.log("get_esc_ep") : _VERBOSE;
         var num_items = 0, spid, idreg, subgroups, sp_target;
 
-        // $("#specie_next").css('visibility', 'hidden');
+        $("#specie_next").css('visibility', 'hidden');
 
         $("#show_gen").css('visibility', 'visible');
         $("#btn_tuto_steps_result").css('visibility', 'visible');

@@ -696,7 +696,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
         let query = 'query{get_mesh(grid_res: "' + _grid_res + '"){cve simplified_geom}}'
         console.log(query)
-        console.log("aquí está el query ------------------------------------")
+       
         // query{get_mesh(grid_res: "mun"){cve simplified_geom}}
 
 
@@ -2218,12 +2218,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
            "region": region
         }
 
-        // if (_AGENT_SELECTED == 'Hospederos')
-        //     var _url = 'http://10.90.0.42:4006/graphql/hospederos/'
-        // else if (_AGENT_SELECTED == 'Patogenos')
-        //     var _url = "http://10.90.0.42:4007/graphql/patogenos/"
-        // else
-        //     var _url = "http://10.90.0.42:4008/graphql/vectores/"
+        
 
         var _url = "https://covid19.c3.unam.mx/gateway/api/nodes/"
 
@@ -2231,11 +2226,12 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
         let fecha_ini = document.getElementById("yearPicker_start").value.trim()
         let fecha_fin = document.getElementById("yearPicker_end").value.trim()
+        
 
         if ( fecha_ini.length < 3)
-            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ _PARENT_FIELD.toLowerCase() +' = \'' + _LABEL_VALUE +'\' "){individuosinfectados gridid_'+ _grid_res + '}}'
+            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ _PARENT_FIELD.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") +' = \'' + _LABEL_VALUE +'\' "){individuosinfectados gridid_'+ _grid_res + '}}'
         else
-            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ _PARENT_FIELD.toLowerCase() +' = \'' + _LABEL_VALUE +'\'  AND aniocolecta >= \''+ fecha_ini + ' \' AND aniocolecta <= \'' + fecha_fin + ' \'"){individuosinfectados gridid_'+ _grid_res + '}}'
+            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ _PARENT_FIELD.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") +' = \'' + _LABEL_VALUE +'\'  AND aniocolecta >= \''+ fecha_ini + ' \' AND aniocolecta <= \'' + fecha_fin + ' \'"){individuosinfectados gridid_'+ _grid_res + '}}'
 
 
         console.log(query)
