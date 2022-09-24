@@ -1657,8 +1657,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .addClass('myScrollableBlockVar')
                         .appendTo(tree_nav_container);
 
-                var tree = $('<div/>')
-                        //.attr('id', "jstree_variables_species_" + id)
+                var tree = $('<div/>')                        
                         .attr('id', "jstree_variables_socio_" + id)
                         .appendTo(div_tree);
                 
@@ -1698,8 +1697,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 })
                                 })
                                 
-                                $('#treeVariableSociofuente').jstree("destroy").empty();
-                                $('#treeVariableSociofuente').jstree({
+                                $('#jstree_variables_socio_fuente').jstree("destroy").empty();
+                                $('#jstree_variables_socio_fuente').jstree({
                                     'plugins': ["wholerow", "checkbox"],
                                     'core': {
                                         'data': data,
@@ -1710,13 +1709,10 @@ var variable_module = (function (verbose, url_zacatuche) {
                                         'check_callback': true
                                     }
                                   });
-                                $(function () { $('#treeVariableSociofuente').jstree(); });
-                                $("#treeVariableSociofuente").on('changed.jstree', self.getChangeTreeVarRaster);
-                                $('#treeVariableSociofuente').on('open_node.jstree', self.getTreeVarRaster);
+                                $(function () { $('#jstree_variables_socio_fuente').jstree(); });
+                                $("#jstree_variables_socio_fuente").on('changed.jstree', self.getChangeTreeVarRaster);
+                                $('#jstree_variables_socio_fuente').on('open_node.jstree', self.getTreeVarRaster);
                                 
-                                
-            
-            
                             }
                         })
                         var btn_add = $('<button/>')
@@ -1725,7 +1721,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .addClass('btn btn-primary glyphicon glyphicon-plus pull-left')
                         .click(function (e) {
                             
-                            self.addOtherGroup('treeVariableSociofuente', self.arrayBioclimSelected, 'Socio', 'treeAddedPanel_' + id, _TYPE_ABIO);
+                            self.addOtherGroup("jstree_variables_socio_" + id, self.arrayBioclimSelected, 'Socio', 'treeAddedPanel_' + id, _TYPE_ABIO);
                             e.preventDefault();
                             console.log(self.arrayBioclimSelected)
                         })
@@ -1739,7 +1735,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                             self.arrayBioclimSelected = [];
                             // self.groupbioclimvar_dataset = [];
-                            self.cleanVariables('treeVariableSociofuente', 'treeAddedPanel_' + id, _TYPE_ABIO);
+                            self.cleanVariables("jstree_variables_socio_" + id, 'treeAddedPanel_' + id, _TYPE_ABIO);
                             e.preventDefault();
 
                         })
