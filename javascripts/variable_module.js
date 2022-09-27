@@ -2170,6 +2170,19 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                     self.arrayBioclimSelected.push({label: node_temp.text, id: node_temp.attr.bid, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
                 }
+                
+
+            }else if ($("#jstree_variables_socio_fuente").jstree(true).get_top_selected().length > 0) {
+
+                var headers_selected = $("#jstree_variables_socio_fuente").jstree(true).get_top_selected().length;
+
+                for (i = 0; i < headers_selected; i++) {
+                    var node_temp = $("#jstree_variables_socio_fuente").jstree(true).get_node($("#jstree_variables_socio_fuente").jstree(true).get_top_selected()[i]).original;
+
+                    _VERBOSE ? console.log(node_temp) : _VERBOSE;
+
+                    self.arrayBioclimSelected.push({label: node_temp.text, id: node_temp.attr.bid, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
+                }
 
             }
 

@@ -1153,6 +1153,9 @@ var module_nicho = (function () {
         $("#btn_tuto_steps_result").css('visibility', 'visible');
 
         // _cleanTutorialButtons();
+        console.log("*********")
+        console.log(_taxones)
+        console.log("*********")
 
         
         if (_taxones.length === 0) {
@@ -1271,7 +1274,7 @@ var module_nicho = (function () {
 
             var chkFecha = $("#chkFecha").is(':checked');
 
-//            slider_value = val_process ? $("#sliderValidation").slider("value") : 0;
+            //slider_value = val_process ? $("#sliderValidation").slider("value") : 0;
             var slider_value = val_process ? true : false;
 
 

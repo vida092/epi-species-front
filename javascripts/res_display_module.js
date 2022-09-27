@@ -613,6 +613,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
         _VERBOSE ? console.log("callDisplayProcess NICHO") : _VERBOSE;
 
+        
+
         despliegaLoadings();
 
         var taxon_values = [];
@@ -1137,11 +1139,19 @@ var res_display_module = (function (verbose, url_zacatuche) {
         var  verbo = _val_process_temp ? "countsTaxonsGroupTimeValidation" : "countsTaxonsGroup"        
 
         // cambiando peticiones ajax por promesas y fetch api
-        fetch(_url_zacatuche + "/niche/" + verbo, {
-            method: "POST",
+        
+        // fetch(_url_zacatuche + "/niche/" + verbo, {
+        //     method: "POST",
+        //     body: JSON.stringify(data_request),
+        //     headers: {
+        //         "Content-Type": "application/json"
+        //     }
+        // })
+        fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
+            method:"POST",
             body: JSON.stringify(data_request),
-            headers: {
-                "Content-Type": "application/json"
+            headers:{
+               "Content-Type": "aplication/json" 
             }
         })
         .then(resp => resp.json())
@@ -1298,13 +1308,19 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                     verbo = _val_process_temp ? "countsTaxonsGroupTimeValidation" : "countsTaxonsGroup"        
 
-                    fetch(_url_zacatuche + "/niche/" + verbo, {
-                        method: "POST",
-                        body: JSON.stringify(total_request),
-                        headers: {
-                            "Content-Type": "application/json"
-                        }
-                    })
+                    // fetch(_url_zacatuche + "/niche/" + verbo, {
+                    //     method: "POST",
+                    //     body: JSON.stringify(total_request),
+                    //     headers: {
+                    //         "Content-Type": "application/json"
+                    //     }
+                        fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
+                            method:"POST",
+                            body: JSON.stringify(data_request),
+                            headers:{
+                               "Content-Type": "aplication/json" 
+                            }
+                        })                  
                     .then(resp => resp.json())
                     .then(resp => {
 
