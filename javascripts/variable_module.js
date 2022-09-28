@@ -108,7 +108,7 @@ var variable_module = (function (verbose, url_zacatuche) {
         // se comentan variables topograficas por expansión de terreno
 
         //var tags = abio_tab ? ['a_taxon', 'a_raster', 'a_raster2', 'a_socio'] : ['a_taxon'];
-        var tags = ['a_taxon', 'a_raster', 'a_raster2', 'a_socio'];
+        var tags = ['a_taxon', 'a_raster', '', 'a_socio'];
 
 
         var sp_items = [ 'a_item_clase', 'a_item_orden', 'a_item_familia', 'a_item_genero','a_item_especie'];
@@ -272,7 +272,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                 var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){reino phylum clase orden familia genero nombrecientifico}}"
 
-                console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                
                 console.log(query)
                 
 
@@ -283,9 +283,9 @@ var variable_module = (function (verbose, url_zacatuche) {
                     data: JSON.stringify({query: query}),
                     success: function(resp){
                         
-                        console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                        
                         console.log(resp)
-                                                console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ') 
+                        
 
                         if (agent_selected == 'Hospederos'){
                             var species = resp.data.occurrences_by_taxon_hospederos;                                            
@@ -481,63 +481,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             console.log("REGION_SELECTED: " + _REGION_SELECTED);
             console.log("_GRID_RES: " + _GRID_RES);
-            var query = "query{  all_worldclim_covariables(limit: 1000, filter: \"\"){id label interval layer icat}}"
-            $.ajax({
-                url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
-                method: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({query: query}),
-                success: function(data){
-                    var awc = data.data.all_worldclim_covariables
-                    //console.log(awc)
-                    data = [{ "id" : "WorlClim", "parent" : "#", "text" : "WorldClim","icon": "plugins/jstree/images/world.png", 'state': {'opened': false},'attr': {'nivel': 1, "type": 0} },
-                            { "id" : "Alt1", "parent" : "#", "text" : "Alt2", "icon": "plugins/jstree/images/world.png", 'state': {'opened': false},'attr': {'nivel': 1, "type": 0} }]
-                    var intervals=[]
-                    awc.forEach(element => {
-                      if(!intervals.includes(element.interval)){
-                        intervals.push(element.interval)
-                      }        
-                    });
-                    //console.log(intervals)
-                    var labels=[]
-                    awc.forEach(element=>{
-                      if(!labels.includes(element.label)){
-                        labels.push(element.label)            
-                      }
-                    })
-                    labels.forEach(element=>{
-                      data.push({"id": element, "parent":"WorlClim", "text":element,'state': {'opened': false}, "icon": "plugins/jstree/images/clima.png",
-                                                     'attr': {'nivel': 2, "type": 0}})
-                    })
-
-                    awc.forEach(element=>{
-                      labels.forEach(label=>{
-                        if(intervals.includes(element.interval) && element.label===label){
-                          data.push({"id":element.interval, "parent":element.label, "text":element.interval, 'state': {'opened': false}, "icon": "plugins/jstree/images/termometro.png",
-                                                     'attr': {'nivel': 3, "type": 0}})
-                        }
-                      })
-                    })
-                    
-                    $('#jtreeVariableBioclim_fuente').jstree("destroy").empty();
-                    $('#treeVariableBioclim_fuente').jstree({
-                        'plugins': ["wholerow", "checkbox"],
-                        'core': {
-                            'data': data,
-                            'themes': {
-                                'name': 'proton',
-                                'responsive': true
-                            },
-                            'check_callback': true
-                        }
-                      });
-                    $(function () { $('#treeVariableBioclim_fuente').jstree(); });
-                    $("#treeVariableBioclim_fuente").on('changed.jstree', self.getChangeTreeVarRaster);
-                    $('#treeVariableBioclim_fuente').on('open_node.jstree', self.getTreeVarRaster);
-
-                }
-
-            })
+            
 
         }
 
@@ -1086,7 +1030,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                                     data_cov.push({ "id" : specie.ordenvalido, "parent" : "#", "text" : specie.ordenvalido, 'state': {'opened': true,  'selected': false},"icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 5, "type": 0}})
                                                 }
                                             })
-                                            console.log("************ ordenes ************")
+                                            
                                             console.log(ordenes)
 
                                             var ordenes_obj = {}
@@ -1332,9 +1276,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                                                     data_cov.push(data_cov.push({ "id" : specie.especievalida , "parent" :"raiz", "text" : specie.especievalida, 'state': {'opened': false},  "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 8, "type": 0}}))                                                                                                   
                                                 }
                                             })
-                                            console.log(data_cov)
-                                            console.log("**********arbol**********")
-                                            console.log("jstree_variables_species_fuente")
+                                            // console.log(data_cov)
+                                            // console.log("jstree_variables_species_fuente")
                                             $('#jstree_variables_species_' + id).jstree("destroy").empty();
                                             $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
                                             $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
@@ -1559,7 +1502,66 @@ var variable_module = (function (verbose, url_zacatuche) {
                 var tree = $('<div/>')
                         .attr('id', "jstree_variables_bioclim_" + id)
                         .appendTo(div_tree);
+                
+                        
+                        var query = "query{all_worldclim_covariables(limit: 1000, filter: \"\"){id label interval layer icat}}"
+                        $.ajax({
+                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({query: query}),
+                            success: function(data){
+                                var awc = data.data.all_worldclim_covariables
+                                //console.log(awc)
+                                data = [{ "id" : "WorlClim", "parent" : "#", "text" : "WorldClim","icon": "plugins/jstree/images/world.png", 'state': {'opened': false},'attr': {'nivel': 1, "type": 0} }]
+                                var intervals=[]
+                                awc.forEach(element => {
+                                  if(!intervals.includes(element.interval)){
+                                    intervals.push(element.interval)
+                                  }        
+                                });
+                                //console.log(intervals)
+                                var labels=[]
+                                awc.forEach(element=>{
+                                  if(!labels.includes(element.label)){
+                                    labels.push(element.label)            
+                                  }
+                                })
+                                labels.forEach(element=>{
+                                  data.push({"id": element, "parent":"WorlClim", "text":element,'state': {'opened': false}, "icon": "plugins/jstree/images/clima.png",
+                                                                 'attr': {'nivel': 2, "type": 0}})
+                                })
+            
+                                awc.forEach(element=>{
+                                  labels.forEach(label=>{
+                                    if(intervals.includes(element.interval) && element.label===label){
+                                      data.push({"id":element.interval, "parent":element.label, "text":element.interval, 'state': {'opened': false}, "icon": "plugins/jstree/images/termometro.png",
+                                                                 'attr': {'nivel': 3, "type": 0}})
+                                    }
+                                  })
+                                })
+                                
+                                $('#jtreeVariableBioclim_fuente').jstree("destroy").empty();
+                                $('#treeVariableBioclim_fuente').jstree({
+                                    'plugins': ["wholerow", "checkbox"],
+                                    'core': {
+                                        'data': data,
+                                        'themes': {
+                                            'name': 'proton',
+                                            'responsive': true
+                                        },
+                                        'check_callback': true
+                                    }
+                                  });
 
+                                
+                                $(function () { $('#treeVariableBioclim_fuente').jstree(); });
+                                $("#treeVariableBioclim_fuente").on('changed.jstree', self.getChangeTreeVarRaster);
+                                $('#treeVariableBioclim_fuente').on('open_node.jstree', self.getTreeVarRaster);
+            
+                            }
+            
+                        })
 
 
 
@@ -1795,7 +1797,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             let query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ varfield.toLowerCase().replace(/é/gi,"e") +' = \'' + self.value_vartree +'\' "){'+ field_r.replace(/é/gi,"e") +'}}'
             console.log(query)
-            console.log("*****------*******-------***")
+            
 
             $.ajax({
                 method: "POST",

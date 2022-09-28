@@ -1,4 +1,3 @@
-
 /**
  * Módulo mapa, utilizado para crear y gestionar el mapa en nicho ecológico y comunidad ecológica.
  *
@@ -2943,12 +2942,12 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
             // console.log(scales['deviation'](20))
             // console.log(scales['deviation'](80))
 
-            $.each(json, function (index, d) {
+            // $.each(json, function (index, d) {
 
                 grid_color.set(parseInt(d.gridid), {color: scales[map_type](rateById[d.gridid]), score: d.tscore});
-                // grid_color.set(parseInt(d.gridid), {color: scales['deviation'](rateById[d.gridid]), score: d.tscore});
+                grid_color.set(parseInt(d.gridid), {color: scales['deviation'](rateById[d.gridid]), score: d.tscore});
 
-            })
+            // })
 
             
 

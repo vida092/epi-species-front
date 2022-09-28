@@ -1500,7 +1500,7 @@ var net_module = (function(verbose, url_zacatuche, map_module_net, utils_module)
 
         $.ajax({
             // url: _url_zacatuche + "/niche/especie/getCountGridid",
-            url: _url_zacatuche + "/niche/especie/getGroupCountGridid",
+            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
             type: 'post',
             data: sdata,
             success: function(resp) {

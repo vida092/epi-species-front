@@ -578,7 +578,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
         _REQUESTS = num_items + _subgroups.length;
         _ITER_REQUESTS = _REQUESTS;
-//        _VERBOSE ? console.log("Peticiones al servidor: " + _REQUESTS) : _VERBOSE;
+        _VERBOSE ? console.log("Peticiones al servidor: " + _REQUESTS) : _VERBOSE;
 
 //        document.getElementById("tbl_hist").style.display = "inline";
         _cleanPanel();
@@ -1314,12 +1314,12 @@ var res_display_module = (function (verbose, url_zacatuche) {
                     //     headers: {
                     //         "Content-Type": "application/json"
                     //     }
-                        fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
-                            method:"POST",
-                            body: JSON.stringify(data_request),
-                            headers:{
-                               "Content-Type": "aplication/json" 
-                            }
+                    fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
+                        method:"POST",
+                        body: JSON.stringify(data_request),
+                        headers:{
+                            "Content-Type": "aplication/json" 
+                        }
                         })                  
                     .then(resp => resp.json())
                     .then(resp => {
