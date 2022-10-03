@@ -417,13 +417,13 @@ var variable_module = (function (verbose, url_zacatuche) {
                             }
                         });
                         
-                        console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                        
                         console.log(Object.keys(arbol['Animalia']))
-                        console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                        
 
                         Object.keys(arbol["Animalia"]).forEach(phylum=>{
 
-                            console.log(' =>>>>>>>>>>>>>>>>>>>>>>>>> ')
+                            
                             console.log(phylum)
                             
                             Object.keys(arbol["Animalia"][phylum]).forEach(clase=>{
@@ -485,154 +485,154 @@ var variable_module = (function (verbose, url_zacatuche) {
 
         }
 
-        self.getTreeVarRaster = function (e, d) {
+        // self.getTreeVarRaster = function (e, d) {
 
-            //evita la petición cuando no se requieren las variables climáticas
-            if(!abio_tab) return;
+        //     //evita la petición cuando no se requieren las variables climáticas
+        //     if(!abio_tab) return;
 
-            _VERBOSE ? console.log("self.getTreeVarRaster") : _VERBOSE;
-            _VERBOSE ? console.log(d) : _VERBOSE;
-            _VERBOSE ? console.log(d.node) : _VERBOSE;
+        //     _VERBOSE ? console.log("self.getTreeVarRaster") : _VERBOSE;
+        //     _VERBOSE ? console.log(d) : _VERBOSE;
+        //     _VERBOSE ? console.log(d.node) : _VERBOSE;
 
-//            _VERBOSE ? console.log("length: " + d.node.children.length) : _VERBOSE;
-//            _VERBOSE ? console.log("indexOf: " + d.node.children[0].indexOf("bio") === 0) : _VERBOSE;
+        //     _VERBOSE ? console.log("length: " + d.node.children.length) : _VERBOSE;
+        //     _VERBOSE ? console.log("indexOf: " + d.node.children[0].indexOf("bio") === 0) : _VERBOSE;
 
-            if (d.node.children.length > 1 || d.node.children[0].indexOf("bio") === 0)
-                return;
+        //     if (d.node.children.length > 1 || d.node.children[0].indexOf("bio") === 0)
+        //         return;
 
-            console.log(d.node.original.attr);
+        //     console.log(d.node.original.attr);
 
-            var level_vartree = d.node.original.attr.level;
-            var raster_type = d.node.original.attr.type;
-            var current_id = d.node.original.attr.bid;
-            var parent_name = d.node.original.attr.parent;
+        //     var level_vartree = d.node.original.attr.level;
+        //     var raster_type = d.node.original.attr.type;
+        //     var current_id = d.node.original.attr.bid;
+        //     var parent_name = d.node.original.attr.parent;
 
-            console.log("current_id 0: " + current_id);
+        //     console.log("current_id 0: " + current_id);
 
-            var max_level = 3;
+        //     var max_level = 3;
 
-            $("#jstree_variables_bioclim_" + id).jstree(true).set_icon(d.node.id, "./plugins/jstree/images/dna.png");
-            _REGION_SELECTED = ($("#footprint_region_select").val() !== null && $("#footprint_region_select").val() !== undefined) ? parseInt($("#footprint_region_select").val()) : _REGION_SELECTED;
-            _GRID_RES = $("#grid_resolution").val();
+        //     $("#jstree_variables_bioclim_" + id).jstree(true).set_icon(d.node.id, "./plugins/jstree/images/dna.png");
+        //     _REGION_SELECTED = ($("#footprint_region_select").val() !== null && $("#footprint_region_select").val() !== undefined) ? parseInt($("#footprint_region_select").val()) : _REGION_SELECTED;
+        //     _GRID_RES = $("#grid_resolution").val();
 
-            console.log("REGION_SELECTED: " + _REGION_SELECTED);
-            console.log("_GRID_RES: " + _GRID_RES);
-
-
-           current_id = current_id.replace(/#/g,'').replace(/\(/g,'').replace(/\)/g,'')
-           console.log("current_id: " + current_id);
-           // console.log("id: " + id);
+        //     console.log("REGION_SELECTED: " + _REGION_SELECTED);
+        //     console.log("_GRID_RES: " + _GRID_RES);
 
 
-//            console.log("level_vartree: " + level_vartree);
-//            console.log("raster_type: " + raster_type);
-//            console.log("parent_name: " + parent_name);
-//            console.log("REGION_SELECTED: " + _REGION_SELECTED);
-
-            $.ajax({
-                url: _url_zacatuche + "/niche/especie/getRasterVariables",
-                dataType: "json",
-                type: "post",
-                data: {
-                    "level": level_vartree,
-                    "field": current_id,
-                    "type": raster_type,
-                    "region": _REGION_SELECTED,
-                    "grid_res": _GRID_RES
-                },
-                success: function (resp) {
-
-                    var data = resp.data;
-
-                    console.log(data)
-
-                    console.log($("#" + current_id));
-
-                    var current_node = $('#jstree_variables_bioclim_' + id).jstree(true).get_node($("#" + current_id));
-                    _VERBOSE ? console.log(current_node) : _VERBOSE;
-
-                    level_vartree = level_vartree + 1;
-
-                    for (var i = 0; i < data.length; i++) {
-
-//                        console.log(data[i]);
-
-                        var default_son = level_vartree < max_level ? [{text: "cargando..."}] : [];
-
-                        var tag = "", min = "", max = "";
-		                var ttext = "";
-                        var newNode = {};
-
-                        if (level_vartree > 2) {
-
-                            // console.log(data[i])
-
-                            tag = String(data[i].tag).split(":")
-                            min = (parseFloat(tag[0]) * data[i].coeficiente).toFixed(3) + " " + data[i].unidad
-                            max = (parseFloat(tag[1]) * data[i].coeficiente).toFixed(3) + " " + data[i].unidad
-
-                            var idNode = "";
-                            if ($("#" + data[i].bid).length > 0) {
-                                idNode = data[i].bid + "_" + Math.floor((Math.random() * 1000) + 1)
-                            } else {
-                                idNode = data[i].bid;
-                            }
-
-			            if(String(data[i].tag).split(":").length > 1){
-                                ttext = min + " : " + max;
-                            }else{
-                                ttext = data[i].tag;
-                            }
-
-                            newNode = {
-                                id: idNode,
-                                text: ttext,
-                                icon: "plugins/jstree/images/dna.png",
-                                attr: {"bid": data[i].bid, "parent": data[i].layer, "level": level_vartree, "type": data[i].type},
-                                state: {'opened': false},
-                                "children": default_son
-                            };
-
-                        }
-                        else {
-
-                            console.log(data[i].label)
-                            // eliminacaraacteres especiales y espacios en blanco
-                            var lb = data[i].label.replace(/[^a-zA-Z0-9]/g, "").replace(/ /g,'').replace(/#/g,'')
+        //    current_id = current_id.replace(/#/g,'').replace(/\(/g,'').replace(/\)/g,'')
+        //    console.log("current_id: " + current_id);
+        //    // console.log("id: " + id);
 
 
-                            // console.log(_iTrans.prop(lb))
+        //     console.log("level_vartree: " + level_vartree);
+        //     console.log("raster_type: " + raster_type);
+        //     console.log("parent_name: " + parent_name);
+        //     console.log("REGION_SELECTED: " + _REGION_SELECTED);
 
-                            newNode = {
-                                id: (data[i].layer).replace(" ", ""),
-                                // text: raster_type !== 0  ? _iTrans.prop("a_item_" + data[i].layer) : data[i].label,
-                                text: raster_type !== 0  ? _iTrans.prop(lb) : data[i].label,
-                                icon: "plugins/jstree/images/dna.png",
-                                attr: {"bid": data[i].layer, "parent": data[i].fuente, "level": level_vartree, "type": data[i].type},
-                                state: {'opened': false},
-                                "children": default_son
-                            };
+        //     $.ajax({
+        //         url: _url_zacatuche + "/niche/especie/getRasterVariables",
+        //         dataType: "json",
+        //         type: "post",
+        //         data: {
+        //             "level": level_vartree,
+        //             "field": current_id,
+        //             "type": raster_type,
+        //             "region": _REGION_SELECTED,
+        //             "grid_res": _GRID_RES
+        //         },
+        //         success: function (resp) {
+
+        //             var data = resp.data;
+
+        //             console.log(data)
+
+        //             console.log($("#" + current_id));
+
+        //             var current_node = $('#jstree_variables_bioclim_' + id).jstree(true).get_node($("#" + current_id));
+        //             _VERBOSE ? console.log(current_node) : _VERBOSE;
+
+        //             level_vartree = level_vartree + 1;
+
+        //             for (var i = 0; i < data.length; i++) {
+
+        //                 console.log(data[i]);
+
+        //                 var default_son = level_vartree < max_level ? [{text: "cargando..."}] : [];
+
+        //                 var tag = "", min = "", max = "";
+		//                 var ttext = "";
+        //                 var newNode = {};
+
+        //                 if (level_vartree > 2) {
+
+        //                     // console.log(data[i])
+
+        //                     tag = String(data[i].tag).split(":")
+        //                     min = (parseFloat(tag[0]) * data[i].coeficiente).toFixed(3) + " " + data[i].unidad
+        //                     max = (parseFloat(tag[1]) * data[i].coeficiente).toFixed(3) + " " + data[i].unidad
+
+        //                     var idNode = "";
+        //                     if ($("#" + data[i].bid).length > 0) {
+        //                         idNode = data[i].bid + "_" + Math.floor((Math.random() * 1000) + 1)
+        //                     } else {
+        //                         idNode = data[i].bid;
+        //                     }
+
+		// 	            if(String(data[i].tag).split(":").length > 1){
+        //                         ttext = min + " : " + max;
+        //                     }else{
+        //                         ttext = data[i].tag;
+        //                     }
+
+        //                     newNode = {
+        //                         id: idNode,
+        //                         text: ttext,
+        //                         icon: "plugins/jstree/images/dna.png",
+        //                         attr: {"bid": data[i].bid, "parent": data[i].layer, "level": level_vartree, "type": data[i].type},
+        //                         state: {'opened': false},
+        //                         "children": default_son
+        //                     };
+
+        //                 }
+        //                 else {
+
+        //                     console.log(data[i].label)
+        //                     // eliminacaraacteres especiales y espacios en blanco
+        //                     var lb = data[i].label.replace(/[^a-zA-Z0-9]/g, "").replace(/ /g,'').replace(/#/g,'')
+
+
+        //                     // console.log(_iTrans.prop(lb))
+
+        //                     newNode = {
+        //                         id: (data[i].layer).replace(" ", ""),
+        //                         // text: raster_type !== 0  ? _iTrans.prop("a_item_" + data[i].layer) : data[i].label,
+        //                         text: raster_type !== 0  ? _iTrans.prop(lb) : data[i].label,
+        //                         icon: "plugins/jstree/images/dna.png",
+        //                         attr: {"bid": data[i].layer, "parent": data[i].fuente, "level": level_vartree, "type": data[i].type},
+        //                         state: {'opened': false},
+        //                         "children": default_son
+        //                     };
 
 
 
-                        }
+        //                 }
 
 
-                        $('#jstree_variables_bioclim_' + id).jstree("create_node", current_node, newNode, 'last', false, false);
+        //                 $('#jstree_variables_bioclim_' + id).jstree("create_node", current_node, newNode, 'last', false, false);
 
 
-                    }
+        //             }
 
 
-                    $("#jstree_variables_bioclim_" + id).jstree(true).delete_node(d.node.children[0]);
-                    $("#jstree_variables_bioclim_" + id).jstree(true).set_icon(current_node.id, "./plugins/jstree/images/dna.png");
+        //             $("#jstree_variables_bioclim_" + id).jstree(true).delete_node(d.node.children[0]);
+        //             $("#jstree_variables_bioclim_" + id).jstree(true).set_icon(current_node.id, "./plugins/jstree/images/dna.png");
 
-                }
+        //         }
 
-            });
+        //     });
 
 
-        }
+        // }
 
 
         /****************************************************************************************** GENERACION DE PANEL */
@@ -722,8 +722,6 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .addClass('tab-pane active')
                         .appendTo(tab_content);
                 //div id="tab_content_fuente" & class="tab-content"
-                
-                
 
                 // div que contiene el dropdown-button de tipos taxonomicos y textfiled para insertar valores
                 if (id === "fuente"){
@@ -763,8 +761,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                     
 
                     // establece el nivel taxonomico inicial del buscador. Donde 0 es reino.
-                    if(start_level > i)
-                        return true;
+                    // if(start_level > i)
+                    //     return true;
 
 
                     var li = $('<li/>')
@@ -1541,7 +1539,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                   })
                                 })
                                 
-                                $('#jtreeVariableBioclim_fuente').jstree("destroy").empty();
+                                $('#jtreeVariableBioclim_' + id).jstree("destroy").empty();
                                 $('#treeVariableBioclim_fuente').jstree({
                                     'plugins': ["wholerow", "checkbox"],
                                     'core': {
@@ -1555,9 +1553,9 @@ var variable_module = (function (verbose, url_zacatuche) {
                                   });
 
                                 
-                                $(function () { $('#treeVariableBioclim_fuente').jstree(); });
-                                $("#treeVariableBioclim_fuente").on('changed.jstree', self.getChangeTreeVarRaster);
-                                $('#treeVariableBioclim_fuente').on('open_node.jstree', self.getTreeVarRaster);
+                                $(function () { $('#treeVariableBioclim_' + id).jstree(); });
+                                $("#treeVariableBioclim_" + id).on('changed.jstree', self.getChangeTreeVarRaster);
+                                //$('#treeVariableBioclim_' + id).on('open_node.jstree', self.getTreeVarRaster);
             
                             }
             
@@ -1712,8 +1710,9 @@ var variable_module = (function (verbose, url_zacatuche) {
                                     }
                                   });
                                 $(function () { $('#jstree_variables_socio_fuente').jstree(); });
-                                $("#jstree_variables_socio_fuente").on('changed.jstree', self.getChangeTreeVarRaster);
-                                $('#jstree_variables_socio_fuente').on('open_node.jstree', self.getTreeVarRaster);
+                                $("#jstree_variables_socio_fuente").on('changed.jstree', self.getChangeTreeVarSocio);
+                                //$('#jstree_variables_socio_fuente').on('open_node.jstree', self.getTreeVarRaster);
+                                
                                 
                             }
                         })
@@ -1722,9 +1721,11 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .attr('type', 'button')
                         .addClass('btn btn-primary glyphicon glyphicon-plus pull-left')
                         .click(function (e) {
-                            
+                            console.log("self.arrayBioclimSelected antes de addOtherGroup //////////////")
+                            console.log(self.arrayBioclimSelected)
                             self.addOtherGroup("jstree_variables_socio_" + id, self.arrayBioclimSelected, 'Socio', 'treeAddedPanel_' + id, _TYPE_ABIO);
                             e.preventDefault();
+                            console.log("self.arrayBioclimSelected DESPUES de addOtherGroup *****************")
                             console.log(self.arrayBioclimSelected)
                         })
                         .appendTo(tab_pane);
@@ -1759,6 +1760,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             // se incrementa level para  asignar el nivel adecuado a los hijos de la raiz
             // la funcion es llamda dos veces, por tantro se decidio utilizar el arreglo + 1, en lugar de utilzar la variable global "level_vartree"
+            console.log(self.varfilter_selected)
             self.level_vartree = parseInt(self.varfilter_selected[2]) + 1;
            _VERBOSE ? console.log("level_vartree: " + self.level_vartree) : _VERBOSE;
 
@@ -1917,6 +1919,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             _VERBOSE ? console.log(d.node.original.attr.nivel) : _VERBOSE;
             _VERBOSE ? console.log(d.node.children) : _VERBOSE;
+            console.log("esto es d"+d)
 
             if (d.node.children.length > 1){
                 console.log("No se encontraron datos debajo de este nivel")
@@ -1985,6 +1988,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             var _url="https://covid19.c3.unam.mx/gateway/api/nodes/"
 
             let nodo = _AGENT_SELECTED.toLowerCase()
+            let _DISEASE_SELECTED = $("#disease_selected option:selected").text();
 
 
             let query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ parent_field.toLowerCase() +' = \'' + label_value +'\' "){'+ next_field +'}}'
@@ -2174,7 +2178,15 @@ var variable_module = (function (verbose, url_zacatuche) {
                 }
                 
 
-            }else if ($("#jstree_variables_socio_fuente").jstree(true).get_top_selected().length > 0) {
+            }
+
+        };
+
+        
+        self.getChangeTreeVarSocio =  function(e, data){
+            _VERBOSE ? console.log("self.getChangeTreeVarSocio") : _VERBOSE;
+            self.arrayBioclimSelected = [];
+            if ($("#jstree_variables_socio_fuente").jstree(true).get_top_selected().length > 0) {
 
                 var headers_selected = $("#jstree_variables_socio_fuente").jstree(true).get_top_selected().length;
 
@@ -2184,11 +2196,12 @@ var variable_module = (function (verbose, url_zacatuche) {
                     _VERBOSE ? console.log(node_temp) : _VERBOSE;
 
                     self.arrayBioclimSelected.push({label: node_temp.text, id: node_temp.attr.bid, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
+                    console.log(self.arrayBioclimSelected)
                 }
 
             }
 
-        };
+        }
 
 
 
@@ -2366,11 +2379,12 @@ var variable_module = (function (verbose, url_zacatuche) {
             _VERBOSE ? console.log("self.addOtherGroup") : _VERBOSE;
 
            console.log("***** addOtherGroup variables *****")
+           
            console.log(idTree);
            console.log(arraySelected);
            console.log(gpoName)
            console.log(idDivContainer)
-           console.log(typeVar)
+           console.log("typeVar es "+typeVar)
             const iterator = arraySelected.values();
 
             for (const value of iterator) {
