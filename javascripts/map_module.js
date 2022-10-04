@@ -691,8 +691,6 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
         _REGION_SELECTED = region_selected;
 
-
-
         let query = 'query{get_mesh(grid_res: "' + _grid_res + '"){cve simplified_geom}}'
         console.log(query)
        
@@ -709,7 +707,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
                      let obj = data["get_mesh"]
 
                      let json = {type: 'FeatureCollection',crs: {}, features: []}
-                 console.log(obj)
+                 //console.log(obj)
 
 
                  for (let i = 0; i < obj.length; i++)
@@ -2100,7 +2098,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
      function busca_especie_grupo(taxones, region = 1, val_process = false, grid_res = "state", fuente = "nicho", disease, agent) {
 
-            _VERBOSE ? console.log("busca_especie_grupo") : _VERBOSE;
+        _VERBOSE ? console.log("busca_especie_grupo") : _VERBOSE;
 
         console.log("_grid_map_occ: " + _grid_map_occ)
         console.log("_grid_res: " + _grid_res)
@@ -2109,8 +2107,8 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         console.log("region: " + region)
         _DISEASE_SELECTED = disease;
         _AGENT_SELECTED = agent;
-        console.log("_DISEASE_SELECTED" + disease)
-        console.log("_AGENT_SELECTED" + _AGENT_SELECTED)
+        console.log("_DISEASE_SELECTED: " + disease)
+        console.log("_AGENT_SELECTED: " + _AGENT_SELECTED)
 
         _taxones = taxones
 
@@ -2225,6 +2223,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
         let fecha_ini = document.getElementById("yearPicker_start").value.trim()
         let fecha_fin = document.getElementById("yearPicker_end").value.trim()
+    
         
 
         if ( fecha_ini.length < 3)
@@ -2245,7 +2244,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
                 let data2 = resp.data["occurrences_by_taxon_" + nodo]
                 //let data = resp["data"];
                 //let obj = data["get_mesh"]
-                console.log(data2)
+                //console.log(data2)
                 let gridid = {gridid: []}
                 for (let i = 0; i < data2.length; i++) {
                     let mesh = "gridid_" + _grid_res
@@ -2311,7 +2310,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
                     num_occ += parseInt(item["occ"])
                 })
 
-                console.log(_data_sp_occ)
+                //console.log(_data_sp_occ)
                 console.log("num_cell_occ: " + num_cell_occ)
                 console.log("num_occ: " + num_occ)
 

@@ -297,7 +297,7 @@ var module_nicho = (function () {
 
         $("#grid_resolution").change(function (e) {
 
-            _VERBOSE ? console.log("Cambia grid resolución") : _VERBOSE;
+            _VERBOSE ? console.log("Cambia grid resolución a" + $("#grid_resolution").val() ) : _VERBOSE;
             // No es necesario regenerar resultados
             _regenMessage();
 
