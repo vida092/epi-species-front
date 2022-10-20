@@ -2920,32 +2920,25 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
                 .domain(arr_range_deviations)
                 .range(colors);
 
-
-            // scales.quantize = d3.scale.quantize()
-            //     .domain([min_scr, max_scr])
-            //     .range(colors);
-
             scales.jenks = d3.scale.threshold()
                 .domain(breaks)
                 .range(colors);
 
-            // console.log(colors)
-            // console.log(rateById)
-            // console.log(scales['jenks9'])
-            // console.log(rateById[8526])
-            // console.log(scales['jenks'](rateById[8526]))
-            // console.log(scales['deviation'](-45))
-            // console.log(scales['deviation'](0))
-            // console.log(scales['deviation'](3))
-            // console.log(scales['deviation'](20))
-            // console.log(scales['deviation'](80))
-
-            //$.each(json, function (_index, d) {
-
+            
+            var no_cells = 0
+            console.log("<=========================PEDROVIC===========================>3")
+            map_type = 'range'
+            console.log(scales)
+            console.log(map_type)
+            console.log(">=========================PEDROVIC===========================<3")
+            $.each(json, function (_index, d) {
+                //console.log("<=========================PEDROVIC===========================>4")
+                //no_cells += 1
+                //console.log(d, no_cells)
+                //console.log(">=========================PEDROVIC===========================<4")
                 grid_color.set(parseInt(d.gridid), {color: scales[map_type](rateById[d.gridid]), score: d.tscore});
                 //grid_color.set(parseInt(d.gridid), {color: scales['deviation'](rateById[d.gridid]), score: d.tscore});
-
-             //})
+            })
 
             
 

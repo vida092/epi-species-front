@@ -1178,26 +1178,21 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
         var data_request = jQuery.extend(true, {}, decildata);
 
-        console.log(data_request)
         data_request["decil_selected"] = [_default_decil]
-
+        console.log("<=========================PEDROVIC===========================>1")
+        console.log(data_request)
+        console.log(">=========================PEDROVIC===========================<1")
 
         // decildata["with_data_freq"] = false;
         // decildata["with_data_score_cell"] = true;
         // decildata["with_data_freq_cell"] = false;
         // decildata["with_data_score_decil"] = false;
 
+        ///tal vez quitar
         var  verbo = _val_process_temp ? "countsTaxonsGroupTimeValidation" : "countsTaxonsGroup"        
 
-        // cambiando peticiones ajax por promesas y fetch api
         
-        // fetch(_url_zacatuche + "/niche/" + verbo, {
-        //     method: "POST",
-        //     body: JSON.stringify(data_request),
-        //     headers: {
-        //         "Content-Type": "application/json"
-        //     }
-        // })
+        // Si se esta haciendo bien la peticion al servidor de epi-puma 2.0
         fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
             method:"POST",
             body: JSON.stringify(data_request),
@@ -1208,7 +1203,9 @@ var res_display_module = (function (verbose, url_zacatuche) {
         .then(resp => resp.json())
         .then(respuesta => {
 
+            console.log("<=========================PEDROVIC===========================>2")
             console.log(respuesta)
+            console.log(">=========================PEDROVIC===========================<2")
 
             if(!respuesta.ok){
                 // TODO: mandar mensaje de error
@@ -1217,11 +1214,12 @@ var res_display_module = (function (verbose, url_zacatuche) {
                 return
             }
 
+            ///talvez modificar
             _REQUESTS_NUMBER = _REQUESTS_NUMBER - 1;
 
             // PROCESANDO PETICIONES INDIVIDUALES
             var data_response = jQuery.extend(true, [], respuesta.data);
-            var validation_data = _val_process_temp ? respuesta.time_validation  : respuesta.validation_data
+            var validation_data = respuesta.validation_data
 
             processSingleResponse(data_response, data_request, validation_data);
 
@@ -1359,12 +1357,6 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                     verbo = _val_process_temp ? "countsTaxonsGroupTimeValidation" : "countsTaxonsGroup"        
 
-                    // fetch(_url_zacatuche + "/niche/" + verbo, {
-                    //     method: "POST",
-                    //     body: JSON.stringify(total_request),
-                    //     headers: {
-                    //         "Content-Type": "application/json"
-                    //     }
                     fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
                         method:"POST",
                         body: JSON.stringify(data_request),
@@ -1381,7 +1373,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                             var total_counts = resp.data;
 
-                            var validation_data = _val_process_temp ? resp.time_validation  : resp.validation_data
+                            var validation_data = resp.validation_data
 
                             // var validation_data = resp.validation_data
 
@@ -1392,24 +1384,21 @@ var res_display_module = (function (verbose, url_zacatuche) {
                             var decil_cells = resp.decil_cells
 
                             // sobre escribe el resultado en caso de ser total
-                            cell_summary = resp.cell_summary
+                            //cell_summary = resp.cell_summary
                             
 
                             // console.log("total_counts: " + total_counts.length)
                             // console.log(decil_cells)
                             // console.log(percentage_avg)
+                            console.log("<=========================PEDROVIC===========================>8")
                             console.log(validation_data)
                             console.log(data_score_cell)
+                            console.log(">=========================PEDROVIC===========================<8")
                             // console.log(cell_summary)
 
-                            if(_val_process_temp){
-                                $("#div_munlist").show();
-                                processTableMun(cell_summary);    
-                            }
-                            else{
-                                $("#div_munlist").hide();
-                            }
-
+                            
+                            $("#div_munlist").hide();
+                            
 
                             var data_decil_byanalysis = {data: _utils_module.processDataForScoreDecil(data_score_cell), gpo_name: "Total", names: names_byanalysis, deciles: validation_data};
 
@@ -1439,18 +1428,13 @@ var res_display_module = (function (verbose, url_zacatuche) {
                     });
 
 
-                }
-                else{
-
+                } else{
+                    
+                    console.log("<=========================PEDROVIC===========================>7")
                     console.log(_RESULTS_TODISPLAY)
-
-                    if(_val_process_temp){
-                        $("#div_munlist").show();
-                        processTableMun(cell_summary);    
-                    }
-                    else{
-                        $("#div_munlist").hide();
-                    }
+                    console.log(">=========================PEDROVIC===========================<7")
+                    
+                    $("#div_munlist").hide();
 
                     _histogram_module_nicho.createMultipleBarChart(_RESULTS_TODISPLAY, [], _id_chartscr_decil, d3.map([]));
                 
