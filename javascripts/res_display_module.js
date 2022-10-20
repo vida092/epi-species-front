@@ -254,6 +254,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
      */
     function set_subGroups(subgroups) {
         _subgroups = subgroups;
+        console.log(subgroups)
     }
 
     /**
@@ -684,8 +685,37 @@ var res_display_module = (function (verbose, url_zacatuche) {
         _VERBOSE ? console.log("grid_res: " + _grid_res) : _VERBOSE;
         
 
+        // $.ajax({
+        //     url: _url_zacatuche + "/niche/especie/getGroupValidationTables",
+        //     type: 'post',
+        //     data: {
+        //         // spid: _spid,
+        //         target_taxons: taxones,
+        //         iter: _NUM_ITERATIONS,
+        //         grid_res: _grid_res,
+        //         footprint_region: _footprint_region
+        //     },
+        //     dataType: "json",
+        //     success: function (resp) {
+
+        //         console.log(resp)
+
+        //         _idtemptable = resp.data[0].tblname;
+        //         _VERBOSE ? console.log("Creación tabla: " + _idtemptable) : _VERBOSE;
+
+        //         // _confDataRequest(_spid, _idreg, val_process, _idtemptable);
+        //         _confDataRequest(taxones, _idreg, val_process, _idtemptable);
+        //         _panelGeneration(_idtemptable);
+        //         // _generateCounts(_countsdata);
+
+        //     },
+        //     error: function (jqXHR, textStatus, errorThrown) {
+        //         _VERBOSE ? console.log("error: " + textStatus) : _VERBOSE;
+
+        //     }
+        // });
         $.ajax({
-            url: _url_zacatuche + "/niche/especie/getGroupValidationTables",
+            url: "https://covid19.c3.unam.mx/gateway/api/analysis/cells/",
             type: 'post',
             data: {
                 // spid: _spid,
@@ -730,8 +760,29 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
         _VERBOSE ? console.log("_deleteValidationTables") : _VERBOSE;
 
+        // $.ajax({
+        //     url: _url_zacatuche + "/niche/especie/deleteValidationTables",
+        //     type: 'post',
+        //     data: {
+        //         idtable: _idtemptable
+        //     },
+        //     dataType: "json",
+        //     success: function (resp) {
+
+        //         console.log("delete");
+        //         console.log(resp);
+        //         _requestReturned = 1;
+        //         _idtemptable = "";
+
+        //     },
+        //     error: function (jqXHR, textStatus, errorThrown) {
+        //         _VERBOSE ? console.log("textStatus: " + textStatus) : _VERBOSE;
+        //         _VERBOSE ? console.log("errorThrown: " + errorThrown) : _VERBOSE;
+
+        //     }
+        // });
         $.ajax({
-            url: _url_zacatuche + "/niche/especie/deleteValidationTables",
+            url: "https://covid19.c3.unam.mx/gateway/api/analysis/cells/",
             type: 'post',
             data: {
                 idtable: _idtemptable
@@ -1459,13 +1510,20 @@ var res_display_module = (function (verbose, url_zacatuche) {
         console.log(map_result);
         console.log(data);
 
-        fetch(_url_zacatuche + "/niche/especie/getColumnsGrid", {
-                method: "POST",
-                body: JSON.stringify(data),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
+        // fetch(_url_zacatuche + "/niche/especie/getColumnsGrid", {
+        //         method: "POST",
+        //         body: JSON.stringify(data),
+        //         headers: {
+        //             "Content-Type": "application/json"
+        //         }
+        //     })
+        fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
+            method:"POST",
+            body: JSON.stringify(data),
+            headers:{
+                "Content-Type": "application/json"
+            }
+        })
             .then(resp => resp.json())
             .then(resp => { 
 

@@ -722,6 +722,7 @@ var module_nicho = (function () {
 //        _confLiveTutorial();
         _genLinkURL();
     }
+    
 
 
     function _regenMessage() {
@@ -1139,10 +1140,12 @@ var module_nicho = (function () {
         
 
     }
+    
+
 
 
     // se ejecutan los modulos necesarios para iniciar el proceso de obteción de epsilon y score y visualización de tablas, histogramas y mapa
-    $("#get_esc_ep").click(function () {
+    $("#get_esc_ep").click(function () {        
 
         _VERBOSE ? console.log("get_esc_ep") : _VERBOSE;
         var num_items = 0, spid, idreg, subgroups, sp_target;
@@ -1153,17 +1156,12 @@ var module_nicho = (function () {
         $("#btn_tuto_steps_result").css('visibility', 'visible');
 
         // _cleanTutorialButtons();
-        console.log("*********")
         console.log(_taxones)
-        console.log("*********")
-
-        
         if (_taxones.length === 0) {
             // no se ha seleccionado especie objetivo
             _module_toast.showToast_BottomCenter(_iTrans.prop('lb_error_especie'), "error");
             return;
         } 
-
         // spid = _map_module_nicho.get_specieTarget().spid;
         
         // _VERBOSE ? console.log(spid) : _VERBOSE;
@@ -1190,25 +1188,24 @@ var module_nicho = (function () {
         _res_display_module_nicho.set_subGroups(subgroups);
 
         _res_display_module_nicho.set_typeBioclim(type_time);
-
-
+        
         if (subgroups.length > 0) {
 
-            // // asegura que si el grupo de variables seleccionado tiene mas de un grupo taxonomico agregue el total
-            // subgroups.forEach(function (grupo) {
+            // asegura que si el grupo de variables seleccionado tiene mas de un grupo taxonomico agregue el total
+            subgroups.forEach(function (grupo) {
 
-            //     if (grupo.value.length > 1) {
-            //         grupo.value.forEach(function (item) {
-            //             num_items++;
-            //         });
-            //     }
+                if (grupo.value.length > 1) {
+                    grupo.value.forEach(function (item) {
+                        num_items++;
+                    });
+                }
 
-            // });
+            });
 
-            // // asegura que si existe mas de un grupo de variables, se calcule el total  de todos los grupos
-            // if (subgroups.length > 1) {
-            //     num_items++;
-            // }
+            // asegura que si existe mas de un grupo de variables, se calcule el total  de todos los grupos
+            if (subgroups.length > 1) {
+                num_items++;
+            }
 
         } else {
 
@@ -1247,7 +1244,7 @@ var module_nicho = (function () {
 
             console.log("grid_res: " + grid_res);
             console.log("footprint_region: " + footprint_region);
-            console.log("disease" + disease);
+            console.log("disease: " + disease);
             console.log("agent"+ agent);
 
             var fossil = $("#chkFosil").is(':checked');
@@ -1257,7 +1254,7 @@ var module_nicho = (function () {
 
             console.log("liminf: " + liminf)
             console.log("limsup: " + limsup)
-
+            
             var rango_fechas = []
             if (liminf == "" ||  limsup == "") {
                 rango_fechas = undefined;
@@ -1271,12 +1268,23 @@ var module_nicho = (function () {
             // if (rango_fechas[0] == $("#sliderFecha").slider("option", "min") && rango_fechas[1] == $("#sliderFecha").slider("option", "max")) {
             //     rango_fechas = undefined;
             // }
-
+            console.log( subgroups) 
             var chkFecha = $("#chkFecha").is(':checked');
+
+            
+
 
             //slider_value = val_process ? $("#sliderValidation").slider("value") : 0;
             var slider_value = val_process ? true : false;
 
+                   
+            // var anal_body_ = 'query{"mesh":\"'+$("#grid_resolution").val() + "\""+
+            // ', "covariables":'+ '[ ' + covariables_array +'], ' +
+            // "covariables_filter:" + '}'
+                       
+
+            // console.log(anal_body_)
+            
 
 
 
@@ -1285,6 +1293,7 @@ var module_nicho = (function () {
             _res_display_module_nicho.refreshData(num_items, val_process, slider_value, min_occ, mapa_prob, rango_fechas, chkFecha, fossil, grid_res, footprint_region, disease, agent, val_process_temp);
 
         }
+
 
 
     });

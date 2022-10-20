@@ -692,9 +692,8 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         _REGION_SELECTED = region_selected;
 
         let query = 'query{get_mesh(grid_res: "' + _grid_res + '"){cve simplified_geom}}'
-        console.log(query)
-       
-        // query{get_mesh(grid_res: "mun"){cve simplified_geom}}
+        console.log(query)       
+        
 
 
          $.ajax({
@@ -2941,12 +2940,12 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
             // console.log(scales['deviation'](20))
             // console.log(scales['deviation'](80))
 
-            // $.each(json, function (index, d) {
+            //$.each(json, function (_index, d) {
 
                 grid_color.set(parseInt(d.gridid), {color: scales[map_type](rateById[d.gridid]), score: d.tscore});
-                grid_color.set(parseInt(d.gridid), {color: scales['deviation'](rateById[d.gridid]), score: d.tscore});
+                //grid_color.set(parseInt(d.gridid), {color: scales['deviation'](rateById[d.gridid]), score: d.tscore});
 
-            // })
+             //})
 
             
 
