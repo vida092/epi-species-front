@@ -1145,10 +1145,46 @@ var module_nicho = (function () {
 
 
     // se ejecutan los modulos necesarios para iniciar el proceso de obteción de epsilon y score y visualización de tablas, histogramas y mapa
-    $("#get_esc_ep").click(function () {        
+    $("#get_esc_ep").click(function () {    
+          
 
         _VERBOSE ? console.log("get_esc_ep") : _VERBOSE;
         var num_items = 0, spid, idreg, subgroups, sp_target;
+        // var body={
+        //     "mesh":$("#grid_resolution").val() , 
+
+        //     "covariables": ["inegi2020", "snib", "worldclim"], 
+
+        //     "covariable_filter": {
+        //         "snib":[{"taxon":varfield.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() , "value": ""} ],
+        //         "inegi2020": [], //push con el formato {"taxon": "code", "value": intervalo.code}
+        //         "worldclim": [] //push con el formato {"taxon": "layer", "value": interavlo.layer}
+        //     }, 
+        //     "target": {
+        //         "species": "",
+        //         "disease": $("#disease_selectec").val(), 
+        //         "agent":$("#agent_selected").val()
+        //     }, 
+        //     "target_atrribute_filter":[
+        //         {
+        //             "attribute": 0,
+        //             "value": 0,
+        //             "operator": ">="
+        //         },
+        //         {
+        //             "attribute": "sexo",
+        //             "value": "H",
+        //             "operator": "=="
+        //         }
+        //     ], 
+        //     "lim_inf_first":"",
+        //     "lim_sup_first": "",
+        //     "lim_inf_training": "",
+        //     "lim_sup_training": "",
+        //     "lim_inf_validation": "",
+        //     "lim_sup_validation": ""        
+        // }
+        // console.log(body)  
 
         $("#specie_next").css('visibility', 'hidden');
 
@@ -1244,8 +1280,8 @@ var module_nicho = (function () {
 
             console.log("grid_res: " + grid_res);
             console.log("footprint_region: " + footprint_region);
-            console.log("disease: " + disease);
-            console.log("agent"+ agent);
+            console.log("disease: " + disease.toLowerCase()); 
+            console.log("agent: "+ agent.normalize('NFD').replace(/[\u0300-\u036f]/g,"").toLowerCase());
 
             var fossil = $("#chkFosil").is(':checked');
             
@@ -1276,21 +1312,37 @@ var module_nicho = (function () {
 
             //slider_value = val_process ? $("#sliderValidation").slider("value") : 0;
             var slider_value = val_process ? true : false;
+            _componente_fuente.getBodyElements()
+           
+            var body={
+                "mesh": $("#grid_resolution").val(),
 
-                   
-            // var anal_body_ = 'query{"mesh":\"'+$("#grid_resolution").val() + "\""+
-            // ', "covariables":'+ '[ ' + covariables_array +'], ' +
-            // "covariables_filter:" + '}'
-                       
+                "covariables":["inegi2020","snib", "worldclim"],
 
-            // console.log(anal_body_)
-            
+                "covariables_filter":{
+                    "snib":snib,
+                    "inegi2020": inegi2020,
+                    "worldclim": worldclim
+                },
 
+                "target":{
+                    "species": target_species,
+                    "disease": mun,
+                    "agent": agent
+                },
 
+                "lim_inf_first": "2021-04-03",
+                "lim_sup_first": "2021-05-02",
+                "lim_inf_training": "2021-05-03",
+                "lim_sup_training": "2021-06-02",
+                "lim_inf_validation": "2021-06-03",
+                "lim_sup_validation": "2021-07-02"
+            }
+            console.log(body)
 
             // Falta agregar la condición makesense. 
             // Cuando se realiza una consulta por region seleccioanda se verica que la especie objetivo se encuentre dentro de esta area
-            _res_display_module_nicho.refreshData(num_items, val_process, slider_value, min_occ, mapa_prob, rango_fechas, chkFecha, fossil, grid_res, footprint_region, disease, agent, val_process_temp);
+            //_res_display_module_nicho.refreshData(num_items, val_process, slider_value, min_occ, mapa_prob, rango_fechas, chkFecha, fossil, grid_res, footprint_region, disease, agent, val_process_temp);
 
         }
 

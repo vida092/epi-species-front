@@ -76,7 +76,7 @@ var variable_module = (function (verbose, url_zacatuche) {
      */
     function getVarSelArray() {
         return _var_sel_array;
-        console.log(_var_sel_array)
+        
     }
 
     /**
@@ -140,7 +140,10 @@ var variable_module = (function (verbose, url_zacatuche) {
         self.last_event;
         self.arrayBioclimSelected = [];
         self.groupbioclimvar_dataset = [];
-        self.arraySocioSelected=[]
+        //en covariables se hará un push con inegi y worldclim siempre que tengan elementos
+        self.covariables=[];
+        
+        
 
         self.groupDatasetTotal = [];
 
@@ -157,7 +160,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             _VERBOSE ? console.log("self.getTreeTarget") : _VERBOSE;
 
             $("#agent_selected").change(function() {
-                let var_obj = $(this).val();
+                let var_obj = $(this).val();                
                 let diseases = document.getElementById("disease_selected");
 
 
@@ -400,7 +403,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                         $('#jstree_variables_species_target').jstree("destroy").empty();
                         $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
-                        $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVar);
+                        $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
                         $("#jstree_variables_species_target").on('loaded.jstree', self.loadNodes);
 
 
@@ -977,7 +980,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                             console.log("jstree_variables_species_fuente")
                                             $('#jstree_variables_species_' + id).jstree("destroy").empty();
                                             $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
-                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
+                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVarFuente);
                                             $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
 
                                             self.value_vartree = ui.item.id;
@@ -1072,7 +1075,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                             console.log("jstree_variables_species_fuente")
                                             $('#jstree_variables_species_' + id).jstree("destroy").empty();
                                             $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
-                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
+                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVarFuente);
                                             $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
 
                                             self.value_vartree = ui.item.id;
@@ -1156,7 +1159,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                             console.log("jstree_variables_species_fuente")
                                             $('#jstree_variables_species_' + id).jstree("destroy").empty();
                                             $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
-                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
+                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVarFuente);
                                             $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
 
                                             self.value_vartree = ui.item.id;
@@ -1228,7 +1231,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                             console.log("jstree_variables_species_fuente")
                                             $('#jstree_variables_species_' + id).jstree("destroy").empty();
                                             $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
-                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
+                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVarFuente);
                                             $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
 
                                             self.value_vartree = ui.item.id;
@@ -1280,7 +1283,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                             // console.log("jstree_variables_species_fuente")
                                             $('#jstree_variables_species_' + id).jstree("destroy").empty();
                                             $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
-                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
+                                            $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVarFuente);
                                             $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
 
                                             self.value_vartree = ui.item.id;
@@ -1380,9 +1383,17 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .attr('id', 'add_group' + "_" + id)
                         .attr('type', 'button')
                         .addClass('btn btn-primary glyphicon glyphicon-plus pull-left no-mg-top')
-                        .click(function (e) {                            
-
-                            self.addOtherGroup('jstree_variables_species_' + id, self.arrayVarSelected, 'Bio', 'treeAddedPanel_' + id, _TYPE_BIO);
+                        .click(function (e) { 
+                            switch(id){
+                                case "fuente":
+                                    self.formQuery('jstree_variables_species_'+ id, self.arrayVarSelectedFuente2)
+                                    self.addOtherGroup('jstree_variables_species_' + id, self.arrayVarSelectedFuente,  'Bio', 'treeAddedPanel_' + id, _TYPE_BIO);
+                                    break;
+                                case "target":
+                                    self.formQuery('jstree_variables_species_'+ id, self.arrayVarSelectedTarget2)
+                                    self.addOtherGroup('jstree_variables_species_' + id, self.arrayVarSelectedTarget,  'Bio', 'treeAddedPanel_' + id, _TYPE_BIO);
+                                    break;
+                            } 
                             $('#jstree_variables_species_' + id).jstree("destroy").empty();
                             $('#jstree_variables_species_' + id).off('open_node.jstree', self.getTreeVar);
                             $("#jstree_variables_species_" + id).off('changed.jstree', self.getChangeTreeVar);
@@ -1571,7 +1582,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .addClass('btn btn-primary glyphicon glyphicon-plus pull-left')
                         .click(function (e) {
                             
-                            self.addOtherGroup('jstree_variables_bioclim_' + id, self.arrayBioclimSelected, 'Raster', 'treeAddedPanel_' + id, _TYPE_ABIO);
+                            self.formQuery('jstree_variables_bioclim_' + id, self.arrayBioclimSelected2)
+                            self.addOtherGroup('jstree_variables_bioclim_' + id, self.arrayBioclimSelected,  'Raster', 'treeAddedPanel_' + id, _TYPE_ABIO);
                             e.preventDefault();
 
                         })
@@ -1613,8 +1625,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .attr('type', 'button')
                         .addClass('btn btn-primary glyphicon glyphicon-plus pull-left')
                         .click(function (e) {
-
-                            self.addOtherGroup('jstree_variables_bioclim_' + id, self.arrayBioclimSelected, 'Raster', 'treeAddedPanel_' + id, _TYPE_ABIO);
+                            self.formQuery('jstree_variables_bioclim_' + id, self.arrayBioclimSelected2)
+                            self.addOtherGroup('jstree_variables_bioclim_' + id, self.arrayBioclimSelected,  'Raster', 'treeAddedPanel_' + id, _TYPE_ABIO);
                             e.preventDefault();
 
                         })
@@ -1724,8 +1736,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .addClass('btn btn-primary glyphicon glyphicon-plus pull-left')
                         .click(function (e) {
                             
-                            console.log(self.arraySocioSelected)
-                            self.addOtherGroup("jstree_variables_socio_" + id, self.arraySocioSelected, 'Socio', 'treeAddedPanel_' + id, _TYPE_ABIO);
+                            self.formQuery("jstree_variables_socio_" + id, self.arraySocioSelected2)
+                            self.addOtherGroup("jstree_variables_socio_" + id, self.arraySocioSelected,  'Socio', 'treeAddedPanel_' + id, _TYPE_ABIO);
                             e.preventDefault();                            
                             console.log(self.arraySocioSelected)
                         })
@@ -2091,20 +2103,21 @@ var variable_module = (function (verbose, url_zacatuche) {
 
         // Evento generado cuando cambia el estado de selección del árbol, almacena los elementos que fueron seleccionados del grupo de variables taxonómicas.
 
-        self.getChangeTreeVar = function (e, data) {
+        self.getChangeTreeVarTarget = function (e, data) {
             console.log("cambiaste el arbol")
             _VERBOSE ? console.log("self.getChangeTreeVar") : _VERBOSE;
 
-            self.arrayVarSelected = [];
+            self.arrayVarSelectedTarget = []; //para el front
+            self.arrayVarSelectedTarget2 = []; //para el query
 
-            if ($('#jstree_variables_species_' + id).jstree(true).get_top_selected().length > 0) {
+            if ($('#jstree_variables_species_target').jstree(true).get_top_selected().length > 0) {
 
                 // _VERBOSE ? console.log("acceder node header del dom") : _VERBOSE;
-                var headers_selected = $('#jstree_variables_species_' + id).jstree(true).get_top_selected().length;
+                var headers_selected = $('#jstree_variables_species_target').jstree(true).get_top_selected().length;
 
                 for (i = 0; i < headers_selected; i++) {
 
-                    var node_temp = $('#jstree_variables_species_' + id).jstree(true).get_node($('#jstree_variables_species_' + id).jstree(true).get_top_selected()[i]).original;
+                    var node_temp = $('#jstree_variables_species_target').jstree(true).get_node($('#jstree_variables_species_target').jstree(true).get_top_selected()[i]).original;
                     var level = "";
 
                     if (node_temp.attr.nivel == 2)
@@ -2125,14 +2138,15 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                     _VERBOSE ? console.log("level: " + level) : _VERBOSE;
 
-                    var parent_node = $('#jstree_variables_species_' + id).jstree(true).get_node($('#jstree_variables_species_' + id).jstree(true).get_parent($('#jstree_variables_species_' + id).jstree(true).get_top_selected()[i])).original;
+                    var parent_node = $('#jstree_variables_species_target').jstree(true).get_node($('#jstree_variables_species_target').jstree(true).get_parent($('#jstree_variables_species_' + id).jstree(true).get_top_selected()[i])).original;
 
                     _VERBOSE ? console.log(parent_node) : _VERBOSE;
                     _VERBOSE ? console.log(node_temp) : _VERBOSE;
 
-                    if (parent_node) {
+                    if (parent_node ) {
 
-                        self.arrayVarSelected.push({label: node_temp.text, level: level, numlevel: node_temp.attr.nivel, type: node_temp.attr.type, parent: parent_node.text});
+                        self.arrayVarSelectedTarget.push({label: node_temp.text, level: level, numlevel: node_temp.attr.nivel, type: node_temp.attr.type, parent: parent_node.text});
+                        self.arrayVarSelectedTarget2.push({taxon: level, value:node_temp.text })
 
                     //    if (node_temp.attr.nivel == 8) {
 
@@ -2146,7 +2160,8 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                     } else {
 
-                        self.arrayVarSelected.push({label: node_temp.text, level: level, numlevel: node_temp.attr.nivel, type: node_temp.attr.type});
+                        self.arrayVarSelectedTarget.push({label: node_temp.text, level: level, numlevel: node_temp.attr.nivel, type: node_temp.attr.type});
+                        self.arrayVarSelectedTarget2.push({taxon: level, value: node_temp.text })
 
                     }
 
@@ -2154,9 +2169,83 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             }
 
-            _VERBOSE ? console.log(self.arrayVarSelected) : _VERBOSE;
+            _VERBOSE ? console.log(self.arrayVarSelectedTarget) : _VERBOSE;
+            _VERBOSE ? console.log(self.arrayVarSelectedTarget2) : _VERBOSE;
 
         };
+
+        self.getChangeTreeVarFuente = function (e, data) {
+            console.log("cambiaste el arbol")
+            _VERBOSE ? console.log("self.getChangeTreeVarFuente") : _VERBOSE;
+
+            self.arrayVarSelectedFuente = []; //para el front
+            self.arrayVarSelectedFuente2 = []; //para el query
+
+            if ($('#jstree_variables_species_fuente').jstree(true).get_top_selected().length > 0) {
+
+                // _VERBOSE ? console.log("acceder node header del dom") : _VERBOSE;
+                var headers_selected = $('#jstree_variables_species_fuente').jstree(true).get_top_selected().length;
+
+                for (i = 0; i < headers_selected; i++) {
+
+                    var node_temp = $('#jstree_variables_species_fuente').jstree(true).get_node($('#jstree_variables_species_fuente').jstree(true).get_top_selected()[i]).original;
+                    var level = "";
+
+                    if (node_temp.attr.nivel == 2)
+                        level = _iTrans.prop('a_item_reino');
+                    else if (node_temp.attr.nivel == 3)
+                        level = _iTrans.prop('a_item_phylum');
+                    else if (node_temp.attr.nivel == 4)
+                        level = _iTrans.prop('a_item_clase');
+                    else if (node_temp.attr.nivel == 5)
+                        level = _iTrans.prop('a_item_orden');
+                    else if (node_temp.attr.nivel == 6)
+                        level = _iTrans.prop('a_item_familia');
+                    else if (node_temp.attr.nivel == 7)
+                        level = _iTrans.prop('a_item_genero');
+                    else if (node_temp.attr.nivel == 8)
+                        level = _iTrans.prop('a_item_especie');
+
+
+                    _VERBOSE ? console.log("level: " + level) : _VERBOSE;
+
+                    var parent_node = $('#jstree_variables_species_fuente').jstree(true).get_node($('#jstree_variables_species_fuente').jstree(true).get_parent($('#jstree_variables_species_' + id).jstree(true).get_top_selected()[i])).original;
+
+                    _VERBOSE ? console.log(parent_node) : _VERBOSE;
+                    _VERBOSE ? console.log(node_temp) : _VERBOSE;
+
+                    if (parent_node ) {
+
+                        self.arrayVarSelectedFuente.push({label: node_temp.text, level: level, numlevel: node_temp.attr.nivel, type: node_temp.attr.type, parent: parent_node.text});
+                        self.arrayVarSelectedFuente2.push({taxon: level, value:node_temp.text })
+
+                    //    if (node_temp.attr.nivel == 8) {
+
+                    //        self.arrayVarSelected.push({label: node_temp.text, level: level, numlevel: node_temp.attr.nivel, type: node_temp.attr.type, parent: parent_node.text});
+
+                    //    }
+                    //    else {
+
+                    //        self.arrayVarSelected.push({label: node_temp.text, level: level, numlevel: node_temp.attr.nivel, type: node_temp.attr.type, parent: parent_node.text});
+                    //    }
+
+                    } else {
+
+                        self.arrayVarSelectedFuente.push({label: node_temp.text, level: level, numlevel: node_temp.attr.nivel, type: node_temp.attr.type});
+                        self.arrayVarSelectedFuente2.push({taxon: level, value: node_temp.text })
+
+                    }
+
+                }
+
+            }
+
+            _VERBOSE ? console.log(self.arrayVarSelectedFuente) : _VERBOSE;
+            _VERBOSE ? console.log(self.arrayVarSelectedFuente2) : _VERBOSE;
+
+        };
+
+        
 
         
 
@@ -2165,8 +2254,8 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             _VERBOSE ? console.log("self.getChangeTreeVarRaster") : _VERBOSE;
 
-            self.arrayBioclimSelected = [];
-            
+            self.arrayBioclimSelected= [];
+            self.arrayBioclimSelected2 = [];            
 
             if ($("#treeVariableBioclim_fuente").jstree(true).get_top_selected().length > 0) {
 
@@ -2178,16 +2267,20 @@ var variable_module = (function (verbose, url_zacatuche) {
                     _VERBOSE ? console.log(node_temp) : _VERBOSE;
 
                     self.arrayBioclimSelected.push({label: node_temp.text, id: node_temp.attr.layer, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
+                    self.arrayBioclimSelected2.push({taxon:"layer" , value: node_temp.attr.layer})
                 }                
 
             }
             _VERBOSE ? console.log(self.arrayBioclimSelected) : _VERBOSE;
+            _VERBOSE ? console.log(self.arrayBioclimSelected2) : _VERBOSE;           
 
         };
 
         
         self.getChangeTreeVarSocio =  function(e, data){
             _VERBOSE ? console.log("self.getChangeTreeVarSocio") : _VERBOSE;
+            self.arraySocioSelected=[];
+            self.arraySocioSelected2=[];
             
             if ($("#jstree_variables_socio_fuente").jstree(true).get_top_selected().length > 0) {
 
@@ -2199,12 +2292,13 @@ var variable_module = (function (verbose, url_zacatuche) {
                     _VERBOSE ? console.log(node_temp) : _VERBOSE;
                     
                     self.arraySocioSelected.push({label: node_temp.text, id: node_temp.attr, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
-                    //self.arraySocioSelected.push({ "taxon": "code", "value": node_temp.attr.code,label: node_temp.text, id: node_temp.attr, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type}) 
+                    self.arraySocioSelected2.push({taxon: "layer", value:node_temp.attr.code  }) 
                     
                 }
 
             }
             _VERBOSE ? console.log(self.arraySocioSelected) : _VERBOSE;
+            _VERBOSE ? console.log(self.arraySocioSelected2) : _VERBOSE;            
 
         }
 
@@ -2377,19 +2471,54 @@ var variable_module = (function (verbose, url_zacatuche) {
                     });
 
         }
+        inegi2020 = [];
+        worldclim = [];
+        snib = [];
+        target_species = []
+        //Evento que guarda la selección de (co)variables para el elemento covariable_filter
+        self.formQuery = function (idTree, arraySelected2){
+            _VERBOSE ? console.log("self.formQuery") : _VERBOSE;
+            console.log(idTree)
+                      
+            switch (idTree) {
+                case 'jstree_variables_socio_fuente':
+                    inegi2020.concat(arraySelected2)
+                    console.log("se agregó información de inegi2020")
+                    console.log(inegi2020)
+                    break;
+                case 'jstree_variables_bioclim_fuente':
+                    worldclim=[...arraySelected2]
+                    console.log("se agregó información de worldclim")
+                    console.log(worldclim)   
+                    break;
+                case "jstree_variables_species_fuente" :
+                    snib=[...arraySelected2]
+                    console.log("se agrego información a snib")
+                    console.log(snib)
+                    break;
+                case "jstree_variables_species_target":
+                    target_species=[...arraySelected2]
+                    console.log("se agrego información a target")
+                    console.log(target_species)
+                    break;
+                default:
+                    console.log("nada que hacer");
+                    break;
+            }
+            
+                          
+        }
 
         // Evento que es generado cuando se desea agregar un grupo seleccionado previamente, realiza la adición del grupo seleccionado al conjunto de variables con las cuales se realizan los cálculos de épsilon y score en ambos sistemas
-        self.addOtherGroup = function (idTree, arraySelected, gpoName, idDivContainer, typeVar) {
+        self.addOtherGroup = function (idTree, arraySelected,  gpoName, idDivContainer, typeVar) {
 
             _VERBOSE ? console.log("self.addOtherGroup") : _VERBOSE;
 
            console.log("***** addOtherGroup variables *****")
+           console.log(idTree)
+           console.log(arraySelected)
            
-           console.log(idTree);
-           console.log(arraySelected);
-           console.log(gpoName)
-           console.log(idDivContainer)
-           console.log("typeVar es "+typeVar)
+           
             const iterator = arraySelected.values();
 
             for (const value of iterator) {
@@ -2429,9 +2558,12 @@ var variable_module = (function (verbose, url_zacatuche) {
                 }));
 
             var subgroup = [];
+            species_target_array =[]
+            
 
 
             _VERBOSE ? console.log(arraySelected) : _VERBOSE;
+            
 
             for (i = 0; i < arraySelected.length; i++) {
 
@@ -2439,8 +2571,11 @@ var variable_module = (function (verbose, url_zacatuche) {
                 if (typeVar == _TYPE_BIO) {
                     var label_taxon = arraySelected[i].numlevel == 8 ? arraySelected[i].label : arraySelected[i].label.split(" ")[0]
                     subgroup.push({label: arraySelected[i].level + " >> " + label_taxon, level: arraySelected[i].numlevel, type: arraySelected[i].type});
+                    
+                    species_target_array.push({ taxon:arraySelected[i].level, value:label_taxon  })
                 } else {
                     subgroup.push({value: arraySelected[i].id, label: arraySelected[i].parent + " >> " + arraySelected[i].label, level: arraySelected[i].level, type: arraySelected[i].type});
+                    //species_target_array.push({ taxon:arraySelected[i].level, value:label_taxon  })
                 }
 
             }
@@ -2544,11 +2679,11 @@ var variable_module = (function (verbose, url_zacatuche) {
                     });
 
 
-            if (typeVar == _TYPE_TERRESTRE || typeVar == _TYPE_ABIO) {
-                $('#' + idTree + _id).jstree(true).deselect_all();
-            } else {
-                $('#' + idTree + _id).jstree("destroy").empty();
-            }
+            // if (typeVar == _TYPE_TERRESTRE || typeVar == _TYPE_ABIO) {
+            //     $('#' + idTree + _id).jstree(true).deselect_all();
+            // } else {
+            //     $('#' + idTree + _id).jstree("destroy").empty();
+            // }
 
             // se envia solo el elemento agregado
             self.updateVarSelArray(temp_grupo, _AGREGADO);
@@ -2564,22 +2699,13 @@ var variable_module = (function (verbose, url_zacatuche) {
 
         // Realiza la actualización del grupo final con el cual se realizan los cálculos de épsilon y score.
         self.updateVarSelArray = function (item, operacion) {
-            // item - llega en forma de array, por tanto para obtener su valor se accede al primer valor            
+            // item - llega en forma de array, por tanto para obtener su valor se accede al primer valor   
+            console.log("updateVarSelArray")         
             console.log(self.var_sel_array)
             if (operacion == _BORRADO) {
 
                 _VERBOSE ? console.log("elemento borrado") : _VERBOSE;
-                $('#jstree_variables_species_target').jstree({
-                    'plugins': ["wholerow", "checkbox"],                            
-                    'core': {
-                        'data': data,
-                        'themes': {
-                            'name': 'proton',
-                            'responsive': true
-                        },
-                        'check_callback': true
-                    }
-                });
+                
 
                 $.each(self.var_sel_array, function (index, gpo_var) {
 
@@ -2594,18 +2720,21 @@ var variable_module = (function (verbose, url_zacatuche) {
             } else if (operacion == _AGREGADO) {
 
                 _VERBOSE ? console.log("elemento añadido") : _VERBOSE;
-                self.var_sel_array.push({"value": item.elements, "type": item.type, "groupid": item.groupid, "title": item.title});
+                self.var_sel_array.push({"value": item.elements, "type": item.type, "groupid": item.groupid, "title": item.title});                
+
 
             }
 
 
             _VERBOSE ? console.log(self.var_sel_array) : _VERBOSE;
-            _VERBOSE ? console.log(self.var_sel_array.length) : _VERBOSE;
+            console.log(species_target_array)
+            //species_target_array guarda los datos target para el body
 
         }
 
         // Elimina las variables previamente agregadas al grupo final con el cual se realizan los cálculos de épsilon y score.
         self.cleanVariables = function (idTree, idDivContainer, typeVar) {
+
 
             _VERBOSE ? console.log("self.cleanVariables") : _VERBOSE;
             $('#disease_selected').val("dis_default")
@@ -2620,6 +2749,29 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             self.var_sel_array = [];
             self.groupDatasetTotal = [];
+
+            switch (idTree) {
+                case 'jstree_variables_socio_fuente':
+                    inegi2020=[]
+                    console.log("se eliminó información inegi2020")
+                    break;
+                case 'jstree_variables_bioclim_fuente':
+                    worldclim=[]
+                    console.log("se eliminó información de worldclim")  
+                case "jstree_variables_species_fuente" :
+                    snib=[]
+                    console.log("se eliminó información taxonomica fuente")
+                    break;  
+                case "jstree_variables_species_target":
+                    target_species=[]
+                    console.log("se eliminó información taxonomica target")
+                    break;        
+                default:
+                    console.log(`nada que hacer`);
+                    break;
+            }
+
+            
 
             // for(i = 0; i < self.var_sel_array.length; i++){
             //     if (self.var_sel_array[i].type == typeVar){
@@ -2662,6 +2814,11 @@ var variable_module = (function (verbose, url_zacatuche) {
             return self.type_time;
             
         }
+        self.getBodyElements = function(){
+            console.log("se cargan los elementos necesarios para formar el body")
+            covlist= [inegi2020, snib, worldclim]
+            return snib, covlist, inegi2020, worldclim, target_species
+        }
 
     }
     
@@ -2692,7 +2849,9 @@ var variable_module = (function (verbose, url_zacatuche) {
         });
 
 
-    }
+    } 
+
+    
 
 
     /**
@@ -2756,6 +2915,8 @@ var variable_module = (function (verbose, url_zacatuche) {
         //loadAvailableLayers();
 
     }
+    
+
 
 
     /**

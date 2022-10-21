@@ -868,9 +868,6 @@ var histogram_module = (function (verbose) {
 
            // obtiene el numero de grupo analizados para generar la colección de elementos para desplegar el calculo de recall
            var array_recall = [];
-           console.log("<=========================PEDROVIC===========================>6")
-           console.log(json_decil);
-           console.log(">=========================PEDROVIC===========================<6") 
            
            $.each(json_decil, function (index, item) {
 
@@ -916,15 +913,10 @@ var histogram_module = (function (verbose) {
 
            // adding recall line
            _VERBOSE ? console.log(array_recall) : _VERBOSE;
-           console.log("<=========================PEDROVIC===========================>6")
-           console.log(array_recall);
-           console.log(">=========================PEDROVIC===========================<6")           
 
            $.each(array_recall, function (i, recall_item) {
-            
-            console.log("<=========================PEDROVIC===========================>5")
-            console.log(recall_item);
-            console.log(">=========================PEDROVIC===========================<5")
+
+               console.log(recall_item);
 
                var line = d3.svg.line()
                        .x(function (d) {
@@ -934,7 +926,7 @@ var histogram_module = (function (verbose) {
                            return y_right(d.recall);
                        });
 
-//                console.log(line);
+
 
                svg.append("path")
                        .datum(recall_item)
@@ -957,7 +949,7 @@ var histogram_module = (function (verbose) {
                        .attr("r", 3.5)
                        .attr("cx", function (d, i) {
 
-//                            return x0(recall_item.length - i) + (x1.rangeBand() * (ageNames.length / 2));
+
                            return x0(d.decil) + (x1.rangeBand() * (ageNames.length / 2));
 
 
