@@ -1281,7 +1281,7 @@ var module_nicho = (function () {
             console.log("grid_res: " + grid_res);
             console.log("footprint_region: " + footprint_region);
             console.log("disease: " + disease.toLowerCase()); 
-            console.log("agent: "+ agent.normalize('NFD').replace(/[\u0300-\u036f]/g,"").toLowerCase());
+            console.log("agent: "+ agent.normalize('NFD').replace(/[\u0300-\u036f]/g,""));
 
             var fossil = $("#chkFosil").is(':checked');
             
@@ -1313,9 +1313,11 @@ var module_nicho = (function () {
             //slider_value = val_process ? $("#sliderValidation").slider("value") : 0;
             var slider_value = val_process ? true : false;
             _componente_fuente.getBodyElements()
+
+            
            
             var body={
-                "mesh": $("#grid_resolution").val(),
+                "mesh": grid_res,
 
                 "covariables":["inegi2020","snib", "worldclim"],
 
@@ -1327,8 +1329,8 @@ var module_nicho = (function () {
 
                 "target":{
                     "species": target_species,
-                    "disease": mun,
-                    "agent": agent
+                    "disease": disease.toLowerCase(),
+                    "agent": agent.normalize('NFD').replace(/[\u0300-\u036f]/g,"")
                 },
 
                 "lim_inf_first": "2021-04-03",
