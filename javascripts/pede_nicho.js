@@ -1313,23 +1313,32 @@ var module_nicho = (function () {
             //slider_value = val_process ? $("#sliderValidation").slider("value") : 0;
             var slider_value = val_process ? true : false;
             _componente_fuente.getBodyElements()
+            covariables=[];
+            covariables_filter={}
+            //covobj= {"inegi2020": inegi2020, "snib": snib, "worldclim":worldclim}
 
+            Object.keys(covobj).forEach(key=>{
+                if (covobj[key].length > 0){
+                    covariables.push(key);
+                    covariables_filter[key]=covobj[key]
+                }
+            }) 
             
+            console.log(covariables)
+            console.log(covariables_filter)  
+                 
+
            
             var body={
                 "mesh": grid_res,
 
-                "covariables":["inegi2020","snib", "worldclim"],
+                "covariables":covariables,
 
-                "covariables_filter":{
-                    "snib":snib,
-                    "inegi2020": inegi2020,
-                    "worldclim": worldclim
-                },
+                "covariables_filter":covariables_filter,
 
                 "target":{
                     "species": target_species,
-                    "disease": disease.toLowerCase(),
+                    "disease": disease,
                     "agent": agent.normalize('NFD').replace(/[\u0300-\u036f]/g,"")
                 },
 
@@ -1340,11 +1349,13 @@ var module_nicho = (function () {
                 "lim_inf_validation": "2021-06-03",
                 "lim_sup_validation": "2021-07-02"
             }
-            console.log(body)
+            
+            body2 = JSON.stringify(body)
+            console.log(body2)
 
             // Falta agregar la condición makesense. 
             // Cuando se realiza una consulta por region seleccioanda se verica que la especie objetivo se encuentre dentro de esta area
-            //_res_display_module_nicho.refreshData(num_items, val_process, slider_value, min_occ, mapa_prob, rango_fechas, chkFecha, fossil, grid_res, footprint_region, disease, agent, val_process_temp);
+            _res_display_module_nicho.refreshData(num_items, val_process, slider_value, min_occ, mapa_prob, rango_fechas, chkFecha, fossil, grid_res, footprint_region, disease, agent, val_process_temp);
 
         }
 
