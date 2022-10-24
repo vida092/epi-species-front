@@ -1324,8 +1324,8 @@ var module_nicho = (function () {
                 }
             }) 
             
-            console.log(covariables)
-            console.log(covariables_filter)  
+            // console.log(covariables)
+            // console.log(covariables_filter)  
                  
 
            
@@ -1351,7 +1351,7 @@ var module_nicho = (function () {
             }
             
             body2 = JSON.stringify(body)
-            console.log(body2)
+            // console.log(body2)
 
             // Falta agregar la condición makesense. 
             // Cuando se realiza una consulta por region seleccioanda se verica que la especie objetivo se encuentre dentro de esta area

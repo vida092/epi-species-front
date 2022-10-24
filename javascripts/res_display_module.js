@@ -1176,7 +1176,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
             stoppable: true
         });
 
-        var data_request = jQuery.extend(true, {}, decildata);
+        //var data_request = jQuery.extend(true, {}, decildata);
+        var data_request = body2
 
         data_request["decil_selected"] = [_default_decil]
         console.log("<=========================PEDROVIC===========================>1")
@@ -1195,7 +1196,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
         // Si se esta haciendo bien la peticion al servidor de epi-puma 2.0
         fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
             method:"POST",
-            body: JSON.stringify(data_request),
+            //body: JSON.stringify(data_request),
+            body: data_request,
             headers:{
                "Content-Type": "aplication/json" 
             }
