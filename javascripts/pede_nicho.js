@@ -1150,41 +1150,7 @@ var module_nicho = (function () {
 
         _VERBOSE ? console.log("get_esc_ep") : _VERBOSE;
         var num_items = 0, spid, idreg, subgroups, sp_target;
-        // var body={
-        //     "mesh":$("#grid_resolution").val() , 
-
-        //     "covariables": ["inegi2020", "snib", "worldclim"], 
-
-        //     "covariable_filter": {
-        //         "snib":[{"taxon":varfield.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() , "value": ""} ],
-        //         "inegi2020": [], //push con el formato {"taxon": "code", "value": intervalo.code}
-        //         "worldclim": [] //push con el formato {"taxon": "layer", "value": interavlo.layer}
-        //     }, 
-        //     "target": {
-        //         "species": "",
-        //         "disease": $("#disease_selectec").val(), 
-        //         "agent":$("#agent_selected").val()
-        //     }, 
-        //     "target_atrribute_filter":[
-        //         {
-        //             "attribute": 0,
-        //             "value": 0,
-        //             "operator": ">="
-        //         },
-        //         {
-        //             "attribute": "sexo",
-        //             "value": "H",
-        //             "operator": "=="
-        //         }
-        //     ], 
-        //     "lim_inf_first":"",
-        //     "lim_sup_first": "",
-        //     "lim_inf_training": "",
-        //     "lim_sup_training": "",
-        //     "lim_inf_validation": "",
-        //     "lim_sup_validation": ""        
-        // }
-        // console.log(body)  
+         
 
         $("#specie_next").css('visibility', 'hidden');
 
@@ -1329,18 +1295,20 @@ var module_nicho = (function () {
                  
 
            
-            var body={
+            body={
                 "mesh": grid_res,
 
                 "covariables":covariables,
 
-                "covariables_filter":covariables_filter,
+                "covariable_filter":covariables_filter,
 
                 "target":{
-                    "species": target_species,
+                    "species": target_species[0], //Por el momento el target debe tener un sólo taxon, luego sólo hay que borrar "[0]"
                     "disease": disease,
-                    "agent": agent.normalize('NFD').replace(/[\u0300-\u036f]/g,"")
+                    "agent": agent.normalize('NFD').replace(/[\u0300-\u036f]/g,"").toLowerCase().substring(0, agent.length - 1)
                 },
+
+                "target_attribute_filter":[],
 
                 "lim_inf_first": "2021-04-03",
                 "lim_sup_first": "2021-05-02",

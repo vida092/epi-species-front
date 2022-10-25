@@ -1661,7 +1661,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 names.forEach(name=>{
                                     if(intervals.includes(element.interval) && element.name===name){
                                     data.push({"id":element.interval, "parent":element.name, "text":element.interval, 'state': {'opened': false}, "icon": "plugins/jstree/images/percent.png",
-                                    'attr': {'nivel': 8, "type": 0, "bin": element.bin, "code":element.code}})
+                                    'attr': {'nivel': 8, "type": 0, "bin": element.bin, "code":element.code, "id": element.id }})
                                     }
                                 })
                                 })
@@ -1926,19 +1926,26 @@ var variable_module = (function (verbose, url_zacatuche) {
                     var level = "";
 
                     if (node_temp.attr.nivel == 2)
-                        level = _iTrans.prop('a_item_reino');
+                        //level = _iTrans.prop('a_item_reino');
+                        level = "kingdom"
                     else if (node_temp.attr.nivel == 3)
-                        level = _iTrans.prop('a_item_phylum');
+                        //level = _iTrans.prop('a_item_phylum');
+                        level = "phylum"
                     else if (node_temp.attr.nivel == 4)
-                        level = _iTrans.prop('a_item_clase');
+                        //level = _iTrans.prop('a_item_clase');
+                        level = "class"
                     else if (node_temp.attr.nivel == 5)
-                        level = _iTrans.prop('a_item_orden');
+                        //level = _iTrans.prop('a_item_orden');
+                        level = "order"
                     else if (node_temp.attr.nivel == 6)
-                        level = _iTrans.prop('a_item_familia');
+                        //level = _iTrans.prop('a_item_familia');
+                        level = "family"
                     else if (node_temp.attr.nivel == 7)
-                        level = _iTrans.prop('a_item_genero');
+                        //level = _iTrans.prop('a_item_genero');
+                        level = "genus"
                     else if (node_temp.attr.nivel == 8)
-                        level = _iTrans.prop('a_item_especie');
+                        //level = _iTrans.prop('a_item_especie');
+                        level = "species"
 
 
                     _VERBOSE ? console.log("level: " + level) : _VERBOSE;
@@ -1997,19 +2004,26 @@ var variable_module = (function (verbose, url_zacatuche) {
                     var level = "";
 
                     if (node_temp.attr.nivel == 2)
-                        level = _iTrans.prop('a_item_reino');
+                        //level = _iTrans.prop('a_item_reino');
+                        level = "kingdom"
                     else if (node_temp.attr.nivel == 3)
-                        level = _iTrans.prop('a_item_phylum');
+                        //level = _iTrans.prop('a_item_phylum');
+                        level = "phylum"                       
                     else if (node_temp.attr.nivel == 4)
-                        level = _iTrans.prop('a_item_clase');
+                        //level = _iTrans.prop('a_item_clase');
+                        level = "class"
                     else if (node_temp.attr.nivel == 5)
-                        level = _iTrans.prop('a_item_orden');
+                        //level = _iTrans.prop('a_item_orden');
+                        level = "order"
                     else if (node_temp.attr.nivel == 6)
-                        level = _iTrans.prop('a_item_familia');
+                        //level = _iTrans.prop('a_item_familia');
+                        level = "family"
                     else if (node_temp.attr.nivel == 7)
-                        level = _iTrans.prop('a_item_genero');
+                        //level = _iTrans.prop('a_item_genero');
+                        level = "genus"
                     else if (node_temp.attr.nivel == 8)
-                        level = _iTrans.prop('a_item_especie');
+                        //level = _iTrans.prop('a_item_especie');
+                        level = "species" 
 
 
                     _VERBOSE ? console.log("level: " + level) : _VERBOSE;
@@ -2022,7 +2036,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                     if (parent_node ) {
 
                         self.arrayVarSelectedFuente.push({label: node_temp.text, level: level, numlevel: node_temp.attr.nivel, type: node_temp.attr.type, parent: parent_node.text});
-                        self.arrayVarSelectedFuente2.push({taxon: level, value:node_temp.text })
+                        self.arrayVarSelectedFuente2.push({taxon: level, value:node_temp.text.toLowerCase() })
 
                     //    if (node_temp.attr.nivel == 8) {
 
@@ -2037,7 +2051,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                     } else {
 
                         self.arrayVarSelectedFuente.push({label: node_temp.text, level: level, numlevel: node_temp.attr.nivel, type: node_temp.attr.type});
-                        self.arrayVarSelectedFuente2.push({taxon: level, value: node_temp.text })
+                        self.arrayVarSelectedFuente2.push({taxon: level, value: node_temp.text.toLowerCase() })
 
                     }
 

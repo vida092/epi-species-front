@@ -293,18 +293,18 @@ $("#modalMail").modal("hide");
                     var temp_item_value = itemGroup.label.toString().split(">>")[1].trim();
                     var temp_item_parent = itemGroup.parent ? itemGroup.parent : "";
 
-//                    _VERBOSE ? console.log(_reino_campos[temp_item_field]) : _VERBOSE;
+                    //_VERBOSE ? console.log(_reino_campos[temp_item_field]) : _VERBOSE;
 
-_VERBOSE ? console.log(temp_item_field) : _VERBOSE;
-_VERBOSE ? console.log(temp_item_value) : _VERBOSE;
-_VERBOSE ? console.log(temp_item_parent) : _VERBOSE;
+                    _VERBOSE ? console.log(temp_item_field) : _VERBOSE;
+                    _VERBOSE ? console.log(temp_item_value) : _VERBOSE;
+                    _VERBOSE ? console.log(temp_item_parent) : _VERBOSE;
 
-filters.push({
-    'biotic': true,
-    'level': group_level_biotic,
-    'rank': map_taxon.get(temp_item_field),
-    'value': temp_item_value,
-    'type': itemGroup.type,
+                    filters.push({
+                        'biotic': true,
+                        'level': group_level_biotic,
+                        'rank': map_taxon.get(temp_item_field),
+                        'value': temp_item_value,
+                        'type': itemGroup.type,
                         // 'field': _reino_campos[temp_item_field],
                         // 'parent': temp_item_parent,
                         "fGroupId": _idFilterGroup,
