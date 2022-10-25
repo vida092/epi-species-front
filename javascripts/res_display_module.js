@@ -1176,13 +1176,13 @@ var res_display_module = (function (verbose, url_zacatuche) {
             stoppable: true
         });
 
-        //var data_request = jQuery.extend(true, {}, decildata);
-        var data_request = body2
+        var data_request = jQuery.extend(true, {}, decildata);
+        //var data_request = JSON.stringify(body)
 
         data_request["decil_selected"] = [_default_decil]
-        console.log("<=========================PEDROVIC===========================>1")
+        console.log("<====================================================>1")
         console.log(data_request)
-        console.log(">=========================PEDROVIC===========================<1")
+        
 
         // decildata["with_data_freq"] = false;
         // decildata["with_data_score_cell"] = true;
@@ -1197,17 +1197,17 @@ var res_display_module = (function (verbose, url_zacatuche) {
         fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
             method:"POST",
             //body: JSON.stringify(data_request),
-            body: data_request,
+            body: JSON.stringify(body),
             headers:{
-               "Content-Type": "aplication/json" 
+               "Content-Type": "application/json" 
             }
         })
         .then(resp => resp.json())
         .then(respuesta => {
 
-            console.log("<=========================PEDROVIC===========================>2")
+            console.log("<====================================================>2")
             console.log(respuesta)
-            console.log(">=========================PEDROVIC===========================<2")
+            console.log(">====================================================<2")
 
             if(!respuesta.ok){
                 // TODO: mandar mensaje de error
@@ -1221,9 +1221,11 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
             // PROCESANDO PETICIONES INDIVIDUALES
             var data_response = jQuery.extend(true, [], respuesta.data);
+            console.log("****************")
+            console.log(data_response)
             var validation_data = respuesta.validation_data
 
-            processSingleResponse(data_response, data_request, validation_data);
+            processSingleResponse(data_response, data_request, validation_data); // data_response[0] porque utils_module.processDataForScoreCell no tenía acceso a cell ni a score
 
             _REQUESTS_DONE.push(respuesta);
 
@@ -1363,7 +1365,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
                         method:"POST",
                         body: JSON.stringify(data_request),
                         headers:{
-                            "Content-Type": "aplication/json" 
+                            "Content-Type": "application/json" 
                         }
                         })                  
                     .then(resp => resp.json())
@@ -1443,7 +1445,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
                     loadDecilDataTable([_default_decil], "Total", true, percentage_avg, decil_cells);
 
                     $('#chartdiv_score_decil').loading('stop');
-
+                    
                 }
 
                
@@ -1616,11 +1618,12 @@ var res_display_module = (function (verbose, url_zacatuche) {
     function processSingleResponse(data, data_request, validation_data = []) {
 
         _VERBOSE ? console.log("processSingleResponse") : _VERBOSE;
+        console.log(_TREE_GENERATED)
 
         _TREE_GENERATED.groups.forEach(function (group_item, index) {
 
-           // console.log(group_item);
-           // console.log(data_request);
+            console.log(group_item);
+            console.log(data_request);
 
             if (group_item.groupid === data_request.covariables[0].group_item) {
 

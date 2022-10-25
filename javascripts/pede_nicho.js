@@ -1318,8 +1318,7 @@ var module_nicho = (function () {
                 "lim_sup_validation": "2021-07-02"
             }
             
-            body2 = JSON.stringify(body)
-            // console.log(body2)
+            
 
             // Falta agregar la condición makesense. 
             // Cuando se realiza una consulta por region seleccioanda se verica que la especie objetivo se encuentre dentro de esta area
