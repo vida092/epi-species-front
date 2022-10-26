@@ -1289,12 +1289,15 @@ var module_nicho = (function () {
                     covariables_filter[key]=covobj[key]
                 }
             }) 
+            switch(agent){
+                case ("Vectores"):
+                    var agente="vector";
+                    break;
+                default:
+                    var agente = agent.normalize('NFD').replace(/[\u0300-\u036f]/g,"").toLowerCase().substring(0, agent.length - 1);
+                    break;
+            }  
             
-            // console.log(covariables)
-            // console.log(covariables_filter)  
-                 
-
-           
             body={
                 "mesh": grid_res,
 
@@ -1305,7 +1308,7 @@ var module_nicho = (function () {
                 "target":{
                     "species": target_species[0], //Por el momento el target debe tener un sólo taxon, luego sólo hay que borrar "[0]"
                     "disease": disease,
-                    "agent": agent.normalize('NFD').replace(/[\u0300-\u036f]/g,"").toLowerCase().substring(0, agent.length - 1)
+                    "agent": agente
                 },
 
                 "target_attribute_filter":[],

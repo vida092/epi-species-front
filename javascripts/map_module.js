@@ -2227,6 +2227,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         switch(_PARENT_FIELD){
             case("phylum"):
                 var label_target = "phylum"
+                break;
             case("class"):
                 var label_target = "clase";
                 break;
