@@ -1359,11 +1359,13 @@ var res_display_module = (function (verbose, url_zacatuche) {
                     total_request.with_data_score_decil = true
                     total_request.decil_selected = [_default_decil]
 
-                    verbo = _val_process_temp ? "countsTaxonsGroupTimeValidation" : "countsTaxonsGroup"        
+                    verbo = _val_process_temp ? "countsTaxonsGroupTimeValidation" : "countsTaxonsGroup" 
+                    ///ojo       
 
                     fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
                         method:"POST",
-                        body: JSON.stringify(data_request),
+                        //body: JSON.stringify(data_request),
+                        body: JSON.stringify(body),
                         headers:{
                             "Content-Type": "application/json" 
                         }
@@ -1393,7 +1395,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                             // console.log("total_counts: " + total_counts.length)
                             // console.log(decil_cells)
-                            // console.log(percentage_avg)
+                            console.log(percentage_avg)
                             console.log("<=========================PEDROVIC===========================>8")
                             console.log(validation_data)
                             console.log(data_score_cell)
@@ -1837,7 +1839,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
         var decil_list = [];
 
-        // console.log(counts)
+        console.log(counts)
         _table_module_eps.createDecilList(counts);
 
 

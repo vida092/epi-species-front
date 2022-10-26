@@ -15,9 +15,9 @@ var variable_module = (function (verbose, url_zacatuche) {
 
     var _id;
 
-    var _TYPE_BIO = 0,
-        _TYPE_ABIO = 1,
-        _TYPE_TERRESTRE = 2;
+    var _TYPE_BIO = 0, //snib
+        _TYPE_ABIO = 1, // worldclim
+        _TYPE_TERRESTRE = 2; //inegi2020
 
     var _TYPE_TAXON = 0,
         _TYPE_CLIMA = 0,
@@ -1524,30 +1524,36 @@ var variable_module = (function (verbose, url_zacatuche) {
                             success: function(data){
                                 var awc = data.data.all_worldclim_covariables
                                 //console.log(awc)
-                                data = [{ "id" : "WorlClim", "parent" : "#", "text" : "WorldClim","icon": "plugins/jstree/images/world.png", 'state': {'opened': true},'attr': {'nivel': 2, "type": 1} }]
+                                data = [{ "id" : "WorlClim", "parent" : "#", "text" : "WorldClim","icon": "plugins/jstree/images/world.png", 'state': {'opened': true},'attr': {'nivel': 6, "type": 1} }]
                                 var intervals=[]
                                 awc.forEach(element => {
                                   if(!intervals.includes(element.interval)){
                                     intervals.push(element.interval)
                                   }        
                                 });
-                                //console.log(intervals)
+                                
                                 var labels=[]
+                                var layers={}
                                 awc.forEach(element=>{
                                   if(!labels.includes(element.label)){
                                     labels.push(element.label)            
                                   }
                                 })
+                                awc.forEach(element=>{
+                                    layers[element.label]=element.layer
+                                })
+
+                                
                                 labels.forEach(element=>{
                                   data.push({"id": element, "parent":"WorlClim", "text":element,'state': {'opened': false}, "icon": "plugins/jstree/images/clima.png",
-                                                                 'attr': {'nivel': 3, "type": 1 }})
+                                                                 'attr': {'nivel': 7, "type": 1, "layer":layers[element] }})
                                 })
             
                                 awc.forEach(element=>{
                                   labels.forEach(label=>{
                                     if(intervals.includes(element.interval) && element.label===label){
                                       data.push({"id":element.interval, "parent":element.label, "text":element.interval, 'state': {'opened': false}, "icon": "plugins/jstree/images/termometro.png",
-                                                                 'attr': {'nivel': 3, "type": 1, "layer": element.layer}})
+                                                                 'attr': {'nivel': 8, "type": 1, "id": element.id}})
                                     }
                                   })
                                 })
@@ -1630,7 +1636,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .attr('id', "jstree_variables_socio_" + id)
                         .appendTo(div_tree);
                 
-                        query2 ="query{all_censo_inegi_2020_covariables(limit: 2000, filter:\"\"){id name interval bin code}}"
+                        query2 ="query{all_censo_inegi_2020_covariables(limit: 2400, filter:\"\"){id name interval bin code}}"
                         $.ajax({
                             url:"https://covid19.c3.unam.mx/gateway/api/nodes/",
                             method: "POST",
@@ -1647,23 +1653,32 @@ var variable_module = (function (verbose, url_zacatuche) {
                                     }
                                 })
                                 var names=[]
+                                var codes={}
                                 sei.forEach(element=>{
-                                if(!names.includes(element.name)){
-                                    names.push(element.name)            
-                                }
+                                    if(!names.includes(element.name)){
+                                        names.push(element.name)                                        
+                                    }                                    
                                 })
+                                sei.forEach(element=>{
+                                    codes[element.name]=element.code
+                                })
+                                
+                                
                                 names.forEach(element=>{
-                                data.push({"id": element, "parent":"inegi", "text":element, 'state': {'opened': false}, "icon": "plugins/jstree/images/group.png",
-                                'attr': {'nivel': 7, "type": 0, level:element.id }})
+                                    data.push({"id": element, "parent":"inegi", "text":element, 'state': {'opened': false}, "icon": "plugins/jstree/images/group.png",
+                                'attr': {'nivel': 7, "type": 2, "code":codes[element]}})                                    
+
                                 })
             
                                 sei.forEach(element=>{
                                 names.forEach(name=>{
                                     if(intervals.includes(element.interval) && element.name===name){
                                     data.push({"id":element.interval, "parent":element.name, "text":element.interval, 'state': {'opened': false}, "icon": "plugins/jstree/images/percent.png",
-                                    'attr': {'nivel': 8, "type": 0, "bin": element.bin, "code":element.code, "id": element.id }})
+                                    'attr': {'nivel': 8, "type": 2, "bin": element.bin,  "id": element.id, "code":element.code }})
                                     }
+
                                 })
+
                                 })
                                 
                                 $('#jstree_variables_socio_fuente').jstree("destroy").empty();
@@ -2036,7 +2051,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                     if (parent_node ) {
 
                         self.arrayVarSelectedFuente.push({label: node_temp.text, level: level, numlevel: node_temp.attr.nivel, type: node_temp.attr.type, parent: parent_node.text});
-                        self.arrayVarSelectedFuente2.push({taxon: level, value:node_temp.text.toLowerCase() })
+                        self.arrayVarSelectedFuente2.push({taxon: level, value:node_temp.text })
 
                     //    if (node_temp.attr.nivel == 8) {
 
@@ -2051,7 +2066,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                     } else {
 
                         self.arrayVarSelectedFuente.push({label: node_temp.text, level: level, numlevel: node_temp.attr.nivel, type: node_temp.attr.type});
-                        self.arrayVarSelectedFuente2.push({taxon: level, value: node_temp.text.toLowerCase() })
+                        self.arrayVarSelectedFuente2.push({taxon: level, value: node_temp.text })
 
                     }
 
@@ -2084,9 +2099,14 @@ var variable_module = (function (verbose, url_zacatuche) {
                     var node_temp = $("#treeVariableBioclim_fuente").jstree(true).get_node($("#treeVariableBioclim_fuente").jstree(true).get_top_selected()[i]).original;
 
                     _VERBOSE ? console.log(node_temp) : _VERBOSE;
+                    if(node_temp.attr.nivel===7){
+                        self.arrayBioclimSelected.push({label: node_temp.text, id: node_temp.attr.layer, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
+                        self.arrayBioclimSelected2.push({taxon:"layer" , value: node_temp.attr.layer})
+                    }else if(node_temp.attr.nivel ===8){
 
-                    self.arrayBioclimSelected.push({label: node_temp.text, id: node_temp.attr.layer, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
-                    self.arrayBioclimSelected2.push({taxon:"layer" , value: node_temp.attr.layer})
+                        self.arrayBioclimSelected.push({label: node_temp.text, id: node_temp.attr.layer, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
+                        self.arrayBioclimSelected2.push({taxon:"id" , value: node_temp.attr.id})
+                    }
                 }                
 
             }
@@ -2109,10 +2129,15 @@ var variable_module = (function (verbose, url_zacatuche) {
                     var node_temp = $("#jstree_variables_socio_fuente").jstree(true).get_node($("#jstree_variables_socio_fuente").jstree(true).get_top_selected()[i]).original;
 
                     _VERBOSE ? console.log(node_temp) : _VERBOSE;
-                    
-                    self.arraySocioSelected.push({label: node_temp.text, id: node_temp.attr, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
-                    self.arraySocioSelected2.push({taxon: "code", value:node_temp.attr.code  }) 
-                    
+                    if (node_temp.attr.nivel === 7){
+                        
+                        self.arraySocioSelected.push({label: node_temp.text, id: node_temp.attr, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
+                        self.arraySocioSelected2.push({taxon: "code", value: node_temp.attr.code}) 
+
+                    }else if(node_temp.attr.nivel === 8){
+                        self.arraySocioSelected.push({label: node_temp.text, id: node_temp.attr, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
+                        self.arraySocioSelected2.push({taxon: "id", value:node_temp.attr.id  }) 
+                    }
                 }
 
             }

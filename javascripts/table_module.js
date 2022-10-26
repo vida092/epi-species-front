@@ -71,6 +71,7 @@ var table_module = (function(verbose) {
     function createDecilList(list_elements = null) {
 
         _VERBOSE ? console.log("createDecilList") : _VERBOSE;
+        console.log(list_elements)
 
         if(list_elements){
 
@@ -78,7 +79,7 @@ var table_module = (function(verbose) {
 
             list_elements.forEach(function(d) {
 
-                // console.log(d)
+                //console.log(d)
 
                 var value_abio = "";
                 if (d.species.indexOf("|") !== -1) {

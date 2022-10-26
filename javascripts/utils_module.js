@@ -216,7 +216,7 @@ var utils_module = (function (verbose) {
     }
 
 
-    function processDataForScoreCell(data, apriori, mapa_prob, all_cells = []) {
+    function processDataForScoreCell(data, apriori, mapa_prob, all_cells = []) { 
 
         _VERBOSE ? console.log("processDataForScoreCell") : _VERBOSE;
 

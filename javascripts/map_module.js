@@ -2222,13 +2222,33 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
         let fecha_ini = document.getElementById("yearPicker_start").value.trim()
         let fecha_fin = document.getElementById("yearPicker_end").value.trim()
-    
+        console.log( _PARENT_FIELD)
+        //_PARENT_FIELD.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        switch(_PARENT_FIELD){
+            case("class"):
+                var label_target = "clase";
+                break;
+            case("order"):
+                var label_target = "orden";
+                break;
+            case("family"):
+                var label_target = "familia";
+                break;
+            case("genus"):
+                var label_target = "genero";
+                break;
+            case("species"):
+                var label_target= "species"
+                break;
+            default:
+                console.log("nada que hacer")
+        }    
         
 
         if ( fecha_ini.length < 3)
-            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ _PARENT_FIELD.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") +' = \'' + _LABEL_VALUE +'\' "){individuosinfectados gridid_'+ _grid_res + '}}'
+            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ label_target +' = \'' + _LABEL_VALUE +'\' "){individuosinfectados gridid_'+ _grid_res + '}}'
         else
-            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ _PARENT_FIELD.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") +' = \'' + _LABEL_VALUE +'\'  AND aniocolecta >= \''+ fecha_ini + ' \' AND aniocolecta <= \'' + fecha_fin + ' \'"){individuosinfectados gridid_'+ _grid_res + '}}'
+            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ label_target +' = \'' + _LABEL_VALUE +'\'  AND aniocolecta >= \''+ fecha_ini + ' \' AND aniocolecta <= \'' + fecha_fin + ' \'"){individuosinfectados gridid_'+ _grid_res + '}}'
 
 
         console.log(query)
