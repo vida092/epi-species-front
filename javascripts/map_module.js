@@ -2225,6 +2225,8 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         console.log( _PARENT_FIELD)
         //_PARENT_FIELD.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
         switch(_PARENT_FIELD){
+            case("phylum"):
+                var label_target = "phylum"
             case("class"):
                 var label_target = "clase";
                 break;
