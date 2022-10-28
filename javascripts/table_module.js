@@ -71,11 +71,11 @@ var table_module = (function(verbose) {
     function createDecilList(list_elements = null) {
 
         _VERBOSE ? console.log("createDecilList") : _VERBOSE;
-        console.log(list_elements)
+        console.log(list_elements.length)
 
         if(list_elements){
 
-            _data_list_decil = []
+            _data_list_decil = []            
 
             list_elements.forEach(function(d) {
 
@@ -84,7 +84,7 @@ var table_module = (function(verbose) {
                 var value_abio = "";
                 if (d.species.indexOf("|") !== -1) {
 
-		   console.log(d);
+		            console.log(d);
                     var arg_values = d.species.split("|")
 
                     // console.log(arg_values)
@@ -106,15 +106,15 @@ var table_module = (function(verbose) {
 
                     // value = _iTrans.prop(lb) + " (" + parseFloat(range[0]).toFixed(2) + " : " + parseFloat(range[1]).toFixed(2) + ") "
                     
-		   if(range.length > 1){
-                        value_abio = _iTrans.prop(lb) + " (" + min  + " : " + max +")";
-                    }else{
-                        value_abio = _iTrans.prop(lb) + ' (' + tag + ')';
+                    if(range.length > 1){
+                                    value_abio = _iTrans.prop(lb) + " (" + min  + " : " + max +")";
+                                }else{
+                                    value_abio = _iTrans.prop(lb) + ' (' + tag + ')';
 
-			if(tag === ''){
-				//value_abio = d.species;
-				value_abio = '';
-			}
+                        if(tag === ''){
+                            //value_abio = d.species;
+                            value_abio = '';
+                        }
 
                     }
                 } 
@@ -126,18 +126,21 @@ var table_module = (function(verbose) {
                 var item_list = [];
                 item_list.push(d.decil)
 
-                if(d.description === '') {
-                    item_list.push(value_abio)
-                }else{
-                    item_list.push(d.description + ' '+ d.species.split(' ')[1])
-                }
-
+                // if(d.description === '') {
+                //     item_list.push(value_abio)
+                // }else{
+                //     item_list.push(d.description + ' '+ d.species.split(' ')[1])
+                // }
+                item_list.push(d.species)
+                
                 item_list.push(d.epsilon)
                 item_list.push(d.score)
                 item_list.push(d.occ)
                 item_list.push(d.occ_perdecile)            
                 _data_list_decil.push(item_list)
+                                
             })
+            console.log(_data_list_decil)
 
         }
         
@@ -838,6 +841,7 @@ var table_module = (function(verbose) {
 
                     item_list.push(name_s);
                     item_list.push(name_t);
+                    
 
                     item_list.push(val.nij);
                     item_list.push(val.nj);

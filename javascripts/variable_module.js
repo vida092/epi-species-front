@@ -1106,7 +1106,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                     
                                 }else if(self.varfilter_selected[1] === "familia"){
                                     var button_val = lst[2]
-                                    var query = "query{all_snib_covariables(limit:2000, filter:\""+ button_val +" ='"+ ui.item.id +"'\"){familiavalida generovalido especievalida}}"
+                                    var query = "query{all_snib_covariables(limit:2500, filter:\""+ button_val +" ='"+ ui.item.id +"'\"){familiavalida generovalido especievalida}}"
                                     $.ajax({
                                         url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
                                         method: "POST",
@@ -1752,7 +1752,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             _VERBOSE ? console.log(d.node.original.attr.nivel) : _VERBOSE;
             _VERBOSE ? console.log(d.node.children) : _VERBOSE;
-            console.log("esto es d "+d)
+            console.log("esto es d "+ d)
 
             if (d.node.children.length > 1){
                 console.log("No se encontraron datos debajo de este nivel")
@@ -2131,7 +2131,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                     _VERBOSE ? console.log(node_temp) : _VERBOSE;
                     if (node_temp.attr.nivel === 7){
                         
-                        self.arraySocioSelected.push({label: node_temp.text, id: node_temp.attr, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
+                        self.arraySocioSelected.push({label: node_temp.text, id: node_temp.attr, parent: node_temp.parent, level: node_temp.attr.level, type: node_temp.attr.type});
                         self.arraySocioSelected2.push({taxon: "code", value: node_temp.attr.code}) 
 
                     }else if(node_temp.attr.nivel === 8){

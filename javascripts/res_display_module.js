@@ -1220,12 +1220,13 @@ var res_display_module = (function (verbose, url_zacatuche) {
             _REQUESTS_NUMBER = _REQUESTS_NUMBER - 1;
 
             // PROCESANDO PETICIONES INDIVIDUALES
-            var data_response = jQuery.extend(true, [], respuesta.data);
+            //var data_response = jQuery.extend(true, [], respuesta.data);
+            var data_response = respuesta.data
             console.log("****************")
             console.log(data_response)
             var validation_data = respuesta.validation_data
 
-            processSingleResponse(data_response, data_request, validation_data); // data_response[0] porque utils_module.processDataForScoreCell no tenía acceso a cell ni a score
+            processSingleResponse(data_response, data_request, validation_data); 
 
             _REQUESTS_DONE.push(respuesta);
 
@@ -1378,6 +1379,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
                             _VERBOSE ? console.log("_TREE_GENERATED.hasTotal resp.ok") : _VERBOSE;
 
                             var total_counts = resp.data;
+                            
 
                             var validation_data = resp.validation_data
 
@@ -1838,6 +1840,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
         _VERBOSE ? console.log("createTableDecil") : _VERBOSE;
 
         var decil_list = [];
+        console.log("*/*/*/*/*/*/*/*/*/*/*/*/")
 
         console.log(counts)
         _table_module_eps.createDecilList(counts);
@@ -1980,12 +1983,14 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
         data.forEach(function (d) {
             var item_list = [];
+            // console.log("*****-----*****----**---*-**--*-*")  
+            // console.log(d)
 
             // las variables climáticas no cuentan con reino, phylum, clase, etc
             if (d.reinovalido === "" && d.phylumdivisionvalido === "" && d.especieepiteto === "") {
                 // var arg_values = d.especievalidabusqueda.split(" ")
 
-                console.log(d)
+                //console.log(d)
 
                 var range = d.tag.split(":")
                 var label = d.label.replace(/[^a-zA-Z0-9]/g, "").replace(/ /g,'')
@@ -2029,6 +2034,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
         });
 
         var json_arg = {data: data_list}
+        console.log("*//*/*/*/*/*/*/*/*/*/*/*/")        
+        console.log(json_arg)
 
         _table_module_eps.createEspList(json_arg);
         _tbl_eps = true;
