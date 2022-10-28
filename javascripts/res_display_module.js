@@ -2002,7 +2002,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
                 
                 
 		if(d.tag.split(":").length > 1){
-                    var value = _iTrans.prop(label) + " (" + min + " : " + max + ") ";
+                    var value = _iTrans.prop(label) + " (" + d.tag + ") ";
                 }else {
                     var value = _iTrans.prop(label) + ' (' +  d.tag + ')'; 
                 }
@@ -2013,7 +2013,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
             } else {
                 //item_list.push(d.generovalido + " " +d.especieepiteto + " " + d.nombreinfra)
 
-                item_list.push(d.description + ' ' + d.especieepiteto)
+                item_list.push(d.generovalido + ' ' + d.especieepiteto)
             }
 
             // var namesp = d.reinovalido === "" ? d.type +" "+ d.layer : 
