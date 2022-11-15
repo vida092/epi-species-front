@@ -17,7 +17,7 @@ var module_nicho = (function () {
     var _AGENT_TEXT_SELECTED;
 
     // actualizar este arreglo si cambian los ids de las secciones
-    var _SCROLL_SECTIONS = ["section0","section1","map","myScrollableBlockEpsilonDecil","histcontainer_row"];
+    var _SCROLL_SECTIONS = ["section0","section1","map","myScrollableBlockEpsilonDecil"]//,"histcontainer_row"];
     var _SCROLL_INDEX = 0;
 
 
@@ -1146,7 +1146,7 @@ var module_nicho = (function () {
 
     // se ejecutan los modulos necesarios para iniciar el proceso de obteción de epsilon y score y visualización de tablas, histogramas y mapa
     $("#get_esc_ep").click(function () {    
-          
+        
 
         _VERBOSE ? console.log("get_esc_ep") : _VERBOSE;
         var num_items = 0, spid, idreg, subgroups, sp_target;

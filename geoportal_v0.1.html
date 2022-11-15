@@ -271,9 +271,9 @@
                             <!--<div class="col-md-12 col-sm-12 col-xs-12">-->
                                 <label class="text-sm" id="footprint_region" ></label>
                                 <select id="footprint_region_select" class="form-control" >
-                                    <option value="México" selected="selected">
+                                    <!-- <option value="México" selected="selected">
                                         México
-                                    </option>
+                                    </option> -->
                                 </select>
                                 <!--agregar sólo México-->
                             </div>
@@ -870,18 +870,19 @@
                     <div class="row">
 
 
-                        <div id="div_munlist" class="row-fluid myScrollableBlockDecilList box_shadow bg-card">
+                        <!-- <div id="div_munlist" class="row-fluid myScrollableBlockDecilList box_shadow bg-card">
 
                             <table id="tbl_munlist" class="display compact cell-border" cellspacing="0"></table>
 
-                        </div>
+                        </div> -->
                         
                         
                     </div>
 
-
-
-                    <div class="row">
+                    <div id="treeAddedPanel"  class="row-fluid myScrollableBlockDecilList box_shadow bg-card">
+                        <table id="tdisplay" class="display compact cell-border" ></table>
+                    </div>
+                    <div class="row histogramrow" style="visibility:hidden; display: none;">
 
                         <div id="histcontainer_row" class="row-fluid histcontainer_row  ">
 
@@ -909,13 +910,6 @@
                         </div>
                         
 
-                    </div>
-
-                    
-
-
-                    <div id="treeAddedPanel"  class="row-fluid myScrollableBlockDecilList box_shadow bg-card">
-                        <table id="tdisplay" class="display compact cell-border" ></table>
                     </div>
 
 

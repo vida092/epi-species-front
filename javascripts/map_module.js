@@ -2247,7 +2247,11 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
                 console.log("nada que hacer")
         }    
         
-
+        if(label_target === "species"){
+            label_target = "nombrecientifico"
+        }
+        
+        console.log(label_target)
         if ( fecha_ini.length < 3)
             var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ label_target +' = \'' + _LABEL_VALUE +'\' "){individuosinfectados gridid_'+ _grid_res + '}}'
         else

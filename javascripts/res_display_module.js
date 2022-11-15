@@ -685,35 +685,6 @@ var res_display_module = (function (verbose, url_zacatuche) {
         _VERBOSE ? console.log("grid_res: " + _grid_res) : _VERBOSE;
         
 
-        // $.ajax({
-        //     url: _url_zacatuche + "/niche/especie/getGroupValidationTables",
-        //     type: 'post',
-        //     data: {
-        //         // spid: _spid,
-        //         target_taxons: taxones,
-        //         iter: _NUM_ITERATIONS,
-        //         grid_res: _grid_res,
-        //         footprint_region: _footprint_region
-        //     },
-        //     dataType: "json",
-        //     success: function (resp) {
-
-        //         console.log(resp)
-
-        //         _idtemptable = resp.data[0].tblname;
-        //         _VERBOSE ? console.log("Creación tabla: " + _idtemptable) : _VERBOSE;
-
-        //         // _confDataRequest(_spid, _idreg, val_process, _idtemptable);
-        //         _confDataRequest(taxones, _idreg, val_process, _idtemptable);
-        //         _panelGeneration(_idtemptable);
-        //         // _generateCounts(_countsdata);
-
-        //     },
-        //     error: function (jqXHR, textStatus, errorThrown) {
-        //         _VERBOSE ? console.log("error: " + textStatus) : _VERBOSE;
-
-        //     }
-        // });
         $.ajax({
             url: "https://covid19.c3.unam.mx/gateway/api/analysis/cells/",
             type: 'post',
@@ -1149,7 +1120,9 @@ var res_display_module = (function (verbose, url_zacatuche) {
         _REQUESTS_MADE.forEach(function (item, index) {
 
             // console.log(item);
+            
             _createScore_Decil(item);
+            
 
         });
 
@@ -1169,6 +1142,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
      * @param {boolean} isTotal - Bandera que indica si la configuración enviada es el total de los conjuntos de las variables seleccionadas 
      */
     function _createScore_Decil(decildata) {
+
+        
 
         _VERBOSE ? console.log("_createScore_Decil") : _VERBOSE;
 
@@ -1398,10 +1373,10 @@ var res_display_module = (function (verbose, url_zacatuche) {
                             // console.log("total_counts: " + total_counts.length)
                             // console.log(decil_cells)
                             console.log(percentage_avg)
-                            console.log("<=========================PEDROVIC===========================>8")
+                            console.log("<====================================================>8")
                             console.log(validation_data)
                             console.log(data_score_cell)
-                            console.log(">=========================PEDROVIC===========================<8")
+                            console.log(">====================================================<8")
                             // console.log(cell_summary)
 
                             
