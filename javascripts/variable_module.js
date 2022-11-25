@@ -1524,7 +1524,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                             self.arrayBioclimSelected = [];
                             // self.groupbioclimvar_dataset = [];
-                            self.cleanVariables('jstree_variables_bioclim_' + id, 'treeAddedPanel_' + id, _TYPE_ABIO);
+                            self.cleanVariables('jstree_variables_bioclim_' + id, 'treeAddedPanel_' + id, _TYPE_TERRESTRE);
                             e.preventDefault();
 
                         })
@@ -1949,11 +1949,11 @@ var variable_module = (function (verbose, url_zacatuche) {
             _VERBOSE ? console.log("self.getChangeTreeVarRaster") : _VERBOSE;
 
             self.arrayBioclimSelected= [];
-            self.arrayBioclimSelected2 = [];   
-            
+            self.arrayBioclimSelected2 = [];             
             console.log($("#treeVariableBioclim_fuente").jstree(true).get_top_selected().length)
             console.log($("#treeVariableBioclim_fuente").jstree(true).get_top_selected())
-            if($("#treeVariableBioclim_fuente").jstree(true).get_top_selected()[0] === 'WorlClim'){
+
+            if($("#treeVariableBioclim_fuente").jstree(true).get_top_selected()[0] === 'WorlClim' && $("#treeVariableBioclim_fuente").jstree(true).get_top_selected().length > 0){
                 console.log("elegiste worldclim")
                 self.arrayBioclimSelected.push({label: "WordlClim", id: " ", parent: "Raster ", level: "5", type: " "})
                 $.ajax({
@@ -1972,33 +1972,36 @@ var variable_module = (function (verbose, url_zacatuche) {
                         layers.forEach(layer=>{
                             self.arrayBioclimSelected2.push({taxon:"layer", value:layer})
                         })
-                        self.arrayBioclimSelected.push({label:"Raster", id:"Worldclim"})
+                        
                         
                     }
                 })             
             }else if ($("#treeVariableBioclim_fuente").jstree(true).get_top_selected().length > 0) {
-
+                console.log("elegiste algúnos nodos")
                 var headers_selected = $("#treeVariableBioclim_fuente").jstree(true).get_top_selected().length;
-                  
 
                 for (i = 0; i < headers_selected; i++) {
                     var node_temp = $("#treeVariableBioclim_fuente").jstree(true).get_node($("#treeVariableBioclim_fuente").jstree(true).get_top_selected()[i]).original;
                     
                     _VERBOSE ? console.log(node_temp) : _VERBOSE;
-                    if(node_temp.attr.nivel===7){
-                        
-                        self.arrayBioclimSelected.push({label: node_temp.text, id: node_temp.attr.layer, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
-                        self.arrayBioclimSelected2.push({taxon:"layer" , value: node_temp.attr.layer})
-                    }else if(node_temp.attr.nivel ===8){
-                        
+                    if(node_temp.attr.nivel===7){      
 
-                        self.arrayBioclimSelected.push({label: node_temp.text, id: node_temp.attr.layer, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
+                        self.arrayBioclimSelected.push({label: node_temp.text, id: node_temp.attr.layer, parent: node_temp.parent, level: node_temp.attr.level, type: node_temp.attr.type});
+                        self.arrayBioclimSelected2.push({taxon:"layer" , value: node_temp.attr.layer})
+
+                    }else if(node_temp.attr.nivel ===8){
+
+                        self.arrayBioclimSelected.push({label: node_temp.text, id: node_temp.attr.layer, parent: node_temp.parent, level: node_temp.attr.level, type: node_temp.attr.type});
                         self.arrayBioclimSelected2.push({taxon:"id" , value: node_temp.attr.id})
+
                     }
                 }                
 
             }
+
+            console.log("-*/-*/-*/*/ Este es para el front -*/-*/-*/-*/")
             _VERBOSE ? console.log(self.arrayBioclimSelected) : _VERBOSE;
+            console.log("-*/-*/-*/-*/ Este es para la petición -*/-*/-*/ ")
             _VERBOSE ? console.log(self.arrayBioclimSelected2) : _VERBOSE;           
 
         };
@@ -2433,6 +2436,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             // item - llega en forma de array, por tanto para obtener su valor se accede al primer valor   
             console.log("updateVarSelArray")         
             console.log(self.var_sel_array)
+            
             if (operacion == _BORRADO) {
 
                 _VERBOSE ? console.log("elemento borrado") : _VERBOSE;
@@ -2468,14 +2472,17 @@ var variable_module = (function (verbose, url_zacatuche) {
 
 
             _VERBOSE ? console.log("self.cleanVariables") : _VERBOSE;
-            $('#disease_selected').val("dis_default")
+            
 
             $('#' + idDivContainer).empty();
+            
+            //agregar caso socioeconomico
 
-            if (typeVar == _TYPE_TERRESTRE || typeVar == _TYPE_ABIO) {
-                $('#' + idTree + _id).jstree(true).deselect_all();
+            if (typeVar == _TYPE_TERRESTRE || typeVar == _TYPE_ABIO) {                              
+                $('#treeVariableBioclim_fuente').jstree("deselect_all")
             } else {
                 $('#' + idTree + _id).jstree("destroy").empty();
+                $('#disease_selected').val("dis_default")
             }
 
             self.var_sel_array = [];
@@ -2488,8 +2495,9 @@ var variable_module = (function (verbose, url_zacatuche) {
                     break;
                 case 'jstree_variables_bioclim_fuente':
                     worldclim=[]
-                    console.log("se eliminó información de worldclim")  
-                case "jstree_variables_species_fuente" :
+                    console.log("se eliminó información de worldclim") 
+                    break; 
+                case "jstree_variables_species_fuente" :                    
                     snib=[]
                     console.log("se eliminó información taxonomica fuente")
                     break;  

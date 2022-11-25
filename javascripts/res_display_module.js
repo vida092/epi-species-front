@@ -577,7 +577,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
         
 
-        _REQUESTS = num_items + _subgroups.length;
+        //_REQUESTS = num_items + _subgroups.length;
+        _REQUESTS=1
         _ITER_REQUESTS = _REQUESTS;
         _VERBOSE ? console.log("Peticiones al servidor: " + _REQUESTS) : _VERBOSE;
 
