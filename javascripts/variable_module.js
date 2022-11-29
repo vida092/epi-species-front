@@ -1865,7 +1865,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             self.arrayVarSelectedFuente = []; //para el front
             self.arrayVarSelectedFuente2 = []; //para el query
-            console.log("-*/-*/-*/-*/-*/-*/-*/-*/-*/-*/")
+            
             console.log($('#jstree_variables_species_fuente').jstree(true).get_top_selected().length)
 
             if ($('#jstree_variables_species_fuente').jstree(true).get_top_selected().length > 0) {
@@ -1999,9 +1999,9 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             }
 
-            console.log("-*/-*/-*/*/ Este es para el front -*/-*/-*/-*/")
+            
             _VERBOSE ? console.log(self.arrayBioclimSelected) : _VERBOSE;
-            console.log("-*/-*/-*/-*/ Este es para la petición -*/-*/-*/ ")
+            
             _VERBOSE ? console.log(self.arrayBioclimSelected2) : _VERBOSE;           
 
         };

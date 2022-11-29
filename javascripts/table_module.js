@@ -140,7 +140,7 @@ var table_module = (function(verbose) {
                 _data_list_decil.push(item_list)
                                 
             })
-            console.log(_data_list_decil)
+            
 
         }
         
@@ -325,6 +325,12 @@ var table_module = (function(verbose) {
 
         // var data_list = rawdata.data;    
         _data_list_eps = rawdata ? rawdata.data : _data_list_eps
+        console.log(rawdata)
+        console.log("-*/-*/-*/-*/-*/-*/*/")
+        console.log(rawdata.data)
+        console.log("-*/-*/-*/-*/-*/-*/*/")
+        console.log(_data_list_eps)
+        console.log("-*/-*/-*/-*/-*/-*/*/")
         
         if (_tbl != false) {
             // $('#tdisplay').dataTable().fnClearTable();

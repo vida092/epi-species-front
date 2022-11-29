@@ -1112,6 +1112,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
         });
 
         _REQUESTS_NUMBER = _REQUESTS_MADE.length;
+        
         console.log("_REQUESTS_NUMBER: " + _REQUESTS_NUMBER);
         // console.log(_TREE_GENERATED);
         // console.log(_REQUESTS_MADE);
@@ -1119,12 +1120,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
         // return;
 
         _REQUESTS_MADE.forEach(function (item, index) {
-
-            // console.log(item);
-            
             _createScore_Decil(item);
-            
-
         });
 
     }
@@ -1193,18 +1189,24 @@ var res_display_module = (function (verbose, url_zacatuche) {
             }
 
             ///talvez modificar
-            _REQUESTS_NUMBER = _REQUESTS_NUMBER - 1;
+            _REQUESTS_NUMBER = 0;
+            
 
             // PROCESANDO PETICIONES INDIVIDUALES
             //var data_response = jQuery.extend(true, [], respuesta.data);
             var data_response = respuesta.data
-            console.log("****************")
+            
             console.log(data_response)
             var validation_data = respuesta.validation_data
 
             processSingleResponse(data_response, data_request, validation_data); 
 
             _REQUESTS_DONE.push(respuesta);
+            console.log("****************-------********")
+            console.log(_REQUESTS_DONE)
+            _REQUESTS_DONE=_REQUESTS_DONE.slice(0,1)
+            console.log("****************-------********")
+            console.log(_REQUESTS_DONE)
 
             // todas las peticiones han sido realizadas
             if (_REQUESTS_NUMBER === 0) {
@@ -1231,6 +1233,14 @@ var res_display_module = (function (verbose, url_zacatuche) {
                     cell_summary = cell_summary.concat(item.cell_summary);
 
                 });
+                // total_score_cell = respuesta.data_score_cell;
+                // percentage_avg = respuesta.percentage_avg
+                // decil_cells = respuesta.decil_cells
+                // time_validacion_decil = respuesta.time_validation // revisar si es necesario
+                // cell_summary = respuesta.cell_summary
+
+
+            
                console.log(total_eps_scr);
                console.log(total_score_cell);
                console.log(percentage_avg);
@@ -1477,14 +1487,6 @@ var res_display_module = (function (verbose, url_zacatuche) {
         console.log("gridres_column: " + gridres_column);
         console.log(map_result);
         console.log(data);
-
-        // fetch(_url_zacatuche + "/niche/especie/getColumnsGrid", {
-        //         method: "POST",
-        //         body: JSON.stringify(data),
-        //         headers: {
-        //             "Content-Type": "application/json"
-        //         }
-        //     })
         fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
             method:"POST",
             body: JSON.stringify(data),
@@ -1816,7 +1818,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
         _VERBOSE ? console.log("createTableDecil") : _VERBOSE;
 
         var decil_list = [];
-        console.log("*/*/*/*/*/*/*/*/*/*/*/*/")
+        
 
         console.log(counts)
         _table_module_eps.createDecilList(counts);
@@ -1977,11 +1979,11 @@ var res_display_module = (function (verbose, url_zacatuche) {
                 // var value = _iTrans.prop(label) + " (" + parseFloat(range[0]).toFixed(2) + " : " + parseFloat(range[1]).toFixed(2) + ") "
                 
                 
-		if(d.tag.split(":").length > 1){
-                    var value = _iTrans.prop(label) + " (" + d.tag + ") ";
-                }else {
-                    var value = _iTrans.prop(label) + ' (' +  d.tag + ')'; 
-                }
+                if(d.tag.split(":").length > 1){
+                            var value = _iTrans.prop(label) + " (" + d.tag + ") ";
+                        }else {
+                            var value = _iTrans.prop(label) + ' (' +  d.tag + ')'; 
+                        }
 
 
                 item_list.push(value)
