@@ -1424,9 +1424,9 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                 } else{
                     
-                    console.log("<=========================PEDROVIC===========================>7")
+                    console.log("<=======================RESULTS_TODISPLAY=============================>7")
                     console.log(_RESULTS_TODISPLAY)
-                    console.log(">=========================PEDROVIC===========================<7")
+                    console.log(">====================================================<7")
                     
                     $("#div_munlist").hide();
 
