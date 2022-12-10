@@ -1299,6 +1299,7 @@ var module_nicho = (function () {
             }  
             
             body={
+                "selected_decile": [10],
                 "mesh": grid_res,
 
                 "covariables":covariables,

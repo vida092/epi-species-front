@@ -299,19 +299,20 @@ var histogram_module = (function (verbose) {
             .on("click",function(d,i) {
 
                 console.log("calculando valores")
-                // console.log(d)
+                console.log(d)
+                console.log(i)
 
                 var deciles = [], grupos = []
 
                 d3.selectAll(".lbdecil_chk .tick .selected")
                 .each(function (d, i) {
-                    // console.log(d)
+                    console.log(d)
                     deciles.push(d)
                 })
 
                 d3.selectAll(".rect_legend.selected")
                 .each(function (d, i) {
-                    // console.log(d)
+                    console.log(d)
                     grupos.push(d)
                 })
 
@@ -324,6 +325,10 @@ var histogram_module = (function (verbose) {
                     _toast_module.showToast_BottomCenter(_iTrans.prop('no_decilgrupo'), "warning");
                     return
                 }
+                body.selected_decile = deciles
+                console.log(body.selected_decile)
+                console.log(body)
+                console.log("ahora se llama ala función load decile table")
 
 
                 // _display_module_nicho.loadDecilDataTable(d.decil, d.name, false, [], []);

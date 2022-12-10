@@ -1696,10 +1696,6 @@ var res_display_module = (function (verbose, url_zacatuche) {
            console.log("value.name: " + value.name);
            console.log("name: " + name);
            console.log(_currentNameView !== name);
-//            console.log(_currentDecil !== decil);
-
-
-            
             console.log(_currentDecil);
             console.log(deciles);
 
@@ -1759,10 +1755,10 @@ var res_display_module = (function (verbose, url_zacatuche) {
                     $('#map').loading('stop');
                 }
                 else{
-
-                    fetch(_url_zacatuche + "/niche/countsTaxonsGroup", {
+                    console.log("se hace la petición a la segunda tabla")
+                    fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/", {
                         method: "POST",
-                        body: JSON.stringify(request),
+                        body: JSON.stringify(body),
                         headers: {
                             "Content-Type": "application/json"
                         }
@@ -1774,12 +1770,13 @@ var res_display_module = (function (verbose, url_zacatuche) {
                         // $("#map_next").show("slow");
 
                         if (resp.ok) {
-
+                                                        
+                            console.log("-*/-*/-*/-*/-*/-*/-*/-*/-*/")
                             _VERBOSE ? console.log("loadDecilDataTable resp.ok") : _VERBOSE;
 
                             var percentage_avg = resp.percentage_avg;
 
-                            var decil_cells = resp.decil_cells;                            
+                            var decil_cells = resp.data_score_cell;                            
 
                             console.log(percentage_avg)
 
@@ -1991,7 +1988,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
             } else {
                 //item_list.push(d.generovalido + " " +d.especieepiteto + " " + d.nombreinfra)
 
-                item_list.push(d.generovalido + ' ' + d.especieepiteto)
+                //item_list.push(d.generovalido + ' ' + d.especievalida)
+                item_list.push(d.especievalida)
             }
 
             // var namesp = d.reinovalido === "" ? d.type +" "+ d.layer : 
@@ -2029,7 +2027,9 @@ var res_display_module = (function (verbose, url_zacatuche) {
     function activeDecilOccurrences(decil_cells, deciles){
 
         _VERBOSE ? console.log("activeDecilOccurrences") : _VERBOSE;
-
+        
+        console.log(decil_cells)
+        
         _map_module_nicho.updateDecilLayer(deciles)
 
         _map_module_nicho.setDecilCells(decil_cells);
