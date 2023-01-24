@@ -2,6 +2,7 @@ var _PARENT_FIELD = "";
 var _LABEL_VALUE = "";
 var _AGENT_SELECTED = "";
 
+
 /**
  * Módulo variable, utilizado para crear y gestionar los selectores de grupos de variables en nicho ecológico y comunidad ecológica.
  *
@@ -12,6 +13,10 @@ var variable_module = (function (verbose, url_zacatuche) {
     var _url_zacatuche = url_zacatuche;
     var _VERBOSE = verbose;
     var _selectors_created = [];
+    _module_toast = toast_module(_VERBOSE);
+    _module_toast.startToast();
+    
+    
 
     var _id;
 
@@ -108,8 +113,8 @@ var variable_module = (function (verbose, url_zacatuche) {
 
         // se comentan variables topograficas por expansión de terreno
 
-        //var tags = abio_tab ? ['a_taxon', 'a_raster', 'a_raster2', 'a_socio'] : ['a_taxon'];
-        var tags = ['a_taxon', 'a_raster']//, 'a_socio'];
+        var tags = abio_tab ? ['a_taxon', 'a_raster',  'a_socio'] : ['a_taxon'];
+        //var tags = ['a_taxon', 'a_raster', 'a_socio'];
 
 
         var sp_items = [ 'a_item_clase', 'a_item_orden', 'a_item_familia', 'a_item_genero','a_item_especie'];
@@ -136,6 +141,8 @@ var variable_module = (function (verbose, url_zacatuche) {
         self.arrayVarSelected;
         self.groupvar_dataset = [];
         self.var_sel_array = [];
+        //self.arrayBioclimSelected2 = [];
+        self.arraySocioSelected2 = [];
 
         self.last_event;
         self.arrayBioclimSelected = [];
@@ -267,7 +274,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             });
 
             $('#disease_selected').change(function(e){
-
+                _module_toast.showToast_CenterCenter("El árbol taxonómico se está cargando, espere unos segundos...","info")
                 var agent_selected = $('#agent_selected').val()
                 var disease_text_selected = $("#disease_selected option:selected").text();
 
@@ -277,10 +284,6 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                 var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){reino phylum clase orden familia genero nombrecientifico}}"
 
-                
-                console.log(query)
-                
-
                 $.ajax({
                     url: _url,
                     method: "POST",
@@ -288,10 +291,6 @@ var variable_module = (function (verbose, url_zacatuche) {
                     data: JSON.stringify({query: query}),
                     success: function(resp){
                         
-                        
-                        console.log(resp)
-                        
-
                         if (agent_selected == 'Hospederos'){
                             var species = resp.data.occurrences_by_taxon_hospederos;                                            
                         }
@@ -421,6 +420,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 'check_callback': true
                             }
                         });
+                        
+                        _module_toast.showToast_CenterCenter("El árbol taxonómico se cargó adecuadamente","info")
                         
                         
                         console.log(Object.keys(arbol['Animalia']))
@@ -564,7 +565,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                             data: JSON.stringify({query: query2}),
                             success: function(resp){
                                 var sei = resp.data.all_censo_inegi_2020_covariables
-                                data = [{"id":"inegi", "parent": "#", "text": "CENSO INEGI 2020", 'state': {'opened': false}, "icon": "plugins/jstree/images/rep.png",
+                                data = [{"id":"inegi", "parent": "#", "text": "CENSO INEGI 2020", 'state': {'opened': true}, "icon": "plugins/jstree/images/rep.png",
                                 'attr': {'nivel': 6, "type": 0} }]
                                 var intervals=[]
                                 sei.forEach(element=>{
@@ -615,7 +616,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                   });
                                 $(function () { $('#jstree_variables_socio_fuente').jstree(); });
                                 $("#jstree_variables_socio_fuente").on('changed.jstree', self.getChangeTreeVarSocio);
-                                //$('#jstree_variables_socio_fuente').on('open_node.jstree', self.getTreeVarRaster);
+                                
                                 
                                 
                             }
@@ -1532,7 +1533,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
 
                 // carga árbol de variables raster
-                self.loadTreeVarRaster();
+                //self.loadTreeVarRaster();
 
             }
 
@@ -1585,23 +1586,9 @@ var variable_module = (function (verbose, url_zacatuche) {
                         })
                         .appendTo(tab_pane);
 
-                
-                
-                
-
             }
-
             
-
-
-
         });
-
-
-
-
-
-        
 
         // Evento generado cuando se realiza la acción de abrir una rama del árbol de selección, realiza la carga de los elementos que componen la rama a la cual se desea tener acceso.
         self.getTreeVar = function (e, d) {
@@ -1670,12 +1657,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             console.log("REGION_SELECTED: " + _REGION_SELECTED);
             console.log("_GRID_RES: " + _GRID_RES);
 
-            // if (_AGENT_SELECTED == 'Hospederos')
-            //     var _url = 'http://10.90.0.42:4006/graphql/hospederos/'
-            // else if (_AGENT_SELECTED == 'Patogenos')
-            //     var _url = "http://10.90.0.42:4007/graphql/patogenos/"
-            // else
-            //     var _url = "http://10.90.0.42:4008/graphql/vectores/"
+            
             var _url="https://covid19.c3.unam.mx/gateway/api/nodes/"
 
             let nodo = _AGENT_SELECTED.toLowerCase()
@@ -1907,7 +1889,6 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                     _VERBOSE ? console.log(parent_node) : _VERBOSE;
                     _VERBOSE ? console.log(node_temp) : _VERBOSE;
-
                     if (parent_node ) {
 
                         self.arrayVarSelectedFuente.push({label: node_temp.text, level: level, numlevel: node_temp.attr.nivel, type: node_temp.attr.type, parent: parent_node.text});
@@ -1938,31 +1919,27 @@ var variable_module = (function (verbose, url_zacatuche) {
             _VERBOSE ? console.log(self.arrayVarSelectedFuente2) : _VERBOSE;
 
         };
-
-        
-
-        
-
         // Evento generado cuando cambia el estado de selección del árbol, almacena los elementos que fueron seleccionados del grupo de variables climáticas.
         self.getChangeTreeVarRaster = function (e, data) {
 
             _VERBOSE ? console.log("self.getChangeTreeVarRaster") : _VERBOSE;
-
             self.arrayBioclimSelected= [];
-            self.arrayBioclimSelected2 = [];             
-            console.log($("#treeVariableBioclim_fuente").jstree(true).get_top_selected().length)
+            self.arrayBioclimSelected2 = [];
             console.log($("#treeVariableBioclim_fuente").jstree(true).get_top_selected())
 
             if($("#treeVariableBioclim_fuente").jstree(true).get_top_selected()[0] === 'WorlClim' && $("#treeVariableBioclim_fuente").jstree(true).get_top_selected().length > 0){
-                console.log("elegiste worldclim")
+                
+                // _module_toast = toast_module(_VERBOSE);
+                // _module_toast.startToast();
+                _module_toast.showToast_CenterCenter("Cargando todos los layers de Worldclim", "info")
                 self.arrayBioclimSelected.push({label: "WordlClim", id: " ", parent: "Raster ", level: "5", type: " "})
                 $.ajax({
                     method: "POST",
                     url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
                     contentType: "application/json",
-                    data: JSON.stringify({query: "query{  all_worldclim_covariables(limit: 1000, filter: \"\"){ layer}}"}),
+                    data: JSON.stringify({query: "query{ all_worldclim_covariables(limit: 1000, filter: \"\"){ layer}}"}),
                     success: function(resp){
-                        
+                        _module_toast.showToast_CenterCenter("Se han cargado todos los layers", "info")
                         var layers=[]
                         resp.data.all_worldclim_covariables.forEach(json=>{
                             if(!layers.includes(json.layer)){
@@ -2010,10 +1987,43 @@ var variable_module = (function (verbose, url_zacatuche) {
         self.getChangeTreeVarSocio =  function(e, data){
             _VERBOSE ? console.log("self.getChangeTreeVarSocio") : _VERBOSE;
             self.arraySocioSelected=[];
-            self.arraySocioSelected2=[];
+            self.arraySocioSelected2=[]; 
+            console.log("socioselected2 es ")
+            console.log(self.arraySocioSelected2)
+            console.log($("#jstree_variables_socio_fuente").jstree(true).get_top_selected())
             
-            if ($("#jstree_variables_socio_fuente").jstree(true).get_top_selected().length > 0) {
+            if($("#jstree_variables_socio_fuente").jstree(true).get_top_selected()[0]==="inegi" && $("#jstree_variables_socio_fuente").jstree(true).get_top_selected().length > 0){
+                // _module_toast = toast_module(_VERBOSE);
+                // _module_toast.startToast();
+                _module_toast.showToast_CenterCenter("Cargando todos los layers de INEGI", "info")
+                self.arraySocioSelected.push({label: "INEGI 2020", id: " ", parent: "Socio ", level: "5", type: " "})
+                console.log("elegiste INEGI2020")
+                $.ajax({
+                    method: "POST",
+                    url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                    contentType: "application/json",
+                    data: JSON.stringify({query: "query{all_censo_inegi_2020_covariables(limit: 2000, filter:\"\"){code}}"}),
+                    success:function(resp){                                                
+                        var codes=[]
+                        resp.data.all_censo_inegi_2020_covariables.forEach(json=>{
+                            if(!codes.includes(json.code)){
+                                codes.push(json.code)
+                            }
+                        })
+                        console.log(self.arraySocioSelected2)
+                        
+                        codes.forEach(code=>{
+                            self.arraySocioSelected2.push({taxon: "code", value: code})
+                        })
+                        _module_toast.showToast_CenterCenter("Se han cargado todos los layers", "info")
 
+                        
+                                               
+                    }
+                })
+
+            }else if ($("#jstree_variables_socio_fuente").jstree(true).get_top_selected().length > 0) {
+                console.log("elegiste alguno de los nodos")
                 var headers_selected = $("#jstree_variables_socio_fuente").jstree(true).get_top_selected().length;
 
                 for (i = 0; i < headers_selected; i++) {
@@ -2032,7 +2042,9 @@ var variable_module = (function (verbose, url_zacatuche) {
                 }
 
             }
+            console.log("Array para el front")
             _VERBOSE ? console.log(self.arraySocioSelected) : _VERBOSE;
+            console.log("Array para el body")
             _VERBOSE ? console.log(self.arraySocioSelected2) : _VERBOSE;            
 
         }
@@ -2206,7 +2218,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                     });
 
         }
-        inegi2020 = [];
+        inegi = [];
         worldclim = [];
         snib = [];
         target_species = []
@@ -2214,12 +2226,13 @@ var variable_module = (function (verbose, url_zacatuche) {
         self.formQuery = function (idTree, arraySelected2){
             _VERBOSE ? console.log("self.formQuery") : _VERBOSE;
             console.log(idTree)
+            console.log(arraySelected2)
                       
             switch (idTree) {
                 case 'jstree_variables_socio_fuente':
-                    inegi2020=[...arraySelected2]
+                    inegi=[...arraySelected2]
                     console.log("se agregó información de inegi2020")
-                    console.log(inegi2020)
+                    console.log(inegi)
                     break;
                 case 'jstree_variables_bioclim_fuente':
                     worldclim=[...arraySelected2]
@@ -2490,7 +2503,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             switch (idTree) {
                 case 'jstree_variables_socio_fuente':
-                    inegi2020=[]
+                    inegi=[]
                     console.log("se eliminó información inegi2020")
                     break;
                 case 'jstree_variables_bioclim_fuente':
@@ -2555,8 +2568,8 @@ var variable_module = (function (verbose, url_zacatuche) {
         }
         self.getBodyElements = function(){
             //se cargan los elementos necesarios para formar el body
-            covobj= {"inegi2020": inegi2020, "snib": snib, "worldclim":worldclim}
-            return snib, covobj, inegi2020, worldclim, target_species
+            covobj= {"inegi2020": inegi, "snib": snib, "worldclim":worldclim}
+            return snib, covobj, inegi, worldclim, target_species
         }
 
     }

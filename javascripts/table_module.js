@@ -133,8 +133,8 @@ var table_module = (function(verbose) {
                 // }
                 item_list.push(d.species)
                 
-                item_list.push(d.epsilon)
-                item_list.push(d.score)
+                item_list.push(d.epsilon.toFixed(3))
+                item_list.push(d.score.toFixed(3))
                 item_list.push(d.occ)
                 item_list.push(d.occ_perdecile)            
                 _data_list_decil.push(item_list)
@@ -322,12 +322,17 @@ var table_module = (function(verbose) {
     function createEspList(rawdata = null) {
 
         _VERBOSE ? console.log("createEspList") : _VERBOSE;
+        console.log("cambiar a 3 decimales")
 
         // var data_list = rawdata.data;    
         _data_list_eps = rawdata ? rawdata.data : _data_list_eps
-        console.log(rawdata)
+        // console.log(rawdata)
         
-        console.log(rawdata.data)
+        // console.log(rawdata.data)
+        
+        
+        _data_list_eps.forEach(element=> element[6]=element[6].toFixed(3))
+        _data_list_eps.forEach(element=> element[5]=element[5].toFixed(3))
         
         console.log(_data_list_eps)
         
@@ -854,13 +859,14 @@ var table_module = (function(verbose) {
                     item_list.push(val.ni);
                     item_list.push(val.n);
 
-                    item_list.push(val.value);
+                    item_list.push(val.value.toFixed(3));
                     
-                    item_list.push(val.score);
+                    item_list.push(val.score.toFixed(3));
 
                     data_list.push(item_list)
 
                 });
+                
 
 
             // })

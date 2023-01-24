@@ -2803,16 +2803,20 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
     function createRankColor(json, mapa_prob, map_type) {
 
         _VERBOSE ? console.log("createRankColor") : _VERBOSE;
+        
 
-        console.log(json)
-
-        // console.log("map_type: " + map_type)
 
         var equal_range_sections = 9;
         var grid_color = d3.map([]);
         var colors = jQuery.extend(true, [], colorbrewer.RdBu[9]); 
         colors = colors.reverse()
-        // console.log(colors)
+
+        
+        console.log(mapa_prob)
+        console.log(json)
+        console.log(colors)
+        console.log("map_type: " + map_type)
+        
 
 
         var equal_range_colors = jQuery.extend(true, [], colorbrewer.Blues[equal_range_sections])
@@ -2953,16 +2957,16 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
             
             var no_cells = 0
-            console.log("<=========================PEDROVIC===========================>3")
+            console.log("<====================================================>3")
             map_type = 'range'
             console.log(scales)
             console.log(map_type)
-            console.log(">=========================PEDROVIC===========================<3")
+            console.log(">====================================================<3")
             $.each(json, function (_index, d) {
-                //console.log("<=========================PEDROVIC===========================>4")
+                //console.log("<====================================================>4")
                 //no_cells += 1
                 //console.log(d, no_cells)
-                //console.log(">=========================PEDROVIC===========================<4")
+                //console.log(">====================================================<4")
                 grid_color.set(parseInt(d.gridid), {color: scales[map_type](rateById[d.gridid]), score: d.tscore});
                 //grid_color.set(parseInt(d.gridid), {color: scales['deviation'](rateById[d.gridid]), score: d.tscore});
             })

@@ -308,10 +308,9 @@ var module_nicho = (function () {
             _VERBOSE ? console.log("Cambia enfermedad") : _VERBOSE;
             // No es necesario regenerar resultados
             _regenMessage();
+
             
-            alert("El árbol taxonómico se está cargando, espere unos segundos...")
-
-
+            
         });
 
 

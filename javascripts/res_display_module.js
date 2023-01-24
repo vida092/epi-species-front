@@ -437,8 +437,10 @@ var res_display_module = (function (verbose, url_zacatuche) {
             $("#btn_map_type").append('<span class="caret"></span>');
 
             _configureStyleMap();
+            
 
             if (_return_map) {
+                
               _map_module_nicho.set_colorCellsDecilMap();
             }
             
@@ -1771,7 +1773,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                         if (resp.ok) {
                                                         
-                            console.log("-*/-*/-*/-*/-*/-*/-*/-*/-*/")
+                            
                             _VERBOSE ? console.log("loadDecilDataTable resp.ok") : _VERBOSE;
 
                             var percentage_avg = resp.percentage_avg;
@@ -3288,7 +3290,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
         setHistogramModule: setHistogramModule,
         loadDecilDataTable: loadDecilDataTable,
         set_taxones: set_taxones,
-        // _configureStyleMap: _configureStyleMap
+        _configureStyleMap: _configureStyleMap,
         activeDecilOccurrences: activeDecilOccurrences
     }
 
