@@ -2820,9 +2820,6 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
 
         var equal_range_colors = jQuery.extend(true, [], colorbrewer.Blues[equal_range_sections])
-
-        
-
         equal_range_colors = equal_range_colors.reverse()
         equal_range_colors = equal_range_colors.concat(jQuery.extend(true, [], colorbrewer.Reds[equal_range_sections]))
         

@@ -161,6 +161,11 @@ var variable_module = (function (verbose, url_zacatuche) {
         // self.getTaxones =function() {
         //     return self.taxones;
         // }
+        
+
+        
+
+        
 
         self.getTreeTarget = function(){
 
@@ -421,38 +426,36 @@ var variable_module = (function (verbose, url_zacatuche) {
                             }
                         });
                         
-                        _module_toast.showToast_CenterCenter("El árbol taxonómico se cargó adecuadamente","info")
+                        _module_toast.showToast_CenterCenter("El árbol taxonómico se cargó adecuadamente","success")
                         
                         
-                        console.log(Object.keys(arbol['Animalia']))
-                        
-
-                        Object.keys(arbol["Animalia"]).forEach(phylum=>{
+                        //console.log(Object.keys(arbol['Animalia']))
+                        // Object.keys(arbol["Animalia"]).forEach(phylum=>{
 
                             
-                            console.log(phylum)
+                        //     console.log(phylum)
                             
-                            Object.keys(arbol["Animalia"][phylum]).forEach(clase=>{
+                        //     Object.keys(arbol["Animalia"][phylum]).forEach(clase=>{
 
-                                console.log("  " + clase)
+                        //         console.log("  " + clase)
                                 
-                                Object.keys(arbol["Animalia"][phylum][clase]).forEach(orden=>{
+                        //         Object.keys(arbol["Animalia"][phylum][clase]).forEach(orden=>{
 
-                                    console.log("     " + orden)
+                        //             console.log("     " + orden)
 
-                                    Object.keys(arbol["Animalia"][phylum][clase][orden]).forEach(familia=>{
+                        //             Object.keys(arbol["Animalia"][phylum][clase][orden]).forEach(familia=>{
 
-                                        console.log("       " + familia)
-                                        Object.keys(arbol["Animalia"][phylum][clase][orden][familia]).forEach(genero=>{
-                                            console.log("       " + genero)
-                                            arbol["Animalia"][phylum][clase][orden][familia][genero].forEach(nombre=>{
-                                                console.log("           " + nombre)
-                                            })
-                                        })
-                                    })
-                                })
-                            })
-                        }) 
+                        //                 console.log("       " + familia)
+                        //                 Object.keys(arbol["Animalia"][phylum][clase][orden][familia]).forEach(genero=>{
+                        //                     console.log("       " + genero)
+                        //                     arbol["Animalia"][phylum][clase][orden][familia][genero].forEach(nombre=>{
+                        //                         console.log("           " + nombre)
+                        //                     })
+                        //                 })
+                        //             })
+                        //         })
+                        //     })
+                        // }) 
 
                         
 
@@ -490,6 +493,71 @@ var variable_module = (function (verbose, url_zacatuche) {
             
 
         }
+
+
+        self.getTreeSocio = function (){
+            var query = "query{all_censo_inegi_2020_covariables(limit: 2400, filter:\"\"){id name interval bin code}}"
+            $.ajax({
+                url:"https://covid19.c3.unam.mx/gateway/api/nodes/",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({query: query}),
+                success: function(resp){
+                    var sei=resp.data.all_censo_inegi_2020_covariables
+                    data = [{"id": "inegi", "parent": "#", "text": "CENSO INEGI 2020", "state":{"opened":true}, "icon": "plugins/jstree/images/rep.png", "attr":{"nivel":6, "type":0}}]
+                    var intervals = []
+                    sei.forEach(element =>{
+                        if(!intervals.includes(element.interval)){
+                            intervals.push(element.interval)
+                        }
+                    })
+                    var names=[]
+
+                    sei.forEach(element=>{
+                        if(!names.includes(element.name)){
+                            names.push(element.name)
+                        }
+                    })
+                    
+
+                    var codes={}
+                    sei.forEach(element=>{
+                        codes[element.name]=element.code
+                    })
+                    
+                    
+                    names.forEach(element=>{
+                        data.push({"id":element, "parent":"inegi","text":element,"state":{"opened":false}, "icon":"plugins/jstree/images/group.png","attr":{"nivel":7, "type":2,"code":codes[element]}})
+                    })
+
+                    sei.forEach(element=>{
+                        names.forEach(name=>{
+                            if(intervals.includes(element.interval) && element.name === name){
+                                data.push({"id":element.interval, "parent": element.name, "text":element.interval, "state":{"opened":false}, "icon":"plugins/jstree/images/percent.png", "attr":{"nivel":8, "type":2, "bin":element.bin, "code":element.code}})
+                            }
+                        })
+                    })
+                    $("#jstree_variables_socio_fuente").jstree({
+                       "plugins":["wholerow", "checkbox"],
+                       "core":{
+                            "data": data,
+                            "themes":{
+                                "name":"proton",
+                                "responsive":true
+                            },
+                        "check_callback":true
+                       }
+                    })
+                    $(function () { $('#jstree_variables_socio_fuente').jstree(); });
+                    $("#jstree_variables_socio_fuente").on("changed.jstree", self.getChangeTreeVarSocio)
+                    
+
+                    
+                }
+            })
+            
+        }
+
         
 
         self.getTreeVarRaster = function () {
@@ -557,75 +625,10 @@ var variable_module = (function (verbose, url_zacatuche) {
                             }
             
                         })
-                        query2 ="query{all_censo_inegi_2020_covariables(limit: 2400, filter:\"\"){id name interval bin code}}"
-                        $.ajax({
-                            url:"https://covid19.c3.unam.mx/gateway/api/nodes/",
-                            method: "POST",
-                            contentType: "application/json",
-                            data: JSON.stringify({query: query2}),
-                            success: function(resp){
-                                var sei = resp.data.all_censo_inegi_2020_covariables
-                                data = [{"id":"inegi", "parent": "#", "text": "CENSO INEGI 2020", 'state': {'opened': true}, "icon": "plugins/jstree/images/rep.png",
-                                'attr': {'nivel': 6, "type": 0} }]
-                                var intervals=[]
-                                sei.forEach(element=>{
-                                    if(!intervals.includes(element.interval)){
-                                        intervals.push(element.interval)
-                                    }
-                                })
-                                var names=[]
-                                var codes={}
-                                sei.forEach(element=>{
-                                    if(!names.includes(element.name)){
-                                        names.push(element.name)                                        
-                                    }                                    
-                                })
-                                sei.forEach(element=>{
-                                    codes[element.name]=element.code
-                                })
-                                
-                                
-                                names.forEach(element=>{
-                                    data.push({"id": element, "parent":"inegi", "text":element, 'state': {'opened': false}, "icon": "plugins/jstree/images/group.png",
-                                'attr': {'nivel': 7, "type": 2, "code":codes[element]}})                                    
-
-                                })
-            
-                                sei.forEach(element=>{
-                                names.forEach(name=>{
-                                    if(intervals.includes(element.interval) && element.name===name){
-                                    data.push({"id":element.interval, "parent":element.name, "text":element.interval, 'state': {'opened': false}, "icon": "plugins/jstree/images/percent.png",
-                                    'attr': {'nivel': 8, "type": 2, "bin": element.bin,  "id": element.id, "code":element.code }})
-                                    }
-
-                                })
-
-                                })
-                                
-                                $('#jstree_variables_socio_fuente').jstree("destroy").empty();
-                                $('#jstree_variables_socio_fuente').jstree({
-                                    'plugins': ["wholerow", "checkbox"],
-                                    'core': {
-                                        'data': data,
-                                        'themes': {
-                                            'name': 'proton',
-                                            'responsive': true
-                                        },
-                                        'check_callback': true
-                                    }
-                                  });
-                                $(function () { $('#jstree_variables_socio_fuente').jstree(); });
-                                $("#jstree_variables_socio_fuente").on('changed.jstree', self.getChangeTreeVarSocio);
-                                
-                                
-                                
-                            }
-                        })
+                        
         }
         self.getTreeVarRaster()
-
-        
-
+        self.getTreeSocio() 
 
         /****************************************************************************************** GENERACION DE PANEL */
 
@@ -692,6 +695,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                     .appendTo(li);
                 }
         });
+        
 
 
 
@@ -704,7 +708,7 @@ var variable_module = (function (verbose, url_zacatuche) {
         
 
         // agregando contenido de cada tab
-        $.each(tags, function (i) {
+        $.each(tags, function (i) {            
             if (i === 0) {
                 // generando tab panel para variables taxonomicas
                 //_VERBOSE ? console.log(tags[i]) : _VERBOSE;
@@ -833,8 +837,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 _GRID_RES = $("#grid_resolution").val();                                
                                 var _url = "https://covid19.c3.unam.mx/gateway/api/nodes/"
                                 let lst = []
-                                console.log(query)
-                                
+                                console.log(query)                                
                                 
                                 $.ajax({
                                     method: "POST",
@@ -1542,11 +1545,11 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .attr('id', 'tab' + i + "_" + id)
                         .addClass('tab-pane')
                         .appendTo(tab_content)
+                        
                 var tree_nav_container = $('<div/>')
                         .addClass('row nav_species_container')
-                        .appendTo(tab_pane);               
-
-
+                        .appendTo(tab_pane)
+                        
                 
 
                 var div_tree = $('<div/>')
@@ -1577,12 +1580,9 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .attr('type', 'button')
                         .addClass('btn btn-primary glyphicon glyphicon-trash pull-left')
                         .click(function (e) {
-
-                            
                             // self.groupbioclimvar_dataset = [];
                             self.cleanVariables("jstree_variables_socio_" + id, 'treeAddedPanel_' + id, _TYPE_ABIO);
                             e.preventDefault();
-
                         })
                         .appendTo(tab_pane);
 
@@ -1939,7 +1939,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                     contentType: "application/json",
                     data: JSON.stringify({query: "query{ all_worldclim_covariables(limit: 1000, filter: \"\"){ layer}}"}),
                     success: function(resp){
-                        _module_toast.showToast_CenterCenter("Se han cargado todos los layers", "info")
+                        _module_toast.showToast_CenterCenter("Se han cargado todos los layers", "success")
                         var layers=[]
                         resp.data.all_worldclim_covariables.forEach(json=>{
                             if(!layers.includes(json.layer)){
@@ -1993,8 +1993,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             console.log($("#jstree_variables_socio_fuente").jstree(true).get_top_selected())
             
             if($("#jstree_variables_socio_fuente").jstree(true).get_top_selected()[0]==="inegi" && $("#jstree_variables_socio_fuente").jstree(true).get_top_selected().length > 0){
-                // _module_toast = toast_module(_VERBOSE);
-                // _module_toast.startToast();
+                
                 _module_toast.showToast_CenterCenter("Cargando todos los layers de INEGI", "info")
                 self.arraySocioSelected.push({label: "INEGI 2020", id: " ", parent: "Socio ", level: "5", type: " "})
                 console.log("elegiste INEGI2020")
@@ -2015,7 +2014,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         codes.forEach(code=>{
                             self.arraySocioSelected2.push({taxon: "code", value: code})
                         })
-                        _module_toast.showToast_CenterCenter("Se han cargado todos los layers", "info")
+                        _module_toast.showToast_CenterCenter("Se han cargado todos los layers", "success")
 
                         
                                                
