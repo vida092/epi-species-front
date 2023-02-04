@@ -1758,6 +1758,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
                 }
                 else{
                     console.log("se hace la petición a la segunda tabla")
+                    //fetch("jsons/pintarmapa.json")
                     fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/", {
                         method: "POST",
                         body: JSON.stringify(body),
@@ -1778,7 +1779,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                             var percentage_avg = resp.percentage_avg;
 
-                            var decil_cells = resp.data_score_cell;                            
+                            var decil_cells = resp.data_score_cell;
+                            //var decil_cells = resp.decil_cells;                            
 
                             console.log(percentage_avg)
 

@@ -328,7 +328,7 @@ var histogram_module = (function (verbose) {
                 body.selected_decile = deciles
                 console.log(body.selected_decile)
                 console.log(body)
-                console.log("ahora se llama ala función load decile table")
+                console.log("ahora se llama a la función load decile table")
 
 
                 // _display_module_nicho.loadDecilDataTable(d.decil, d.name, false, [], []);

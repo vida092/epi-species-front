@@ -35,9 +35,9 @@ var toast_module = (function(verbose){
 			"debug": false,
 			"onclick": null,
 			"fadeIn": 300,
-			"fadeOut": 1000,
+			"fadeOut": 2000,
 			"timeOut": 2000,
-			"extendedTimeOut": 2000,
+			"extendedTimeOut": 3000,
 			"positionClass": "toast-center-center",
 			"preventDuplicates": true,
 			"progressBar": true

@@ -162,9 +162,6 @@ var variable_module = (function (verbose, url_zacatuche) {
         //     return self.taxones;
         // }
         
-
-        
-
         
 
         self.getTreeTarget = function(){
@@ -399,13 +396,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                             
 
                         })
-                        
-                        
-                        console.log("arbol es")
-                        console.log(data)
-                        
-
-                        $('#jstree_variables_species_target').jstree("destroy").empty();
+                        //$(function () { $('#jstree_variables_species_target').jstree(); });
+                        //$('#jstree_variables_species_target').jstree("destroy").empty();
                         $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
                         $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
                         $("#jstree_variables_species_target").on('loaded.jstree', self.loadNodes);
@@ -425,42 +417,11 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 'check_callback': true
                             }
                         });
-                        
                         _module_toast.showToast_CenterCenter("El árbol taxonómico se cargó adecuadamente","success")
                         
-                        
-                        //console.log(Object.keys(arbol['Animalia']))
-                        // Object.keys(arbol["Animalia"]).forEach(phylum=>{
-
-                            
-                        //     console.log(phylum)
-                            
-                        //     Object.keys(arbol["Animalia"][phylum]).forEach(clase=>{
-
-                        //         console.log("  " + clase)
-                                
-                        //         Object.keys(arbol["Animalia"][phylum][clase]).forEach(orden=>{
-
-                        //             console.log("     " + orden)
-
-                        //             Object.keys(arbol["Animalia"][phylum][clase][orden]).forEach(familia=>{
-
-                        //                 console.log("       " + familia)
-                        //                 Object.keys(arbol["Animalia"][phylum][clase][orden][familia]).forEach(genero=>{
-                        //                     console.log("       " + genero)
-                        //                     arbol["Animalia"][phylum][clase][orden][familia][genero].forEach(nombre=>{
-                        //                         console.log("           " + nombre)
-                        //                     })
-                        //                 })
-                        //             })
-                        //         })
-                        //     })
-                        // }) 
-
-                        
-
                     }
                 })
+                
                 
                 
             })
@@ -629,6 +590,7 @@ var variable_module = (function (verbose, url_zacatuche) {
         }
         self.getTreeVarRaster()
         self.getTreeSocio() 
+        
 
         /****************************************************************************************** GENERACION DE PANEL */
 
