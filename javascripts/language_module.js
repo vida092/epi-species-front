@@ -333,6 +333,7 @@ var language_module = (function (verbose) {
             $("#lb_panel_variables").text($.i18n.prop('lb_panel_variables'));
             $("#a_taxon_fuente").text($.i18n.prop('a_taxon'));
             $("#a_raster_fuente").text($.i18n.prop('a_raster'));
+            $("#a_socio_fuente").text($.i18n.prop('a_socio'));
             $("#a_topo_fuente").text($.i18n.prop('a_topo'));
 
             $("#a_taxon_sumidero").text($.i18n.prop('a_taxon'));

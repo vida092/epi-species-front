@@ -195,7 +195,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 }
 
                                 for (let index = 0; index < disease.length; index++){
-                                    console.log(disease[index]["name"])
+                                    //console.log(disease[index]["name"])
                                     var opt = document.createElement('option');
                                     opt.setAttribute("class", "disease_opt")
                                     opt.value = disease[index]["name"];
@@ -227,7 +227,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 }
 
                                 for (let index = 0; index < disease.length; index++){
-                                    console.log(disease[index]["name"])
+                                    //console.log(disease[index]["name"])
                                     var opt = document.createElement('option');
                                     opt.setAttribute("class", "disease_opt")
                                     opt.value = disease[index]["name"];
@@ -258,7 +258,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 }
 
                                 for (let index = 0; index < disease.length; index++){
-                                    console.log(disease[index]["name"])
+                                    //console.log(disease[index]["name"])
                                     var opt = document.createElement('option');
                                     opt.setAttribute("class", "disease_opt")
                                     opt.value = disease[index]["name"];
@@ -654,7 +654,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                     .attr('href', '#tab' + i + "_" + id)
                     .attr('data-toggle', 'tab' + i + "_" + id)
                     .text(_iTrans.prop(tags[i]))
-                    .appendTo(li);
+                    .appendTo(li);tags
                 }
         });
         
@@ -2585,6 +2585,9 @@ var variable_module = (function (verbose, url_zacatuche) {
         var variable_selector = new VariableSelector(parent, id, title, abio_tab, reduced_height, btn_visualize, start_level);
 
         _selectors_created.push(variable_selector);
+        console.log("-*-*/-*/-*/-*/-*/-*/-*/-*/-*/")+
+        console.log(id)
+        
         return variable_selector;
 
 //        loadAvailableLayers(parent, id, title);

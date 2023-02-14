@@ -972,6 +972,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
         // console.log(cells_map)
         // console.log(score_map)
+        
 
         for (var i = 0; i < grid_map.features.length; i++) {
 
@@ -1016,6 +1017,9 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
     function colorizeTargetFeatures(grid_map = _grid_map_target, tileLayer = _tileLayerSpecies) {
 
         _VERBOSE ? console.log("colorizeTargetFeatures") : _VERBOSE;
+        console.log(grid_map);
+        console.log(tileLayer)
+        console.log("<------------Colores--------------->")
 
         var gridid_occ = []
         

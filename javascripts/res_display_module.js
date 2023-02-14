@@ -427,6 +427,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
             var language_selected = e.target.getAttribute("value");
             var language_label_selected = e.target.getAttribute("label");
+            console.log("-*/-*/-*/-*/-*/-*/-*/")
+            console.log(language_label_selected)
 
             _VERBOSE ? console.log("value: " + language_selected) : _VERBOSE;
             _VERBOSE ? console.log("label: " + language_label_selected) : _VERBOSE;
@@ -1203,6 +1205,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
             processSingleResponse(data_response, data_request, validation_data); 
 
+
+            console.log(_REQUESTS_DONE)
             _REQUESTS_DONE.push(respuesta);
             console.log("****************-------********")
             console.log(_REQUESTS_DONE)
@@ -1768,6 +1772,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
                     })
                     .then(resp => resp.json())
                     .then(resp => {
+                        console.log(resp)
+                        resp.decil_cells=[{cell: 196, decile: 5},{cell: 1051, decile: 5},{cell: 1118, decile: 5},{cell: 1988, decile: 5},{cell: 251, decile: 5},{cell: 1492, decile: 5},{cell: 887, decile: 5},{cell: 1342, decile: 5},{cell: 209, decile: 5},{cell: 700, decile: 5},{cell: 532, decile: 5}]
 
                         // $("#map_next").css('visibility', 'visible');
                         // $("#map_next").show("slow");
@@ -1779,8 +1785,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                             var percentage_avg = resp.percentage_avg;
 
-                            var decil_cells = resp.data_score_cell;
-                            //var decil_cells = resp.decil_cells;                            
+                            //var decil_cells = resp.data_score_cell;
+                            var decil_cells = resp.decil_cells;                            
 
                             console.log(percentage_avg)
 
