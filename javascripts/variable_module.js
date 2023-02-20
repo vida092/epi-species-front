@@ -171,9 +171,9 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             $("#agent_selected").change(function() {
 
-                _AGENT_SELECTED = ($("#agent_selected").val());
-                _AGENT_TEXT_SELECTED = $("#agent_selected option:selected").text(); ///Verificar _AGENT_SELECTED y _AGENT_TEXT_SELECTED como variables globales
-                _map_module_nicho.changeRegionView(_AGENT_SELECTED);
+                 _AGENT_SELECTED = ($("#agent_selected").val());
+                 _AGENT_TEXT_SELECTED = $("#agent_selected option:selected").text(); ///Verificar _AGENT_SELECTED y _AGENT_TEXT_SELECTED como variables globales
+                // _map_module_nicho.changeRegionView(_AGENT_SELECTED);
 
 
                 let var_obj = $(this).val();                
