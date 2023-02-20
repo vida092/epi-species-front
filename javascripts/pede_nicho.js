@@ -281,17 +281,17 @@ var module_nicho = (function () {
 
         });
 
-        $("#agent_selected").change(function (e) {
+        // $("#agent_selected").change(function (e) {
 
-            console.log("Cambiando a " + ($("#agent_selected").val()));
+        //     console.log("Cambiando a " + ($("#agent_selected").val()));
 
-            _AGENT_SELECTED = ($("#agent_selected").val());
-            _AGENT_TEXT_SELECTED = $("#agent_selected option:selected").text();
-            //_map_module_nicho.changeRegionView(_AGENT_SELECTED);
+        //     _AGENT_SELECTED = ($("#agent_selected").val());
+        //     _AGENT_TEXT_SELECTED = $("#agent_selected option:selected").text();
+        //     //_map_module_nicho.changeRegionView(_AGENT_SELECTED);
 
-            _regenMessage();
+        //     _regenMessage();
 
-        });
+        // });
 
 
 
@@ -303,15 +303,15 @@ var module_nicho = (function () {
 
         });
 
-        $("#disease_selected").change(function (e) {
+        // $("#disease_selected").change(function (e) {
 
-            _VERBOSE ? console.log("Cambia enfermedad") : _VERBOSE;
-            // No es necesario regenerar resultados
-            _regenMessage();
+        //     _VERBOSE ? console.log("Cambia enfermedad") : _VERBOSE;
+        //     // No es necesario regenerar resultados
+        //     _regenMessage();
 
             
             
-        });
+        // });
 
 
         // checkbox que se activa cuando se desea realizar el proceso de validación. (Proceso de validación todavia no implementado)

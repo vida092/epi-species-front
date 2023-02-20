@@ -163,12 +163,19 @@ var variable_module = (function (verbose, url_zacatuche) {
         // }
         
         
+        
 
         self.getTreeTarget = function(){
 
             _VERBOSE ? console.log("self.getTreeTarget") : _VERBOSE;
 
             $("#agent_selected").change(function() {
+
+                _AGENT_SELECTED = ($("#agent_selected").val());
+                _AGENT_TEXT_SELECTED = $("#agent_selected option:selected").text(); ///Verificar _AGENT_SELECTED y _AGENT_TEXT_SELECTED como variables globales
+                _map_module_nicho.changeRegionView(_AGENT_SELECTED);
+
+
                 let var_obj = $(this).val();                
                 let diseases = document.getElementById("disease_selected");
 
@@ -401,9 +408,6 @@ var variable_module = (function (verbose, url_zacatuche) {
                         $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
                         $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
                         $("#jstree_variables_species_target").on('loaded.jstree', self.loadNodes);
-
-
-                        var icon = "plugins/jstree/images/dna.png"                                         
                         
                         
                         $('#jstree_variables_species_target').jstree({
@@ -427,7 +431,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             })
         }
 
-        self.getTreeTarget()
+        
 
         // Evento generado cuando se selecciona un grupo de variables climáticas, realiza la carga del árbol de selección del grupo seleccionado.
         self.loadTreeVarRaster = function () {
@@ -588,6 +592,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         })
                         
         }
+        self.getTreeTarget()
         self.getTreeVarRaster()
         self.getTreeSocio() 
         
@@ -766,22 +771,22 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 console.log(varfield + "seleccionado")
 
                                 switch(varfield){    
-                                case "Clase":
+                                case "Clase": case "Class":
                                     console.log("clase valida");
                                     var query = "query{all_snib_covariables(limit: 1, filter: \" clasevalida LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){clasevalida}} "                                
                                                                 
                                     break;
-                                case "Orden":
+                                case "Orden": case "Order":
                                     console.log("orden valido");
                                     var query = "query{all_snib_covariables(limit: 1, filter: \" ordenvalido LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){ordenvalido}} "
                                     
                                     break;
-                                case "Familia":
+                                case "Familia": case "Family":
                                     console.log("familia valida");
                                     var query = "query{all_snib_covariables(limit: 1, filter: \" familiavalida LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){familiavalida}} "
                                     
                                     break;
-                                case "Género":
+                                case "Género": case "Genus":
                                     console.log("genero valido");
                                     var query = "query{all_snib_covariables(limit: 1, filter: \" generovalido LIKE '"  + request.term.charAt(0).toUpperCase()+ request.term.slice(1) + "%'\"){generovalido}} "
                                     
@@ -1223,14 +1228,15 @@ var variable_module = (function (verbose, url_zacatuche) {
                                         success: function(resp){                
                                             var sel = resp.data.all_snib_covariables
                                             console.log(sel)
-                                            var data_cov = [{ "id" : "raiz" , "parent" :"#", "text" : "raiz", 'state': {'opened': false},  "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 7, "type": 0}}]
-                                            var species_names = [];
-                                            sel.forEach(specie=>{
-                                                if(!species_names.includes(specie.especievalida)){
-                                                    species_names.push(specie.especievalida)
-                                                    data_cov.push(data_cov.push({ "id" : specie.especievalida , "parent" :"raiz", "text" : specie.especievalida, 'state': {'opened': false},  "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 8, "type": 0}}))                                                                                                   
-                                                }
-                                            })
+                                            var data_cov = [{ "id" : "raiz" , "parent" :"#", "text" : ui.item.id, 'state': {'opened': false},  "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 7, "type": 0}}]
+                                            
+                                            //var species_names = [];
+                                            // sel.forEach(specie=>{
+                                            //     if(!species_names.includes(specie.especievalida)){
+                                            //         species_names.push(specie.especievalida)
+                                            //         data_cov.push(data_cov.push({ "id" : specie.especievalida , "parent" :"raiz", "text" : specie.especievalida, 'state': {'opened': false},  "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 8, "type": 0}}))                                                                                                   
+                                            //     }
+                                            // })
                                             // console.log(data_cov)
                                             // console.log("jstree_variables_species_fuente")
                                             $('#jstree_variables_species_' + id).jstree("destroy").empty();
@@ -2585,7 +2591,7 @@ var variable_module = (function (verbose, url_zacatuche) {
         var variable_selector = new VariableSelector(parent, id, title, abio_tab, reduced_height, btn_visualize, start_level);
 
         _selectors_created.push(variable_selector);
-        console.log("-*-*/-*/-*/-*/-*/-*/-*/-*/-*/")+
+        console.log("-*-*/-*/-*/-*/-*/-*/-*/-*/-*/")
         console.log(id)
         
         return variable_selector;
