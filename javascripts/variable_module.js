@@ -2586,13 +2586,15 @@ var variable_module = (function (verbose, url_zacatuche) {
      */
     function createSelectorComponent(parent, id, title, abio_tab = true, reduced_height = false, btn_visualize = false, start_level = 0) {
 
-        _VERBOSE ? console.log("createSelectorComponent") : _VERBOSE;
+        console.log("<====================>")
+        _VERBOSE ? console.log("createSelectorComponent " + id) : _VERBOSE;
+        console.log("<====================>")
 
         var variable_selector = new VariableSelector(parent, id, title, abio_tab, reduced_height, btn_visualize, start_level);
 
         _selectors_created.push(variable_selector);
-        console.log("-*-*/-*/-*/-*/-*/-*/-*/-*/-*/")
-        console.log(id)
+        
+        
         
         return variable_selector;
 
