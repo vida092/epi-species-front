@@ -265,7 +265,7 @@
                         <div id="result"></div>
 
 
-                        <div class="row pd-top20 container_15p" >
+                        <div class="row pd-top20 pd-down20 container_15p" >
 
                             <div id="tuto_region"  class="col-md-6 col-sm-12 col-xs-12">
                             <!--<div class="col-md-12 col-sm-12 col-xs-12">-->
@@ -308,27 +308,32 @@
                                 </div>
                             </div>
 
-                            <div id="tuto_disease" class="col-md-6 col-sm-12 col-xs-12">
+                            <div>
+                                <div id="taxon_tree_root" class="col-md-6 col-sm-12 col-xs-12">
+                                    <label class = "text-sm">Raiz taxonómica</label>
+                                    <select id="taxon_tree_root_value" class="form-control">
+                                        <option value="familia">Familia</option>
+                                        <option value="genero">Genero</option>
+                                        <option value="nombrecientifico">Especie</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+
+
+
+                            <div id="tuto_disease" class="col-md-12 col-sm-12 col-xs-12">
 
                                 <div class="form-group" >
                                     <label class = "text-sm" id="disease">Enfermedad:</label>
                                     <select  id = "disease_selected" class="form-control">
                                         <option value = "dis_default" selected disabled> Seleccione Enfermedad</option>
-                                        <option value ="todas">Sin enfermedad</option>
-                                        <!--<option value="Enfermedad de Chagas">Enfermedad de Chagas</option>
-                                        <option value="Fiebre de Zika"> Fiebre de Zika</option>
-                                        <option value="Fiebre de Dengue">Fiebre de Dengue</option>
-                                        <option value="Fiebre Chikunguña"> Fiebre Chikinguña</option>
-                                        <option value="Hantavirosis"> Hantavirosis</option>
-                                        <option value="Fiebre del Nilo"> Fiebre del Nilo</option>
-                                        <option value="Enfermedad de Lyme"> Enfermedad de Lyme </option>
-                                        <option value="Fiebre del Nilo"> Fiebre del Nilo</option>
-                                        <option value="Leptospirosis"> Leptospirosis</option>
-                                        <option value="Leishmaniasis"> Leishmaniasis</option>-->
-
+                                        <option value ="todas">Sin enfermedad</option>                                       
                                     </select>
                                 </div>
                             </div>
+                            
 
                         </div>
 

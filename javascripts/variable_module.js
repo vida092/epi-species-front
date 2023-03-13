@@ -286,145 +286,199 @@ var variable_module = (function (verbose, url_zacatuche) {
                 _module_toast.showToast_CenterCenter("El árbol taxonómico se está cargando, espere unos segundos...","info")
                 var agent_selected = $('#agent_selected').val()
                 var disease_text_selected = $("#disease_selected option:selected").text();
+                var tax_root = $("#taxon_tree_root_value").val()
+                console.log(tax_root)
 
                 var _url = "https://covid19.c3.unam.mx/gateway/api/nodes/"
 
                 let nodo = agent_selected.toLowerCase()
-
+                console.log("<=======nodo=========>")
+                console.log(nodo)
                 var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){reino phylum clase orden familia genero nombrecientifico}}"
-
-                $.ajax({
-                    url: _url,
-                    method: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify({query: query}),
-                    success: function(resp){
-                        
-                        if (agent_selected == 'Hospederos'){
-                            var species = resp.data.occurrences_by_taxon_hospederos;                                            
-                        }
-                        else if (agent_selected == 'Patogenos'){
-                            var species = resp.data.occurrences_by_taxon_patogenos;
-                        }else{
-                            var species = resp.data.occurrences_by_taxon_vectores;
-                        }
-                        
-                        //data = [{ "id" : "animalia", "parent" : "#", "text" : "Animalia", 'state': {'opened': true, 'disabled' : true },
-                        //"icon": "plugins/jstree/images/dna.png"}]
-
-                        data = []
-                        
-                        var species_non_repeat = [];
-                        var species_names = [];
-                        
-                        species.forEach(specie=>{
-                            if(!species_names.includes(specie.nombrecientifico)){
-                                species_names.push(specie.nombrecientifico);
-                                species_non_repeat.push(specie);
-                            }
-                        })
-
-                        var arbol = {}
-                        var phylums = []
-                        species.forEach(specie=>{
-                            if(!phylums.includes(specie.phylum)){
-                                phylums.push(specie.phylum);
-                                data.push({ "id" : specie.phylum, "parent" : "#", "text" : specie.phylum, 'state': {'opened': true,  'selected': false},"icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 3, "type": 0}})                                                
-                            }
-                        })
-
-                        
-                        console.log(phylums)                       
-                            
-
-                        var phylums_obj = {}
-                        phylums.forEach(phylum=>{                                            
-                            var clases=[]
-                            species.forEach(specie=>{
-                                if(!clases.includes(specie.clase) && specie.phylum ===phylum){
-                                    clases.push(specie.clase);
-                                    data.push({ "id" : specie.clase , "parent" : specie.phylum  , "text" : specie.clase, 'state': {'opened': false},
-                                    "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 4, "type": 0}})
+                
+                console.log("-*/-*/-*/-*/-*/-*/-*/-*/-*/")
+                switch(tax_root){
+                    case "familia":
+                        var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){familia genero nombrecientifico}}"
+                        $.ajax({
+                            url: _url,
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({query: query}),
+                            success: function(resp){
+                                if (agent_selected == 'Hospederos'){
+                                    var species = resp.data.occurrences_by_taxon_hospederos;                                            
                                 }
-                            })
-                            var clases_obj = {}
-                            clases.forEach(clase=>{
-                                var ordenes = []
+                                else if (agent_selected == 'Patogenos'){
+                                    var species = resp.data.occurrences_by_taxon_patogenos;
+                                }else{
+                                    var species = resp.data.occurrences_by_taxon_vectores;
+                                }
+                                var familias = []
+                                var data = []
                                 species.forEach(specie=>{
-                                    if(!ordenes.includes(specie.orden) && specie.clase === clase){
-                                        ordenes.push(specie.orden);
-                                        data.push({ "id" : specie.orden , "parent" : specie.clase  , "text" : specie.orden,'state': {'opened': false},
-                                        "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 5, "type": 0}})
+                                    if(!familias.includes(specie.familia)){
+                                        familias.push(specie.familia)
+                                        data.push({"id":specie.familia, "parent" :"#", "text": specie.familia, 'state': {'opened': false},
+                                        "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 6, "type": 0}})                                        
                                     }
                                 })
-                                var ordenes_obj={}
-                                ordenes.forEach(orden=>{
-                                    var familias = []
+                                var generos =[]
+                                var nombrescientificos=[]
+                                familias.forEach(familia=>{
                                     species.forEach(specie=>{
-                                        if(!familias.includes(specie.familia) && specie.orden === orden){
-                                            familias.push(specie.familia);
-                                            data.push({ "id" : specie.familia , "parent" : specie.orden  , "text" : specie.familia, 'state': {'opened': false},
-                                            "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 6, "type": 0}})
+                                        if(!generos.includes(specie.genero)&& specie.familia ==familia){
+                                            generos.push(specie.genero)
+                                            data.push({"id":specie.genero, "parent": specie.familia, "text":specie.genero, 'state': {'opened': false},
+                                            "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 5, "type": 0}})
                                         }
                                     })
-                                    var familias_obj={}
-                                    familias.forEach(familia=>{
-                                        var generos = []
+                                    generos.forEach(genero=>{
                                         species.forEach(specie=>{
-                                            if(!generos.includes(specie.genero) && specie.familia === familia){
-                                                generos.push(specie.genero);
-                                                data.push({ "id" : specie.genero , "parent" : specie.familia  , "text" : specie.genero, 'state': {'opened': false},
-                                                "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 7, "type": 0}})
+                                            if(!nombrescientificos.includes(specie.nombrecientifico) && specie.genero === genero){
+                                                nombrescientificos.push(specie.nombrecientifico)
+                                                data.push({"id":specie.nombrecientifico, "parent": specie.genero, "text":specie.nombrecientifico, 'state': {'opened': false},
+                                                "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 8, "type": 0}})
+
                                             }
-                                        }) 
-                                        var generos_obj ={}
-                                        generos.forEach(genero=>{
-                                            var nombrescientificos=[]
-                                            species.forEach(specie=>{
-                                                if(!nombrescientificos.includes(specie.nombrecientifico) && specie.genero === genero){
-                                                    nombrescientificos.push(specie.nombrecientifico);
-                                                    data.push({ "id" : specie.nombrecientifico , "parent" : specie.genero , "text" : specie.nombrecientifico, 'state': {'opened': false},
-                                                    "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 8, "type": 0}})
-                                                }
-                                            })
-                                            generos_obj[genero] = nombrescientificos
                                         })
-
-                                        familias_obj[familia]=generos_obj                                                     
-                                        
                                     })
-                                    ordenes_obj[orden] = familias_obj
+                                })
 
-                                })                                                
-                                clases_obj[clase] = ordenes_obj
-                            })
-                            phylums_obj[phylum] = clases_obj
-                            arbol['Animalia']=phylums_obj
-                            
-
-                        })
-                        //$(function () { $('#jstree_variables_species_target').jstree(); });
-                        //$('#jstree_variables_species_target').jstree("destroy").empty();
-                        $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
-                        $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
-                        $("#jstree_variables_species_target").on('loaded.jstree', self.loadNodes);
-                        
-                        
-                        $('#jstree_variables_species_target').jstree({
-                            'plugins': ["wholerow", "checkbox"],                            
-                            'core': {
-                                'data': data,
-                                'themes': {
-                                    'name': 'proton',
-                                    'responsive': true
-                                },
-                                'check_callback': true
+                                console.log(data)
+                                $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
+                                $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
+                                $("#jstree_variables_species_target").on('loaded.jstree', self.loadNodes);
+                                
+                                
+                                $('#jstree_variables_species_target').jstree({
+                                    'plugins': ["wholerow", "checkbox"],                            
+                                    'core': {
+                                        'data': data,
+                                        'themes': {
+                                            'name': 'proton',
+                                            'responsive': true
+                                        },
+                                        'check_callback': true
+                                    }
+                                });
+                                _module_toast.showToast_CenterCenter("El árbol taxonómico se cargó adecuadamente","success")
                             }
-                        });
-                        _module_toast.showToast_CenterCenter("El árbol taxonómico se cargó adecuadamente","success")
-                        
-                    }
-                })
+                        })
+                    break;
+                    case "genero":
+                        var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){genero nombrecientifico}}"
+                        $.ajax({
+                            url: _url,
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({query:query}),
+                            success: function(resp){
+                                if (agent_selected == 'Hospederos'){
+                                    var species = resp.data.occurrences_by_taxon_hospederos;                                            
+                                }
+                                else if (agent_selected == 'Patogenos'){
+                                    var species = resp.data.occurrences_by_taxon_patogenos;
+                                }else{
+                                    var species = resp.data.occurrences_by_taxon_vectores;
+                                }
+                                var generos = []
+                                var data = []
+                                var nombrescientificos = []
+                                species.forEach(specie=>{
+                                    if(!generos.includes(specie.genero)){
+                                        generos.push(specie.genero)
+                                        data.push({"id":specie.genero,"parent":"#", "text":specie.genero,  'state': {'opened': false},
+                                        "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 7, "type": 0}})
+                                    }
+                                })
+                                
+                                
+                                generos.forEach(genero=>{
+                                    species.forEach(specie=>{
+                                      if(!nombrescientificos.includes(specie.nombrecientifico) && specie.genero === genero){
+                                        nombrescientificos.push(specie.nombrecientifico)
+                                        data.push({"id":specie.nombrecientifico, "parent": specie.genero, "text":specie.nombrecientifico,  'state': {'opened': false},
+                                        "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 8, "type": 0} })
+                                      }
+                                    })
+                          
+                                })
+                                console.log("/******/")
+                                console.log(data)
+                                $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
+                                $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
+                                $("#jstree_variables_species_target").on('loaded.jstree', self.loadNodes);
+                                
+                                
+                                $('#jstree_variables_species_target').jstree({
+                                    'plugins': ["wholerow", "checkbox"],                            
+                                    'core': {
+                                        'data': data,
+                                        'themes': {
+                                            'name': 'proton',
+                                            'responsive': true
+                                        },
+                                        'check_callback': true
+                                    }
+                                });
+                                _module_toast.showToast_CenterCenter("El árbol taxonómico se cargó adecuadamente","success")
+                            }
+                        })
+                    break
+                    case "nombrecientifico":
+                        var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){nombrecientifico}}"
+                        $.ajax({
+                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({query: query}),
+                            success: function(resp){
+                                if (agent_selected == 'Hospederos'){
+                                    var species = resp.data.occurrences_by_taxon_hospederos;                                            
+                                }
+                                else if (agent_selected == 'Patogenos'){
+                                    var species = resp.data.occurrences_by_taxon_patogenos;
+                                }else{
+                                    var species = resp.data.occurrences_by_taxon_vectores;
+                                }
+                              
+                                var nombrescientificos = []
+                                var data = []
+                                species.forEach(specie=>{
+                                if(!nombrescientificos.includes(specie.nombrecientifico)){
+                                  nombrescientificos.push(specie.nombrecientifico)
+                                }
+                                })
+                              nombrescientificos.forEach(nombre=>{
+                                data.push({"id":nombre, "parent": "#", "text":nombre, 'state': {'opened': false},
+                                "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 8, "type": 0}})
+                              })
+                              $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
+                                $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
+                                $("#jstree_variables_species_target").on('loaded.jstree', self.loadNodes);
+                                
+                                
+                                $('#jstree_variables_species_target').jstree({
+                                    'plugins': ["wholerow", "checkbox"],                            
+                                    'core': {
+                                        'data': data,
+                                        'themes': {
+                                            'name': 'proton',
+                                            'responsive': true
+                                        },
+                                        'check_callback': true
+                                    }
+                                });
+                                _module_toast.showToast_CenterCenter("El árbol taxonómico se cargó adecuadamente","success")
+                              
+                            }
+                          })
+                          
+
+                    break
+                }
+
                 
                 
                 
@@ -635,6 +689,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                 .attr("id", "tuto_nav_tabs_" + id)
                 .addClass('nav nav-tabs nav-variables')
                 .appendTo(nav_selection);
+        
 
         // sea agregan los tabs disponibles
         $.each(tags, function (i) {
@@ -645,6 +700,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             if (i == 0) {
                 name_class = 'active nav-variables';
             }
+
             
             var li = $('<li/>')
                     .addClass(name_class)
@@ -661,6 +717,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                     .text(_iTrans.prop(tags[i]))
                     .appendTo(li);tags
                 }
+            
         });
         
 
@@ -681,10 +738,72 @@ var variable_module = (function (verbose, url_zacatuche) {
                 //_VERBOSE ? console.log(tags[i]) : _VERBOSE;
                 //div del tab[i]_id               
                 var tab_pane = $('<div/>')
-                        .attr('id', 'tab' + i + "_" + id)
+                        .attr('id', 'tab' + i + "_" + "target")
                         .addClass('tab-pane active')
                         .appendTo(tab_content);
                 //div id="tab_content_fuente" & class="tab-content"
+                var btn_div = $('<div/>')
+                        .addClass('input-group-btn')
+                        .appendTo(drop_item);
+
+                var btn_sp = $('<button/>')
+                        .attr('id', 'btn_variable' + "_" + "target")
+                        .attr('type', 'button')
+                        .attr('data-toggle', 'dropdown')
+                        .attr('aria-haspopup', 'true')
+                        .attr('aria-expanded', 'false')
+                        .text(_iTrans.prop('btn_variable') + " ")
+                        .addClass('btn btn-primary dropdown-toggle')
+                        .appendTo(btn_div);
+
+                $('<span/>')
+                        .addClass('caret')
+                        .appendTo(btn_sp);
+
+                var btn_items = $('<div/>')
+                        .addClass('dropdown-menu')
+                        .appendTo(btn_div);
+
+                        $.each(sp_items, function (i) {
+
+                            // console.log(sp_items[i])
+                            // console.log(_iTrans.prop(sp_items[i]))
+        
+                            // establece el nivel taxonomico inicial del buscador. Donde 0 es reino.
+                            if(start_level > i)
+                                return true;
+        
+        
+                            var li = $('<li/>')
+                                    .click(function (e) {
+                                        // evento que guarda selección taxonomica.
+                                        _VERBOSE ? console.log("biotico") : _VERBOSE;
+                                        
+                                        self.varfilter_selected = [e.target.getAttribute("data-field"), e.target.getAttribute("parent-field"), e.target.getAttribute("level-field")];
+                                        varfield = e.target.text;
+        
+                                       // _VERBOSE ? console.log(varfield) : _VERBOSE;
+                                       // _VERBOSE ? console.log(self.varfilter_selected) : _VERBOSE;
+        
+                                        $("#btn_variable" + "_" + id).text(varfield + " ");
+                                        $("#btn_variable" + "_" + id).append('<span class="caret"></span>');
+                                        $("#text_variable" + "_" + id).prop("disabled", false);
+                                        $("#text_variable" + "_" + id).val("");
+                                        e.preventDefault();
+                                    })
+                                    .appendTo(btn_items);
+        
+                            var aaa = $('<a/>')
+                                    .attr('id', sp_items[i] + "_" + id)
+                                    .attr('parent-field', sp_parent_field[i])
+                                    .attr('data-field', sp_data_field[i])
+                                    .attr('level-field', (i + 2)) // inicia en 2
+                                    .addClass('biotica')
+                                    .text(_iTrans.prop(sp_items[i]))
+                                    .appendTo(li);
+        
+                        });
+
 
                 // div que contiene el dropdown-button de tipos taxonomicos y textfiled para insertar valores
                 if (id === "fuente"){
@@ -1454,6 +1573,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .attr('id', 'tab' + i + "_" + id)
                         .addClass('tab-pane')
                         .appendTo(tab_content)
+
+                
                         
 
 
