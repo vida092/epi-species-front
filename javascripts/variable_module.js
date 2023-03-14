@@ -168,6 +168,7 @@ var variable_module = (function (verbose, url_zacatuche) {
         self.getTreeTarget = function(){
 
             _VERBOSE ? console.log("self.getTreeTarget") : _VERBOSE;
+            console.log(id)
 
             $("#agent_selected").change(function() {
 
@@ -283,7 +284,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             });
 
             $('#disease_selected').change(function(e){
-                _module_toast.showToast_CenterCenter("El árbol taxonómico se está cargando, espere unos segundos...","info")
+                
                 var agent_selected = $('#agent_selected').val()
                 var disease_text_selected = $("#disease_selected option:selected").text();
                 var tax_root = $("#taxon_tree_root_value").val()
@@ -299,6 +300,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                 console.log("-*/-*/-*/-*/-*/-*/-*/-*/-*/")
                 switch(tax_root){
                     case "familia":
+                        _module_toast.showToast_CenterCenter("El árbol taxonómico se está cargando, espere unos segundos...","info")
                         var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){familia genero nombrecientifico}}"
                         $.ajax({
                             url: _url,
@@ -367,6 +369,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         })
                     break;
                     case "genero":
+                        _module_toast.showToast_CenterCenter("El árbol taxonómico se está cargando, espere unos segundos...","info")
                         var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){genero nombrecientifico}}"
                         $.ajax({
                             url: _url,
@@ -427,6 +430,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         })
                     break
                     case "nombrecientifico":
+                        _module_toast.showToast_CenterCenter("El árbol taxonómico se está cargando, espere unos segundos...","info")
                         var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){nombrecientifico}}"
                         $.ajax({
                             url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
@@ -474,14 +478,11 @@ var variable_module = (function (verbose, url_zacatuche) {
                               
                             }
                           })
-                          
-
+                    break
+                    default:
+                        _module_toast.showToast_CenterCenter("Seleccione una Raíz", "error")
                     break
                 }
-
-                
-                
-                
             })
         }
 
@@ -494,6 +495,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             if(!abio_tab) return;
 
             _VERBOSE ? console.log("self.loadTreeVarRaster") : _VERBOSE;
+            console.log(id)
 
             var text_raster = _iTrans.prop('lb_raster');
             var var_selected = "root_bioclim";
@@ -516,6 +518,8 @@ var variable_module = (function (verbose, url_zacatuche) {
 
         self.getTreeSocio = function (){
             var query = "query{all_censo_inegi_2020_covariables(limit: 2400, filter:\"\"){id name interval bin code}}"
+            _VERBOSE ? console.log("self.getTreeSocio") : _VERBOSE;
+            console.log(id)
             $.ajax({
                 url:"https://covid19.c3.unam.mx/gateway/api/nodes/",
                 method: "POST",
@@ -569,9 +573,6 @@ var variable_module = (function (verbose, url_zacatuche) {
                     })
                     $(function () { $('#jstree_variables_socio_fuente').jstree(); });
                     $("#jstree_variables_socio_fuente").on("changed.jstree", self.getChangeTreeVarSocio)
-                    
-
-                    
                 }
             })
             
@@ -646,6 +647,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         })
                         
         }
+        
         self.getTreeTarget()
         self.getTreeVarRaster()
         self.getTreeSocio() 
@@ -689,6 +691,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                 .attr("id", "tuto_nav_tabs_" + id)
                 .addClass('nav nav-tabs nav-variables')
                 .appendTo(nav_selection);
+        
         
 
         // sea agregan los tabs disponibles
@@ -1855,9 +1858,11 @@ var variable_module = (function (verbose, url_zacatuche) {
         self.getChangeTreeVarTarget = function (e, data) {
             console.log("cambiaste el arbol")
             _VERBOSE ? console.log("self.getChangeTreeVar") : _VERBOSE;
+            console.log($('#jstree_variables_species_target').jstree(true).get_top_selected().length)
 
             self.arrayVarSelectedTarget = []; //para el front
             self.arrayVarSelectedTarget2 = []; //para el query
+            
 
             if ($('#jstree_variables_species_target').jstree(true).get_top_selected().length > 0) {
 
@@ -1894,7 +1899,8 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                     _VERBOSE ? console.log("level: " + level) : _VERBOSE;
 
-                    var parent_node = $('#jstree_variables_species_target').jstree(true).get_node($('#jstree_variables_species_target').jstree(true).get_parent($('#jstree_variables_species_' + id).jstree(true).get_top_selected()[i])).original;
+                    //var parent_node = $('#jstree_variables_species_target').jstree(true).get_node($('#jstree_variables_species_target').jstree(true).get_parent($('#jstree_variables_species_' + id).jstree(true).get_top_selected()[i])).original;
+                    var parent_node = $('#jstree_variables_species_target').jstree(true).get_node($('#jstree_variables_species_target').jstree(true).get_parent($('#jstree_variables_species_target').jstree(true).get_top_selected()[i])).original;
 
                     _VERBOSE ? console.log(parent_node) : _VERBOSE;
                     _VERBOSE ? console.log(node_temp) : _VERBOSE;
