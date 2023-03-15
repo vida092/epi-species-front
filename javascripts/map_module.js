@@ -2256,13 +2256,20 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         }
         
         console.log(label_target)
+
+        var subquery = _LABEL_MAP.map(taxon => `${label_target}= \'${taxon}\'`).join(" OR ")
+        console.log(subquery)       
+
+
+
         if ( fecha_ini.length < 3)
-            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ label_target +' = \'' + _LABEL_VALUE +'\' "){individuosinfectados gridid_'+ _grid_res + '}}'
+            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND ' + subquery +' "){individuosinfectados gridid_'+ _grid_res + '}}'
         else
-            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ label_target +' = \'' + _LABEL_VALUE +'\'  AND aniocolecta >= \''+ fecha_ini + ' \' AND aniocolecta <= \'' + fecha_fin + ' \'"){individuosinfectados gridid_'+ _grid_res + '}}'
+            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ subquery +'  AND aniocolecta >= \''+ fecha_ini + ' \' AND aniocolecta <= \'' + fecha_fin + ' \'"){individuosinfectados gridid_'+ _grid_res + '}}'
 
 
         console.log(query)
+        console.log(_LABEL_MAP)
 
         $.ajax({
             method: "POST",

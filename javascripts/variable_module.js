@@ -1496,6 +1496,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                             $("#jstree_variables_species_" + id).off('ready.jstree', self.loadNodes);
 
                             self.arrayVarSelected = [];
+                            _LABEL_MAP=[]
                             // self.groupvar_dataset = [];
                             self.cleanVariables('jstree_variables_species_' + id, 'treeAddedPanel_' + id, _TYPE_BIO);
 
@@ -2361,6 +2362,12 @@ var variable_module = (function (verbose, url_zacatuche) {
            console.log(arraySelected)
             const iterator = arraySelected.values();
 
+           _LABEL_MAP = []
+           arraySelected.forEach(element =>{
+            _LABEL_MAP.push(element.label)
+           })
+           console.log(_LABEL_MAP)
+
             for (const value of iterator) {
                 var variable = value
                 console.log(variable)
@@ -2368,8 +2375,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                 _LABEL_VALUE = variable["label"]
                 console.log(_PARENT_FIELD)
                 console.log(_LABEL_VALUE)
-
             }
+
 
 
             if (arraySelected.length === 0)
