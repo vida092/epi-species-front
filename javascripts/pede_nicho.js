@@ -304,13 +304,9 @@ var module_nicho = (function () {
         });
 
         // $("#disease_selected").change(function (e) {
-
         //     _VERBOSE ? console.log("Cambia enfermedad") : _VERBOSE;
         //     // No es necesario regenerar resultados
         //     _regenMessage();
-
-            
-            
         // });
 
 

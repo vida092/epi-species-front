@@ -295,13 +295,14 @@ var variable_module = (function (verbose, url_zacatuche) {
                 let nodo = agent_selected.toLowerCase()
                 console.log("<=======nodo=========>")
                 console.log(nodo)
-                var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){reino phylum clase orden familia genero nombrecientifico}}"
+                //var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){reino phylum clase orden familia genero nombrecientifico}}"
                 
                 console.log("-*/-*/-*/-*/-*/-*/-*/-*/-*/")
                 switch(tax_root){
                     case "familia":
                         _module_toast.showToast_CenterCenter("El árbol taxonómico se está cargando, espere unos segundos...","info")
                         var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){familia genero nombrecientifico}}"
+                        console.log(query)
                         $.ajax({
                             url: _url,
                             method: "POST",
@@ -325,6 +326,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                         "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 6, "type": 0}})                                        
                                     }
                                 })
+                                
                                 var generos =[]
                                 var nombrescientificos=[]
                                 familias.forEach(familia=>{
@@ -347,6 +349,9 @@ var variable_module = (function (verbose, url_zacatuche) {
                                     })
                                 })
 
+                                console.log(familias)
+                                console.log(generos)
+                                console.log(nombrescientificos)
                                 console.log(data)
                                 $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
                                 $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
@@ -371,6 +376,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                     case "genero":
                         _module_toast.showToast_CenterCenter("El árbol taxonómico se está cargando, espere unos segundos...","info")
                         var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){genero nombrecientifico}}"
+                        console.log(query)
                         $.ajax({
                             url: _url,
                             method: "POST",
@@ -408,6 +414,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                           
                                 })
                                 console.log("/******/")
+                                console.log(generos)
+                                console.log(nombrescientificos)
                                 console.log(data)
                                 $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
                                 $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
@@ -432,6 +440,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                     case "nombrecientifico":
                         _module_toast.showToast_CenterCenter("El árbol taxonómico se está cargando, espere unos segundos...","info")
                         var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){nombrecientifico}}"
+                        console.log(query)
                         $.ajax({
                             url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
                             method: "POST",
@@ -462,7 +471,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
                                 $("#jstree_variables_species_target").on('loaded.jstree', self.loadNodes);
                                 
-                                
+                                console.log(nombrescientificos)
+                                console.log(data)
                                 $('#jstree_variables_species_target').jstree({
                                     'plugins': ["wholerow", "checkbox"],                            
                                     'core': {
@@ -483,6 +493,12 @@ var variable_module = (function (verbose, url_zacatuche) {
                         _module_toast.showToast_CenterCenter("Seleccione una Raíz", "error")
                     break
                 }
+
+                
+            })
+
+            $("#taxon_tree_root_value").change(function(e){
+                $('#jstree_variables_species_target').jstree("destroy")                
             })
         }
 
@@ -1394,45 +1410,6 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 })
 
                                 }
-                                
-
-                            //     $('#jstree_variables_species_' + id).jstree("destroy").empty();
-                            //     $('#jstree_variables_species_' + id).on('open_node.jstree', self.getTreeVar);
-                            //     $("#jstree_variables_species_" + id).on('changed.jstree', self.getChangeTreeVar);
-                            //     $("#jstree_variables_species_" + id).on('loaded.jstree', self.loadNodes);
-
-                            //     self.value_vartree = ui.item.id;
-                            //     self.field_vartree = self.varfilter_selected[0];
-                            //     self.parent_field_vartree = self.varfilter_selected[1];
-                            //     self.level_vartree = self.varfilter_selected[2];
-
-                            //    _VERBOSE ? console.log("nivel") : _VERBOSE;
-                            //    _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
-
-                            //    var icon = parseInt(self.level_vartree) === 8 ? "plugins/jstree/images/dna.png" : "plugins/jstree/dist/themes/default/throbber.gif"
-
-                            //    _VERBOSE ? console.log(self.level_vartree) : _VERBOSE;
-
-                            //     var tree_reinos = [{
-                            //             "text": self.value_vartree,
-                            //             "id": "root",
-                            //             "attr": {"nivel": self.level_vartree, "type": _TYPE_TAXON},
-                            //             'state': {'opened': true},
-                            //             "icon": icon
-                            //         }];
-
-                            //     $('#jstree_variables_species_' + id).jstree({
-                            //         'plugins': ["wholerow", "checkbox"],
-                            //         'core': {
-                            //             'data': tree_reinos,
-                            //             'themes': {
-                            //                 'name': 'proton',
-                            //                 'responsive': true
-                            //             },
-                            //             'check_callback': true
-                            //         }
-                            //     });
-
                             }
 
                         })
@@ -1489,6 +1466,12 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .attr('type', 'button')
                         .addClass('btn btn-primary glyphicon glyphicon-trash pull-left no-mg-top')
                         .click(function (e) {
+                            console.log(id)
+                            if(id === "target"){
+                                $('#agent_selected').val('model_default');
+                                //$('#disease_selected').val("dis_default");
+                                $('#taxon_tree_root_value').val("tree_default")
+                            }
 
                             $("#text_variable" + "_" + id).val("");
                             $('#jstree_variables_species_' + id).off('open_node.jstree', self.getTreeVar);
@@ -1684,174 +1667,174 @@ var variable_module = (function (verbose, url_zacatuche) {
         });
 
         // Evento generado cuando se realiza la acción de abrir una rama del árbol de selección, realiza la carga de los elementos que componen la rama a la cual se desea tener acceso.
-        self.getTreeVar = function (e, d) {
+        // self.getTreeVar = function (e, d) {
 
-            _VERBOSE ? console.log("self.getTreeVar") : _VERBOSE;
+        //     _VERBOSE ? console.log("self.getTreeVar") : _VERBOSE;
 
-            _VERBOSE ? console.log(d.node.original.attr.nivel) : _VERBOSE;
-            _VERBOSE ? console.log(d.node.children) : _VERBOSE;
-            console.log("esto es d "+ d)
+        //     _VERBOSE ? console.log(d.node.original.attr.nivel) : _VERBOSE;
+        //     _VERBOSE ? console.log(d.node.children) : _VERBOSE;
+        //     console.log("esto es d "+ d)
 
-            if (d.node.children.length > 1){
-                console.log("No se encontraron datos debajo de este nivel")
-                return;
-            }
+        //     if (d.node.children.length > 1){
+        //         console.log("No se encontraron datos debajo de este nivel")
+        //         return;
+        //     }
 
-            var next_field = "";
-            var next_nivel = 0;
-            var parent_field = "";
+        //     var next_field = "";
+        //     var next_nivel = 0;
+        //     var parent_field = "";
 
-            $("#jstree_variables_species_" + id).jstree(true).set_icon(d.node.id, "plugins/jstree/images/dna.png");
+        //     //$("#jstree_variables_species_" + id).jstree(true).set_icon(d.node.id, "plugins/jstree/images/dna.png");
 
-            if (d.node.original.attr.nivel == 2) {
-                parent_field = "reino"
-                next_field = "phylum";
-                next_nivel = 3;
-            } else if (d.node.original.attr.nivel == 3) {
-                parent_field = "phylum"
-                next_field = "clase";
-                next_nivel = 4;
-            } else if (d.node.original.attr.nivel == 4) {
-                parent_field = "clase"
-                next_field = "orden";
-                next_nivel = 5;
-            } else if (d.node.original.attr.nivel == 5) {
-                parent_field = "orden"
-                next_field = "familia";
-                next_nivel = 6;
-            } else if (d.node.original.attr.nivel == 6) {
-                parent_field = "familia"
-                next_field = "genero";
-                next_nivel = 7;
-            } else if (d.node.original.attr.nivel == 7) {
-                parent_field = "genero"
-                next_field = "epitetoespecifico";
-                next_nivel = 8;
-            } else {
-                $('#jstree_variables_species_' + id).tooltip('hide');
-                $("#jstree_variables_species_" + id).jstree(true).delete_node(d.node.children[0]);
-                $("#jstree_variables_species_" + id).jstree(true).set_icon(d.node.id, "./plugins/jstree/images/dna.png");
-                return;
-            }
+        //     if (d.node.original.attr.nivel == 2) {
+        //         parent_field = "reino"
+        //         next_field = "phylum";
+        //         next_nivel = 3;
+        //     } else if (d.node.original.attr.nivel == 3) {
+        //         parent_field = "phylum"
+        //         next_field = "clase";
+        //         next_nivel = 4;
+        //     } else if (d.node.original.attr.nivel == 4) {
+        //         parent_field = "clase"
+        //         next_field = "orden";
+        //         next_nivel = 5;
+        //     } else if (d.node.original.attr.nivel == 5) {
+        //         parent_field = "orden"
+        //         next_field = "familia";
+        //         next_nivel = 6;
+        //     } else if (d.node.original.attr.nivel == 6) {
+        //         parent_field = "familia"
+        //         next_field = "genero";
+        //         next_nivel = 7;
+        //     } else if (d.node.original.attr.nivel == 7) {
+        //         parent_field = "genero"
+        //         next_field = "epitetoespecifico";
+        //         next_nivel = 8;
+        //     } else {
+        //         $('#jstree_variables_species_' + id).tooltip('hide');
+        //         $("#jstree_variables_species_" + id).jstree(true).delete_node(d.node.children[0]);
+        //         $("#jstree_variables_species_" + id).jstree(true).set_icon(d.node.id, "./plugins/jstree/images/dna.png");
+        //         return;
+        //     }
 
-            _VERBOSE ? console.log(d.node.id) : _VERBOSE
-            _VERBOSE ? console.log(d.node.text) : _VERBOSE
+        //     _VERBOSE ? console.log(d.node.id) : _VERBOSE
+        //     _VERBOSE ? console.log(d.node.text) : _VERBOSE
 
-            var text_val = d.node.text
-            var regex = / \(spp: \d*\)/gi;
+        //     var text_val = d.node.text
+        //     var regex = / \(spp: \d*\)/gi;
 
-            // elimina el (spp: N) del valir para realizar la busqueda de manera correcta
-            var label_value = text_val.replace(regex, '');
-            _VERBOSE ? console.log(label_value) : _VERBOSE
+        //     // elimina el (spp: N) del valir para realizar la busqueda de manera correcta
+        //     var label_value = text_val.replace(regex, '');
+        //     _VERBOSE ? console.log(label_value) : _VERBOSE
 
-            _REGION_SELECTED = ($("#footprint_region_select").val() !== null && $("#footprint_region_select").val() !== undefined) ? parseInt($("#footprint_region_select").val()) : _REGION_SELECTED;
-            _GRID_RES = $("#grid_resolution").val();
+        //     _REGION_SELECTED = ($("#footprint_region_select").val() !== null && $("#footprint_region_select").val() !== undefined) ? parseInt($("#footprint_region_select").val()) : _REGION_SELECTED;
+        //     _GRID_RES = $("#grid_resolution").val();
 
-            console.log("REGION_SELECTED: " + _REGION_SELECTED);
-            console.log("_GRID_RES: " + _GRID_RES);
+        //     console.log("REGION_SELECTED: " + _REGION_SELECTED);
+        //     console.log("_GRID_RES: " + _GRID_RES);
 
             
-            var _url="https://covid19.c3.unam.mx/gateway/api/nodes/"
+        //     var _url="https://covid19.c3.unam.mx/gateway/api/nodes/"
 
-            let nodo = _AGENT_SELECTED.toLowerCase()
-            let _DISEASE_SELECTED = $("#disease_selected option:selected").text();
-
-
-            let query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ parent_field.toLowerCase() +' = \'' + label_value +'\' "){'+ next_field +'}}'
-            console.log(query)
+        //     let nodo = _AGENT_SELECTED.toLowerCase()
+        //     let _DISEASE_SELECTED = $("#disease_selected option:selected").text();
 
 
-            $.ajax({
-                method: "POST",
-                url: _url,
-                contentType: "application/json",
-                data: JSON.stringify({query: query}),
-                success: function (resp) {
-                    console.log(resp)
-
-                    let data2 = resp.data["occurrences_by_taxon_" + nodo]
-                    console.log(data2)
-                    console.log(data2[0])
+        //     let query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ parent_field.toLowerCase() +' = \'' + label_value +'\' "){'+ next_field +'}}'
+        //     console.log(query)
 
 
-                    let uniqueObjArray = []
+        //     $.ajax({
+        //         method: "POST",
+        //         url: _url,
+        //         contentType: "application/json",
+        //         data: JSON.stringify({query: query}),
+        //         success: function (resp) {
+        //             console.log(resp)
+
+        //             let data2 = resp.data["occurrences_by_taxon_" + nodo]
+        //             console.log(data2)
+        //             console.log(data2[0])
 
 
-                    for (let i = 0; i < data2.length; i++) {
-                        let val = data2[i];
-                        //console.log(val)
-                        if(uniqueObjArray.indexOf(val) === -1) {
-                           uniqueObjArray.push(val);
-                        }
+        //             let uniqueObjArray = []
 
 
-                    }
+        //             for (let i = 0; i < data2.length; i++) {
+        //                 let val = data2[i];
+        //                 //console.log(val)
+        //                 if(uniqueObjArray.indexOf(val) === -1) {
+        //                    uniqueObjArray.push(val);
+        //                 }
 
-                    let uniqueObjArray1 = [
-                    ...new Map( uniqueObjArray.map((item) => [item[next_field], item])).values(),
-                    ];
+
+        //             }
+
+        //             let uniqueObjArray1 = [
+        //             ...new Map( uniqueObjArray.map((item) => [item[next_field], item])).values(),
+        //             ];
 
 
-                    console.log(uniqueObjArray1)
-                    let data = uniqueObjArray1
+        //             console.log(uniqueObjArray1)
+        //             let data = uniqueObjArray1
 
-                    $('ul').tooltip('hide');
-                    $('li').tooltip('hide');
-                    $('li').removeAttr("title");
-                    $('li').removeAttr("data-original-title");
-                    $('#jstree_variables_species_' + id).removeAttr("data-original-title");
-                    $('#jstree_variables_species_' + id).removeAttr("title");
+        //             $('ul').tooltip('hide');
+        //             $('li').tooltip('hide');
+        //             $('li').removeAttr("title");
+        //             $('li').removeAttr("data-original-title");
+        //             $('#jstree_variables_species_' + id).removeAttr("data-original-title");
+        //             $('#jstree_variables_species_' + id).removeAttr("title");
 
-                    for (i = 0; i < data.length; i++) {
+        //             for (i = 0; i < data.length; i++) {
 
-                        var idNode = "";
-                        var camp = data[i]
-                        var name_variable = camp[next_field]
+        //                 var idNode = "";
+        //                 var camp = data[i]
+        //                 var name_variable = camp[next_field]
 
-                        console.log("name_variable: " + name_variable)
+        //                 console.log("name_variable: " + name_variable)
 
-                        if ($("#" + data[i].id).length > 0) {
-                            // _VERBOSE ? console.log("id_existente") : _VERBOSE;
+        //                 if ($("#" + data[i].id).length > 0) {
+        //                     // _VERBOSE ? console.log("id_existente") : _VERBOSE;
 
-                            idNode = data[i].id.replace(" ","") + "_" + Math.floor((Math.random() * 1000) + 1)
-                        } else {
-                            // ._VERBOSE ? console.log("nuevo_id") : _VERBOSE;
+        //                     idNode = data[i].id.replace(" ","") + "_" + Math.floor((Math.random() * 1000) + 1)
+        //                 } else {
+        //                     // ._VERBOSE ? console.log("nuevo_id") : _VERBOSE;
 
-                            idNode = camp[next_field];
-                        }
+        //                     idNode = camp[next_field];
+        //                 }
 
-                        var default_son = next_nivel < 8 ? [{text: "cargando..."}] : [];
-                        var label_taxon = next_nivel < 8 ? camp[next_field] : camp[next_field];  //" (spp: " + data[i].spp + ")"
+        //                 var default_son = next_nivel < 8 ? [{text: "cargando..."}] : [];
+        //                 var label_taxon = next_nivel < 8 ? camp[next_field] : camp[next_field];  //" (spp: " + data[i].spp + ")"
 
-                        var newNode = {
-                            id: idNode,
-                            text: label_taxon,
-                            icon: "plugins/jstree/images/dna.png",
-                            attr: {"nivel": next_nivel, "type": _TYPE_TAXON},
-                            state: {'opened': false},
-                            "children": default_son
-                        };
+        //                 var newNode = {
+        //                     id: idNode,
+        //                     text: label_taxon,
+        //                     icon: "plugins/jstree/images/dna.png",
+        //                     attr: {"nivel": next_nivel, "type": _TYPE_TAXON},
+        //                     state: {'opened': false},
+        //                     "children": default_son
+        //                 };
 
-                        if(data[i].description+'' !== 'undefined'){
-                            newNode['li_attr'] = {"title": data[i].description + ' ' + data[i].name.split(' ')[1]};
-                        }
+        //                 if(data[i].description+'' !== 'undefined'){
+        //                     newNode['li_attr'] = {"title": data[i].description + ' ' + data[i].name.split(' ')[1]};
+        //                 }
 
-                        $('#jstree_variables_species_' + id).jstree("create_node", d.node, newNode, 'last', false, false);
+        //                 $('#jstree_variables_species_' + id).jstree("create_node", d.node, newNode, 'last', false, false);
 
-                    }
+        //             }
 
-                    $("#jstree_variables_species_" + id).jstree(true).delete_node(d.node.children[0]);
-                    $("#jstree_variables_species_" + id).jstree(true).set_icon(d.node.id, "./plugins/jstree/images/dna.png");
-                    $("#jstree_variables_species_" + id).prop('title', data[0].description);
-                    $("#jstree_variables_species_" + id).tooltip();
+        //             //$("#jstree_variables_species_" + id).jstree(true).delete_node(d.node.children[0]);
+        //             //$("#jstree_variables_species_" + id).jstree(true).set_icon(d.node.id, "./plugins/jstree/images/dna.png");
+        //             $("#jstree_variables_species_" + id).prop('title', data[0].description);
+        //             $("#jstree_variables_species_" + id).tooltip();
 
-                    $('li').tooltip();
-                    $('ul').tooltip();
+        //             $('li').tooltip();
+        //             $('ul').tooltip();
 
-                }
-            });
+        //         }
+        //     });
 
-        };
+        // };
 
 
         // Evento generado cuando cambia el estado de selección del árbol, almacena los elementos que fueron seleccionados del grupo de variables taxonómicas.
@@ -2622,9 +2605,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                 default:
                     console.log(`nada que hacer`);
                     break;
-            }
-
-            
+            }           
 
             // for(i = 0; i < self.var_sel_array.length; i++){
             //     if (self.var_sel_array[i].type == typeVar){
