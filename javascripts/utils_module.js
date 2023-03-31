@@ -76,6 +76,8 @@ var utils_module = (function (verbose) {
 
     function processDataForFreqCell(data) {
 
+        console.log(data)
+
         var min_scr = d3.min(data.map(function (d) {
             return parseFloat(d.tscore);
         }));
@@ -121,6 +123,7 @@ var utils_module = (function (verbose) {
 
         var index = 0;
         var index_bucket = 0;
+        console.log(data_freq)
 
         while (index_bucket < buckets) {
 
@@ -186,6 +189,8 @@ var utils_module = (function (verbose) {
     function reduceScoreCell(data, val_apriori = 0, numr = 1) {
 
         var cross_cells = crossfilter(data)
+        console.log("<---------0--------->")
+        console.log(data)
 
         cross_cells.groupAll();
         var cells_dimension = cross_cells.dimension(function (d) {
@@ -219,6 +224,7 @@ var utils_module = (function (verbose) {
     function processDataForScoreCell(data, apriori, mapa_prob, all_cells = []) { 
 
         _VERBOSE ? console.log("processDataForScoreCell") : _VERBOSE;
+
 
         var cells_array = data.map(function (d) {
             return {cells: d.cells, score: parseFloat(d.score)}

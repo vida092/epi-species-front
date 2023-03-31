@@ -2530,7 +2530,8 @@ var variable_module = (function (verbose, url_zacatuche) {
 
         // Realiza la actualización del grupo final con el cual se realizan los cálculos de épsilon y score.
         self.updateVarSelArray = function (item, operacion) {
-            // item - llega en forma de array, por tanto para obtener su valor se accede al primer valor   
+            // item - llega en forma de array, por tanto para obtener su valor se accede al primer valor  
+            console.log("<----------->") 
             console.log("updateVarSelArray")         
             console.log(self.var_sel_array)
             
@@ -2550,6 +2551,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                 });
 
             } else if (operacion == _AGREGADO) {
+
+                //checar
 
                 _VERBOSE ? console.log("elemento añadido") : _VERBOSE;
                 self.var_sel_array.push({"value": item.elements, "type": item.type, "groupid": item.groupid, "title": item.title});                
