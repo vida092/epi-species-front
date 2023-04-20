@@ -1223,6 +1223,10 @@ var histogram_module = (function (verbose) {
     function createBarChart(idComponent, data, f_legend) {
 
         _VERBOSE ? console.log("createBarChart") : _VERBOSE;
+        console.log("<--------------------------------data----------------------->")
+        console.log(data)
+        console.log("<----------------------------idComponent-------------------->")
+        console.log(idComponent)
 
         $("#" + idComponent.id).empty();
         // _VERBOSE ? console.log($(window).width()) : _VERBOSE;

@@ -182,8 +182,6 @@ var utils_module = (function (verbose) {
         return data_freq;
     }
 
-
-
     // TODO: Tomar en cuenta cuando se ejecuta el proceso con apriori o prob
     // Esta sumando cada uno de los analisis que ya lo contienen
     function reduceScoreCell(data, val_apriori = 0, numr = 1) {

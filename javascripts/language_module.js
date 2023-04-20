@@ -334,6 +334,7 @@ var language_module = (function (verbose) {
             $("#a_taxon_fuente").text($.i18n.prop('a_taxon'));
             $("#a_raster_fuente").text($.i18n.prop('a_raster'));
             $("#a_socio_fuente").text($.i18n.prop('a_socio'));
+            $("#a_emisiones_fuente").text($.i18n.prop('a_emisiones'));
             $("#a_topo_fuente").text($.i18n.prop('a_topo'));
 
             $("#a_taxon_sumidero").text($.i18n.prop('a_taxon'));

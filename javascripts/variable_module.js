@@ -113,7 +113,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
         // se comentan variables topograficas por expansión de terreno
 
-        var tags = abio_tab ? ['a_taxon', 'a_raster',  'a_socio'] : ['a_taxon'];
+        var tags = abio_tab ? ['a_taxon', 'a_raster',  'a_socio', 'a_emisiones'] : ['a_taxon'];
         //var tags = ['a_taxon', 'a_raster', 'a_socio'];
 
 
@@ -293,11 +293,10 @@ var variable_module = (function (verbose, url_zacatuche) {
                 var _url = "https://covid19.c3.unam.mx/gateway/api/nodes/"
 
                 let nodo = agent_selected.toLowerCase()
-                console.log("<=======nodo=========>")
-                console.log(nodo)
+
                 //var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){reino phylum clase orden familia genero nombrecientifico}}"
                 
-                console.log("-*/-*/-*/-*/-*/-*/-*/-*/-*/")
+                
                 switch(tax_root){
                     case "familia":
                         _module_toast.showToast_CenterCenter("El árbol taxonómico se está cargando, espere unos segundos...","info")
@@ -531,6 +530,50 @@ var variable_module = (function (verbose, url_zacatuche) {
 
         }
 
+        self.getTreeFuturo = function (){
+            console.log("self.getTreeFuturo")
+            var root = ['2021-2040', '2041-2060', '2061-2080', '2081-2100'];
+            var firstchilds = ['ssp126', 'ssp245', 'ssp370', 'ssp585'];
+            var secondchilds = ['ACCESS-ESM1-5', 'CNRM-CM6-1', 'GFDL-ESM4', 'GISS-E2-1-H', 'HadGEM3-GC31-LL', 'MIROC6', 'MPI-ESM1-2-LR'];
+
+            var data = [];
+
+            for (var i = 0; i < root.length; i++) {
+                var root_node = {'text': root[i], 'children': []};
+
+                for (var j = 0; j < firstchilds.length; j++) {
+                    var firstchild_node = {'text': firstchilds[j], 'children': []};
+
+                    for (var k = 0; k < secondchilds.length; k++) {
+                        var secondchild_node = {'text': secondchilds[k]};
+                        firstchild_node['children'].push(secondchild_node);
+                    }
+
+                    root_node['children'].push(firstchild_node);
+                }
+
+                data.push(root_node);
+            }                       
+                            
+
+            
+                
+                $("#jstree_variables_futurofuente").jstree({
+                    "plugins":["wholerow", "checkbox"],
+                    "core":{
+                         "data": data,
+                         "themes":{
+                             "name":"proton",
+                             "responsive":true
+                         },
+                     "check_callback":true
+                    }
+                 })
+                 $(function () { $('#jstree_variables_futurofuente').jstree(); });
+        }
+
+        self.getTreeFuturo()
+
 
         self.getTreeSocio = function (){
             var query = "query{all_censo_inegi_2020_covariables(limit: 2400, filter:\"\"){id name interval bin code}}"
@@ -735,6 +778,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                     .attr('data-toggle', 'tab' + i + "_" + id)
                     .text(_iTrans.prop(tags[i]))
                     .appendTo(li);tags
+                    console.log(tags[i])
                 }
             
         });
@@ -1649,6 +1693,53 @@ var variable_module = (function (verbose, url_zacatuche) {
                             e.preventDefault();                            
                             
                         })
+                        .appendTo(tab_pane);
+
+                var btn_add = $('<button/>')
+                        .attr('id', 'clean_var_bioclim' + "_" + id)
+                        .attr('type', 'button')
+                        .addClass('btn btn-primary glyphicon glyphicon-trash pull-left')
+                        .click(function (e) {
+                            // self.groupbioclimvar_dataset = [];
+                            self.cleanVariables("jstree_variables_socio_" + id, 'treeAddedPanel_' + id, _TYPE_ABIO);
+                            e.preventDefault();
+                        })
+                        .appendTo(tab_pane);
+
+            }
+            else if (i===3){
+                var tab_pane = $('<div/>')
+                        .attr('id', 'tab' + i + "_" + id)
+                        .addClass('tab-pane')
+                        .appendTo(tab_content)
+                        
+                var tree_nav_container = $('<div/>')
+                        .addClass('row nav_species_container')
+                        .appendTo(tab_pane)
+                        
+                
+
+                var div_tree = $('<div/>')
+                        .attr('id', "treeVariableFuturo" + id)
+                        .addClass('myScrollableBlockVar')
+                        .appendTo(tree_nav_container);
+
+                var tree = $('<div/>')                        
+                        .attr('id', "jstree_variables_futuro" + id)
+                        .appendTo(div_tree);
+                
+                        
+                        var btn_add = $('<button/>')
+                        .attr('id', 'add_group_bioclim' + "_" + id)
+                        .attr('type', 'button')
+                        .addClass('btn btn-primary glyphicon glyphicon-plus pull-left')
+                        // .click(function (e) {
+                            
+                        //     self.formQuery("jstree_variables_socio_" + id, self.arraySocioSelected2)
+                        //     self.addOtherGroup("jstree_variables_socio_" + id, self.arraySocioSelected,  'Socio', 'treeAddedPanel_' + id, _TYPE_ABIO);
+                        //     e.preventDefault();                            
+                            
+                        // })
                         .appendTo(tab_pane);
 
                 var btn_add = $('<button/>')
