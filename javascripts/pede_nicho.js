@@ -1265,10 +1265,9 @@ var module_nicho = (function () {
             // if (rango_fechas[0] == $("#sliderFecha").slider("option", "min") && rango_fechas[1] == $("#sliderFecha").slider("option", "max")) {
             //     rango_fechas = undefined;
             // }
+            // subgroups [{type groupid title value}{}]
             console.log( subgroups) 
-            var chkFecha = $("#chkFecha").is(':checked');
-
-            
+            var chkFecha = $("#chkFecha").is(':checked');            
 
 
             //slider_value = val_process ? $("#sliderValidation").slider("value") : 0;
@@ -1316,7 +1315,11 @@ var module_nicho = (function () {
                 "lim_inf_validation": "2021-06-03",
                 "lim_sup_validation": "2021-07-02"
             }
-            
+
+            console.log(" <===== body para el análisis =====>")
+            console.log(body.covariables)
+            console.log(body.covariable_filter)
+                       
             
 
             // Falta agregar la condición makesense. 
@@ -1405,6 +1408,10 @@ var module_nicho = (function () {
 
         // _componente_target = _variable_module_nicho.createSelectorComponent("var_target", ids_comp_variables[1], "", false, true, true, 4);
         _componente_target = _variable_module_nicho.createSelectorComponent("var_target", ids_comp_variables[1], "", false, true, true);
+        var targetChildDiv = $('#tab_content_target').find('div').first();
+
+        // Change the id attribute of the child div
+        targetChildDiv.attr('id', 'tab0_target');
 
         // enlazando los modulos que tienen interacción en los procesos
         _res_display_module_nicho.startResDisplay(_map_module_nicho, _histogram_module_nicho, _table_module, _language_module_nicho, ids_comp_variables);

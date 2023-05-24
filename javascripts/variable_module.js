@@ -348,10 +348,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                     })
                                 })
 
-                                console.log(familias)
-                                console.log(generos)
-                                console.log(nombrescientificos)
-                                console.log(data)
+                                
                                 $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
                                 $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
                                 $("#jstree_variables_species_target").on('loaded.jstree', self.loadNodes);
@@ -759,33 +756,34 @@ var variable_module = (function (verbose, url_zacatuche) {
             var name_class = 'nav-variables';
             if(id=="fuente"){
 
-            if (i == 0) {
-                name_class = 'active nav-variables';
+                if (i == 0) {
+                    name_class = 'active nav-variables';
+                }
+                
+                var li = $('<li/>')
+                        .addClass(name_class)
+                        .appendTo(nav_items)
+                        .click(function (e) {
+                            console.log( e.target.getAttribute('href')  )
+                            $('.nav-tabs a[href="' + e.target.getAttribute('href') + '"]').tab('show');
+                            
+                            e.preventDefault();
+                        });
+
+                var aaa = $('<a/>')
+                        .attr('id', tags[i] + "_" + id)
+                        .attr('href', '#tab' + i + "_" + id)
+                        .attr('data-toggle', 'tab' + i + "_" + id)
+                        .text(_iTrans.prop(tags[i]))
+                        .appendTo(li);tags
+                        console.log(tags[i])
+            
+        
             }
 
-            
-            var li = $('<li/>')
-                    .addClass(name_class)
-                    .appendTo(nav_items)
-                    .click(function (e) {
-                        $('.nav-tabs a[href="' + e.target.getAttribute('href') + '"]').tab('show');
-                        e.preventDefault();
-                    });
 
-            var aaa = $('<a/>')
-                    .attr('id', tags[i] + "_" + id)
-                    .attr('href', '#tab' + i + "_" + id)
-                    .attr('data-toggle', 'tab' + i + "_" + id)
-                    .text(_iTrans.prop(tags[i]))
-                    .appendTo(li);tags
-                    console.log(tags[i])
-                }
             
         });
-        
-
-
-
         // div que alamcena el cuerpo de los tabs
 
         var tab_content = $('<div/>')
@@ -801,7 +799,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                 //_VERBOSE ? console.log(tags[i]) : _VERBOSE;
                 //div del tab[i]_id               
                 var tab_pane = $('<div/>')
-                        .attr('id', 'tab' + i + "_" + "target")
+                        .attr('id', 'tab' + i + "_" + "fuente")
                         .addClass('tab-pane active')
                         .appendTo(tab_content);
                 //div id="tab_content_fuente" & class="tab-content"
@@ -810,7 +808,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .appendTo(drop_item);
 
                 var btn_sp = $('<button/>')
-                        .attr('id', 'btn_variable' + "_" + "target")
+                        .attr('id', 'btn_variable' + "_" + "fuente")
                         .attr('type', 'button')
                         .attr('data-toggle', 'dropdown')
                         .attr('aria-haspopup', 'true')
@@ -1605,11 +1603,6 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .addClass('tab-pane')
                         .appendTo(tab_content)
 
-                
-                        
-
-
-
                 // contendor de arbol y panel de seleccion
                 var tree_nav_container = $('<div/>')
                         .addClass('row nav_species_container')
@@ -1622,11 +1615,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                 var tree = $('<div/>')
                         .attr('id', "jstree_variables_bioclim_" + id)
-                        .appendTo(div_tree);                
-                        
-
-
-
+                        .appendTo(div_tree);   
                 var btn_add = $('<button/>')
                         .attr('id', 'add_group_bioclim' + "_" + id)
                         .attr('type', 'button')
@@ -2487,6 +2476,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             
 
             for (i = 0; i < arraySelected.length; i++) {
+                console.log(arraySelected[i])
 
                 // se elimita el spp del label cuando es tipo BIO
                 if (typeVar == _TYPE_BIO) {
@@ -2501,6 +2491,12 @@ var variable_module = (function (verbose, url_zacatuche) {
                 }
 
             }
+
+            console.log("--------------------------------------------------------------------------------------")
+
+            console.log(subgroup)
+
+            console.log("--------------------------------------------------------------------------------------")
 
             var groupid = parseInt(maxGroup) + 1;
             console.log("maxGroup: " + maxGroup);

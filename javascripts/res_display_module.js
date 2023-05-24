@@ -717,6 +717,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
             error: function (jqXHR, textStatus, errorThrown) {
                 _VERBOSE ? console.log("error: " + textStatus) : _VERBOSE;
 
+
             }
         });
 
@@ -1014,9 +1015,9 @@ var res_display_module = (function (verbose, url_zacatuche) {
                 _TREE_GENERATED.groups.push({index: (index + 1), name: grupo.title});
             }
 
-//            _VERBOSE ? console.log(_TREE_GENERATED) : _VERBOSE;
+            //_VERBOSE ? console.log(_TREE_GENERATED) : _VERBOSE;
 
-//            var filterby_group = [];
+            //var filterby_group = [];
            _VERBOSE ? console.log(grupo) : _VERBOSE;
 
             var hasChildren = false;
@@ -1028,7 +1029,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
             temp_group.hasChildren = hasChildren;
             temp_group.groupid = grupo.groupid;
 
-
+            console.log(grupo)
             grupo.value.forEach(function (item) {
 
                 // if item is type 1 is a json and if 0 is a string
@@ -1119,13 +1120,51 @@ var res_display_module = (function (verbose, url_zacatuche) {
         
         console.log("_REQUESTS_NUMBER: " + _REQUESTS_NUMBER);
         // console.log(_TREE_GENERATED);
-        // console.log(_REQUESTS_MADE);
+        console.log("<///////////  ******* request made  ******///////////> ")
+        console.log(_REQUESTS_MADE);
 
-        // return;
+        console.log("se empiezan a generar las peticiones")
+        console.log(body)
 
-        _REQUESTS_MADE.forEach(function (item, index) {
+            // Obtener la cantidad de elementos en "covariables"
+        const covariablesCount = body.covariables.length;
+
+        // Crear las copias del JSON y actualizar "covariable_filter"
+        const copies = [];
+
+        for (let i = 0; i < covariablesCount; i++) {
+            const copy = JSON.parse(JSON.stringify(body)); // Copia profunda del JSON original
+            copy.covariables = [body.covariables[i]]; // Cambiar el valor de "covariables"
+
+            // Actualizar "covariable_filter" solo si los valores son iguales
+            if (body.covariable_filter && body.covariable_filter[body.covariables[i]]) {
+            copy.covariable_filter = {
+                [body.covariables[i]]: body.covariable_filter[body.covariables[i]]
+            };
+            } else {
+            copy.covariable_filter = null;
+            }
+
+            copies.push(copy);
+        }
+
+        
+        // Imprimir las copias
+        copies.forEach((copy, index) => {
+            console.log(`Copia ${index + 1}:`, copy);
+        });
+
+        copies.forEach(function (item, index) {
             _createScore_Decil(item);
         });
+
+
+
+
+        // _REQUESTS_MADE.forEach(function (item, index) {
+        //     _createScore_Decil(item);
+        // });
+        //// aquí hay que modificar el body por cada covariable
 
     }
 
@@ -1143,8 +1182,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
      * @param {boolean} isTotal - Bandera que indica si la configuración enviada es el total de los conjuntos de las variables seleccionadas 
      */
     function _createScore_Decil(decildata) {
-
-        
+        console.log("------decil_data-----")
+        console.log(decildata)        
 
         _VERBOSE ? console.log("_createScore_Decil") : _VERBOSE;
 
@@ -1158,6 +1197,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
         data_request["decil_selected"] = [_default_decil]
         console.log("<====================================================>1")
         console.log(data_request)
+        console.log(_TREE_GENERATED)
         
 
         // decildata["with_data_freq"] = false;
@@ -1166,14 +1206,14 @@ var res_display_module = (function (verbose, url_zacatuche) {
         // decildata["with_data_score_decil"] = false;
 
         ///tal vez quitar
-        var  verbo = _val_process_temp ? "countsTaxonsGroupTimeValidation" : "countsTaxonsGroup"        
-
+        var  verbo = _val_process_temp ? "countsTaxonsGroupTimeValidation" : "countsTaxonsGroup"  
+        
         
         // Si se esta haciendo bien la peticion al servidor de epi-puma 2.0
         fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
             method:"POST",
             //body: JSON.stringify(data_request),
-            body: JSON.stringify(body),
+            body: JSON.stringify(decildata),
             headers:{
                "Content-Type": "application/json" 
             }
@@ -1181,7 +1221,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
         .then(resp => resp.json())
         .then(respuesta => {
 
-            console.log("<====================================================>2")
+            console.log("<===================== RESPUESTA ===============================>2")
             console.log(respuesta)
             console.log(">====================================================<2")
 
@@ -1205,13 +1245,13 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
             processSingleResponse(data_response, data_request, validation_data); 
 
-
+            console.log("<-------- _REQUEST_DONE BEFORE PUSH RESPONSE ------->")
             console.log(_REQUESTS_DONE)
             _REQUESTS_DONE.push(respuesta);
-            console.log("****************-------********")
+            console.log("<-------- _REQUEST_DONE AFTER RESPONSE ------->")
             console.log(_REQUESTS_DONE)
             _REQUESTS_DONE=_REQUESTS_DONE.slice(0,1)
-            console.log("****************-------********")
+            console.log("<-------- _REQUEST_DONE AFTER SLICE ------->")
             console.log(_REQUESTS_DONE)
 
             // todas las peticiones han sido realizadas
@@ -1285,7 +1325,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                 
 
-                console.log(_TREE_GENERATED);
+                console.log(_TREE_GENERATED);//
                 // console.log(_TREE_GENERATED.groups);
 
                 var score_cell_byanalysis = [];
@@ -1293,6 +1333,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
                 var decil_total_results = []
 
                 _TREE_GENERATED.groups.forEach(function (group) {
+                    
 
                     var score_cell_bygroup = [];
                     var names_bygroup = [];
@@ -1329,7 +1370,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                 });
 
-
+                console.log("<----------------_TREE_GENERATED-------------------------->")
+                console.log(_TREE_GENERATED)
 
                 if (_TREE_GENERATED.hasTotal) {
 
@@ -1353,7 +1395,9 @@ var res_display_module = (function (verbose, url_zacatuche) {
                     total_request.decil_selected = [_default_decil]
 
                     verbo = _val_process_temp ? "countsTaxonsGroupTimeValidation" : "countsTaxonsGroup" 
-                    ///ojo       
+                    ///ojo 
+                    console.log("<------------------------ULTIMA PETICION----------------------------->")
+                    console.log(body)
 
                     fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
                         method:"POST",
@@ -1389,8 +1433,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                             // console.log("total_counts: " + total_counts.length)
                             // console.log(decil_cells)
-                            console.log(percentage_avg)
                             console.log("<====================================================>8")
+                            console.log(percentage_avg)                            
                             console.log(validation_data)
                             console.log(data_score_cell)
                             console.log(">====================================================<8")
@@ -1443,10 +1487,6 @@ var res_display_module = (function (verbose, url_zacatuche) {
                     $('#chartdiv_score_decil').loading('stop');
                     
                 }
-
-               
-                
-
             }
 
         })
