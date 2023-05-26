@@ -1154,16 +1154,16 @@ var res_display_module = (function (verbose, url_zacatuche) {
             console.log(`Copia ${index + 1}:`, copy);
         });
 
-        copies.forEach(function (item, index) {
-            _createScore_Decil(item);
-        });
-
-
-
-
-        // _REQUESTS_MADE.forEach(function (item, index) {
+        // copies.forEach(function (item, index) {
         //     _createScore_Decil(item);
         // });
+
+
+
+
+        _REQUESTS_MADE.forEach(function (item, index) {
+            _createScore_Decil(item);
+        });
         //// aquí hay que modificar el body por cada covariable
 
     }
@@ -1182,7 +1182,6 @@ var res_display_module = (function (verbose, url_zacatuche) {
      * @param {boolean} isTotal - Bandera que indica si la configuración enviada es el total de los conjuntos de las variables seleccionadas 
      */
     function _createScore_Decil(decildata) {
-        console.log("------decil_data-----")
         console.log(decildata)        
 
         _VERBOSE ? console.log("_createScore_Decil") : _VERBOSE;
@@ -1213,7 +1212,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
         fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
             method:"POST",
             //body: JSON.stringify(data_request),
-            body: JSON.stringify(decildata),
+            body: JSON.stringify(body),
             headers:{
                "Content-Type": "application/json" 
             }
@@ -1233,12 +1232,17 @@ var res_display_module = (function (verbose, url_zacatuche) {
             }
 
             ///talvez modificar
-            _REQUESTS_NUMBER = 0;
+            console.log("----PETICIONES----")
+            console.log(_REQUESTS_NUMBER)
+            _REQUESTS_NUMBER = _REQUESTS_NUMBER - 1;
+            console.log("----PETICIONES MENOS UNO----")
+            console.log(_REQUESTS_NUMBER)
+
             
 
             // PROCESANDO PETICIONES INDIVIDUALES
-            //var data_response = jQuery.extend(true, [], respuesta.data);
-            var data_response = respuesta.data
+            var data_response = jQuery.extend(true, [], respuesta.data);
+            //var data_response = respuesta.data
             
             console.log(data_response)
             var validation_data = respuesta.validation_data
@@ -1328,12 +1332,15 @@ var res_display_module = (function (verbose, url_zacatuche) {
                 console.log(_TREE_GENERATED);//
                 // console.log(_TREE_GENERATED.groups);
 
+                
+
+
                 var score_cell_byanalysis = [];
                 var names_byanalysis = [];
                 var decil_total_results = []
 
                 _TREE_GENERATED.groups.forEach(function (group) {
-                    
+                    console.log(group)
 
                     var score_cell_bygroup = [];
                     var names_bygroup = [];
@@ -1986,6 +1993,64 @@ var res_display_module = (function (verbose, url_zacatuche) {
         });
         
     }
+
+    /**
+     * Enlaza los datos configurados de la petición con los datos de validación de la repuesta del análisis
+     *
+     * @function bindResponseWithValidation
+     * 
+     * @param {array} data - Array con la colección de scores por celda.
+     * @param {array} data_request - Array con la configuración utilizada para generar el análisis de nicho. Esta configuración es la utilizada por cada grupo de variables seleccionado.
+     * @param {array} validation_data - Array con el resultado del proceso de validación cuando este es solicitado.
+     *
+     */
+    function bindResponseWithValidation(data, data_request, validation_data = []) {
+
+        _VERBOSE ? console.log("bindResponseWithValidation") : _VERBOSE;
+
+        _TREE_GENERATED.groups.forEach(function (group_item, index) {
+
+           console.log(group_item);
+           console.log(data_request);
+
+            if (group_item.groupid === data_request.covariables[0].group_item) {
+
+                group_item.children.forEach(function (child, index) {
+
+                    if (child.value === data_request.covariables[0].merge_vars[0].value) {
+
+                        // var data_score_cell = _utils_module.processDataForScoreCell(data);
+                        // child.response = data_score_cell;
+                        child.response = data;
+                        child.validation_data = validation_data
+
+                        if (data_request.groupid !== undefined || data_request.covariables !== undefined) {
+                            // var title_valor = _utils_module.processTitleGroup(data_request.groupid, data_request.covariables);
+                            // child.title_valor = title_valor;
+
+                            child.title_valor = JSON.stringify({'title': 'Grupo Bio ' + data_request.groupid,
+                                                    'type': 0,
+                                                    'group_item': data_request.covariables[0].group_item,
+                                                    'is_parent': true});
+
+                            child.request = data_request;
+                        }
+
+                    }
+
+                });
+
+            }
+
+        });
+
+        _TREE_GENERATED.groups.forEach(group =>{
+            console.log(group)
+        })
+
+    }
+
+
 
 
     /**
