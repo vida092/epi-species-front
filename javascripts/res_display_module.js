@@ -1157,14 +1157,18 @@ var res_display_module = (function (verbose, url_zacatuche) {
         // copies.forEach(function (item, index) {
         //     _createScore_Decil(item);
         // });
-
-
-
-
         _REQUESTS_MADE.forEach(function (item, index) {
-            _createScore_Decil(item);
+            console.log(item);
         });
+
+
+        // _REQUESTS_MADE.forEach(function (item, index) {
+        //     _createScore_Decil(item);
+        // });
         //// aquí hay que modificar el body por cada covariable
+        for (let i = 0; i < copies.length; i++) {
+            _createScore_Decil(_REQUESTS_MADE[i], copies[i]);
+          }
 
     }
 
@@ -1181,8 +1185,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
      * @param {boolean} hasChildren - Bandera que indica si la configuración enviada es un conjunto de las variables seleccionadas o es una variable del grupo
      * @param {boolean} isTotal - Bandera que indica si la configuración enviada es el total de los conjuntos de las variables seleccionadas 
      */
-    function _createScore_Decil(decildata) {
-        console.log(decildata)        
+    function _createScore_Decil(decildata, petition) {
+        //console.log(decildata)        
 
         _VERBOSE ? console.log("_createScore_Decil") : _VERBOSE;
 
@@ -1196,6 +1200,11 @@ var res_display_module = (function (verbose, url_zacatuche) {
         data_request["decil_selected"] = [_default_decil]
         console.log("<====================================================>1")
         console.log(data_request)
+        
+
+        // _TREE_GENERATED.groups = _TREE_GENERATED.groups.filter(function(obj) {
+        //     return !obj.name.includes("Emisiones");
+        //   });
         console.log(_TREE_GENERATED)
         
 
@@ -1212,7 +1221,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
         fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
             method:"POST",
             //body: JSON.stringify(data_request),
-            body: JSON.stringify(body),
+            body: JSON.stringify(petition),
             headers:{
                "Content-Type": "application/json" 
             }
@@ -1249,10 +1258,10 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
             processSingleResponse(data_response, data_request, validation_data); 
 
-            console.log("<-------- _REQUEST_DONE BEFORE PUSH RESPONSE ------->")
+            
             console.log(_REQUESTS_DONE)
             _REQUESTS_DONE.push(respuesta);
-            console.log("<-------- _REQUEST_DONE AFTER RESPONSE ------->")
+            
             console.log(_REQUESTS_DONE)
             _REQUESTS_DONE=_REQUESTS_DONE.slice(0,1)
             console.log("<-------- _REQUEST_DONE AFTER SLICE ------->")

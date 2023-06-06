@@ -187,7 +187,6 @@ var utils_module = (function (verbose) {
     function reduceScoreCell(data, val_apriori = 0, numr = 1) {
 
         var cross_cells = crossfilter(data)
-        console.log("<---------0--------->")
         console.log(data)
 
         cross_cells.groupAll();

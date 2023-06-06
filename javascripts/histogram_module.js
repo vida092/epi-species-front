@@ -210,6 +210,9 @@ var histogram_module = (function (verbose) {
      */
     function createMultipleBarChart(json_decil, array_recall, idComponent, nameMap) {
 
+        console.log("----------json decil ---------------")
+        console.log(json_decil)
+
         _VERBOSE ? console.log("createMultipleBarChart") : _VERBOSE;
         
         // LIMPIA EL AREA DONDE SE ENCUENTRA EL HISTOGRAMA
@@ -323,7 +326,7 @@ var histogram_module = (function (verbose) {
                 if(deciles.length == 0 || grupos == 0){
                     console.log("Sin grupos o deciles seleccionados")
                     _toast_module.showToast_BottomCenter(_iTrans.prop('no_decilgrupo'), "warning");
-                    return
+                    returnaddTooltipBarChart
                 }
                 body.selected_decile = deciles
                 console.log(body.selected_decile)
@@ -1223,9 +1226,9 @@ var histogram_module = (function (verbose) {
     function createBarChart(idComponent, data, f_legend) {
 
         _VERBOSE ? console.log("createBarChart") : _VERBOSE;
-        console.log("<--------------------------------data----------------------->")
+        
         console.log(data)
-        console.log("<----------------------------idComponent-------------------->")
+        
         console.log(idComponent)
 
         $("#" + idComponent.id).empty();

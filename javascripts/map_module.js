@@ -412,9 +412,9 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         };
 
 
-//        var milliseconds = new Date().getTime();
-//        var url = _url_geoserver + "t=" + milliseconds;
-//        var espacio_capa = _workspace + ":sp_grid_terrestre";
+        //var milliseconds = new Date().getTime();
+        //var url = _url_geoserver + "t=" + milliseconds;
+        //var espacio_capa = _workspace + ":sp_grid_terrestre";
 
 
         // normal osm map: http://{s}.tile.osm.org/{z}/{x}/{y}.png
@@ -692,10 +692,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         _REGION_SELECTED = region_selected;
 
         let query = 'query{get_mesh(grid_res: "' + _grid_res + '"){cve simplified_geom}}'
-        console.log(query)       
-        
-
-
+        console.log(query)  
          $.ajax({
                  method: "POST",
                  url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
@@ -703,10 +700,10 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
                  data: JSON.stringify({query: query}),
              success: function (resp) {
                      let data = resp["data"];
-                     let obj = data["get_mesh"]
+                     let obj = data["get_mesh"] //lista con {cve, simplified_geom}
 
                      let json = {type: 'FeatureCollection',crs: {}, features: []}
-                 //console.log(obj)
+                 
 
 
                  for (let i = 0; i < obj.length; i++)
@@ -2933,7 +2930,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
             }
 
-            console.log("********values")
+            console.log("********values******")
             console.log(equal_range_values)
             console.log(equal_range_colors)
                 

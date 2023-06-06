@@ -364,6 +364,7 @@ var module_nicho = (function () {
         _SCROLL_INDEX = 0;
 
         $("#specie_next").click(function () {
+            console.log("mueve a abajo")
 
             if(_SCROLL_INDEX >= _SCROLL_SECTIONS.length-1)
                 return;
@@ -382,6 +383,7 @@ var module_nicho = (function () {
 
 
         $("#specie_before").click(function () {
+            console.log("mueve a arriba")
 
             if(_SCROLL_INDEX == 0)
                 return;
@@ -1140,12 +1142,11 @@ var module_nicho = (function () {
 
 
     // se ejecutan los modulos necesarios para iniciar el proceso de obteción de epsilon y score y visualización de tablas, histogramas y mapa
-    $("#get_esc_ep").click(function () {    
+    $("#get_esc_ep").click(function () { 
         
-
         _VERBOSE ? console.log("get_esc_ep") : _VERBOSE;
         var num_items = 0, spid, idreg, subgroups, sp_target;
-         
+        
 
         $("#specie_next").css('visibility', 'hidden');
 
@@ -1267,7 +1268,9 @@ var module_nicho = (function () {
             // }
             // subgroups [{type groupid title value}{}]
             console.log( subgroups) 
-            var chkFecha = $("#chkFecha").is(':checked');            
+            var chkFecha = $("#chkFecha").is(':checked');  
+            
+
 
 
             //slider_value = val_process ? $("#sliderValidation").slider("value") : 0;
@@ -1317,14 +1320,174 @@ var module_nicho = (function () {
             }
 
             console.log(" <===== body para el análisis =====>")
-            console.log(body.covariables)
-            console.log(body.covariable_filter)
+            // console.log(body.covariables)
+            // console.log(body.covariable_filter)
+            
+
+            var peticiones_futuro;
+
+            function generarPeticiones(arrayEmisionSelected, id_analysis_worldclim) {
+                var peticiones_futuro = [];
+
+                arrayEmisionSelected.forEach(element => {
+                    if (element.parent && element.grandparent) {
+                        peticiones_futuro.push({
+                            "id_analysis_worldclim": id_analysis_worldclim,
+                            "ssp": element.parent.replace(/ssp/g, ""),
+                            "period": element.grandparent,
+                            "gcm": element.label
+                        });
+                    }
+                });
+
+                return peticiones_futuro;
+            }
+
+            
+
+          
                        
             
 
             // Falta agregar la condición makesense. 
             // Cuando se realiza una consulta por region seleccioanda se verica que la especie objetivo se encuentre dentro de esta area
             _res_display_module_nicho.refreshData(num_items, val_process, slider_value, min_occ, mapa_prob, rango_fechas, chkFecha, fossil, grid_res, footprint_region, disease, agent, val_process_temp);
+            
+            if (body.covariables.includes('worldclim')) {
+                console.log('la petición trae worldclim')
+                var respuestaAjax;
+
+                _componente_fuente.getEmisionesElement()
+                $.ajax({
+                    url: "https://covid19.c3.unam.mx/gateway/api/analysis/cells/",
+                    type: "POST",
+                    dataType: "json",
+                    data: JSON.stringify(body),
+                    contentType: "application/json",
+                    success: function(resp) {
+                        respuestaAjax = resp.id_analysis_worldclim;
+                        peticiones_futuro = generarPeticiones(arrayEmisionSelected, respuestaAjax);
+                        var geoJSON; // Variable para almacenar el GeoJSON
+                        let query = "query{get_mesh(grid_res: \"mun\"){cve simplified_geom}}";
+                        var layers = {};
+                        $.ajax({
+                            method: "POST",
+                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                            contentType: "application/json",
+                            data: JSON.stringify({ query: query }),
+                            success: function (resp) {
+                                let data = resp["data"];
+                                let obj = data["get_mesh"];
+                                geoJSON = {
+                                type: "FeatureCollection",
+                                crs: {},
+                                features: []
+                                };
+            
+                                for (let i = 0; i < obj.length; i++) {
+                                let prop = new Object();
+                                let geom = new Object();
+                                geom = Object.assign({}, obj[i].simplified_geom);
+                                prop = parseInt(obj[i].cve);
+                                let prope = new Object();
+                                prope.gridid = prop;
+                                // Asignar valores nulos para los tscore por ahora, se actualizarán en cada llamada a getAndDrawMap
+                                prope.tscore = null;
+                                let type = new Object();
+                                type.type = "Feature";
+                                type.geometry = geom;
+                                type.properties = prope;
+                                geoJSON.features.push(type);
+                                geoJSON.crs = {
+                                    type: "name",
+                                    properties: {
+                                    name: "urn:ogc:def:crs:EPSG::4326"
+                                    }
+                                };
+                                }
+            
+                                for (var i = 0, j = 1; i < peticiones_futuro.length; i++, j++) {
+                                    var layer = L.layerGroup().addTo(map);
+                                    layers['Layer ' + j] = layer;
+                                    getAndDrawMap(peticiones_futuro[i], layer, geoJSON); // Pasar peticiones_futuro como argumento
+                                }
+            
+                                var layerControl = L.control.layers(null, layers).addTo(map);
+                            }
+                            });
+                        
+                           
+                            console.log("listo")
+                        
+                        
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+                
+
+                // Realizar la solicitud AJAX original para obtener el GeoJSON
+                
+
+                function getAndDrawMap(petition, layer, geoJSON) {
+                $.ajax({
+                    url: "https://covid19.c3.unam.mx/gateway/api/analysis/future/",
+                    type: "POST",
+                    dataType: "json",
+                    data: JSON.stringify(petition),
+                    contentType: "application/json",
+                    success: function (resp) {
+                    var gridData = resp.data_score_cell;
+                    var gridDataMap = {};
+
+                    for (var i = 0; i < gridData.length; i++) {
+                        var gridItem = gridData[i];
+                        gridDataMap[gridItem.gridid] = gridItem.tscore;
+                    }
+
+                    for (var i = 0; i < geoJSON.features.length; i++) {
+                        var feature = geoJSON.features[i];
+                        var gridid = feature.properties.gridid;
+                        if (gridDataMap.hasOwnProperty(gridid)) {
+                        feature.properties.tscore = gridDataMap[gridid];
+                        }
+                    }
+
+                    L.geoJson(geoJSON, {
+                        style: function (feature) {
+                        var tscore = feature.properties.tscore;
+                        var color = getColor(tscore);
+
+                        return {
+                            fillColor: color,
+                            weight: 1,
+                            opacity: 1,
+                            color: "white",
+                            dashArray: "3",
+                            fillOpacity: 0.7
+                        };
+                        }
+                    }).addTo(layer);
+                    }
+                });
+                }
+
+                function getColor(tscore) {
+                if (tscore >= 0 && tscore <= -0.5) {
+                    return "red";
+                } else if (tscore > 0.5 && tscore <= 0.8) {
+                    return "blue";
+                } else {
+                    return "grey";
+                }
+                }
+
+
+
+            }
+
+
 
         }
 
