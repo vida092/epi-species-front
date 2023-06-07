@@ -1322,143 +1322,80 @@ var module_nicho = (function () {
             console.log(" <===== body para el análisis =====>")
             // console.log(body.covariables)
             // console.log(body.covariable_filter)
-            
-
-            var peticiones_futuro;
-
-            function generarPeticiones(arrayEmisionSelected, id_analysis_worldclim) {
-                var peticiones_futuro = [];
-
-                arrayEmisionSelected.forEach(element => {
-                    if (element.parent && element.grandparent) {
-                        peticiones_futuro.push({
-                            "id_analysis_worldclim": id_analysis_worldclim,
-                            "ssp": element.parent.replace(/ssp/g, ""),
-                            "period": element.grandparent,
-                            "gcm": element.label
-                        });
-                    }
-                });
-
-                return peticiones_futuro;
-            }
-
-            
-
-          
-                       
-            
-
-            // Falta agregar la condición makesense. 
-            // Cuando se realiza una consulta por region seleccioanda se verica que la especie objetivo se encuentre dentro de esta area
             _res_display_module_nicho.refreshData(num_items, val_process, slider_value, min_occ, mapa_prob, rango_fechas, chkFecha, fossil, grid_res, footprint_region, disease, agent, val_process_temp);
+            _componente_fuente.getSubarrayEmisiones()
+            if(body.covariables.includes('worldclim') && Object.keys(subarrays).length>0 ){
+            console.log("el análisis tiene worldclim")
             
-            if (body.covariables.includes('worldclim')) {
-                console.log('la petición trae worldclim')
-                var respuestaAjax;
+            console.log(subarrays)
+            addid()
+                async function addid() {
+                    try {
+                      const resp = await $.ajax({
+                        url: "https://covid19.c3.unam.mx/gateway/api/analysis/cells/",
+                        type: "POST",
+                        dataType: "json",
+                        data: JSON.stringify(body),
+                        contentType: "application/json"
+                      });
+                  
+                      var id_analysis_worldclim = resp.id_analysis_worldclim;
+                      formarpeticion(subarrays, id_analysis_worldclim);
+                      console.log(subarrays);
+                      
 
-                _componente_fuente.getEmisionesElement()
-                $.ajax({
-                    url: "https://covid19.c3.unam.mx/gateway/api/analysis/cells/",
-                    type: "POST",
-                    dataType: "json",
-                    data: JSON.stringify(body),
-                    contentType: "application/json",
-                    success: function(resp) {
-                        respuestaAjax = resp.id_analysis_worldclim;
-                        peticiones_futuro = generarPeticiones(arrayEmisionSelected, respuestaAjax);
-                        var geoJSON; // Variable para almacenar el GeoJSON
-                        let query = "query{get_mesh(grid_res: \"mun\"){cve simplified_geom}}";
-                        var layers = {};
-                        $.ajax({
-                            method: "POST",
-                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
-                            contentType: "application/json",
-                            data: JSON.stringify({ query: query }),
-                            success: function (resp) {
-                                let data = resp["data"];
-                                let obj = data["get_mesh"];
-                                geoJSON = {
-                                type: "FeatureCollection",
-                                crs: {},
-                                features: []
-                                };
-            
-                                for (let i = 0; i < obj.length; i++) {
-                                let prop = new Object();
-                                let geom = new Object();
-                                geom = Object.assign({}, obj[i].simplified_geom);
-                                prop = parseInt(obj[i].cve);
-                                let prope = new Object();
-                                prope.gridid = prop;
-                                // Asignar valores nulos para los tscore por ahora, se actualizarán en cada llamada a getAndDrawMap
-                                prope.tscore = null;
-                                let type = new Object();
-                                type.type = "Feature";
-                                type.geometry = geom;
-                                type.properties = prope;
-                                geoJSON.features.push(type);
-                                geoJSON.crs = {
-                                    type: "name",
-                                    properties: {
-                                    name: "urn:ogc:def:crs:EPSG::4326"
-                                    }
-                                };
-                                }
-            
-                                for (var i = 0, j = 1; i < peticiones_futuro.length; i++, j++) {
-                                    var layer = L.layerGroup().addTo(map);
-                                    layers['Layer ' + j] = layer;
-                                    getAndDrawMap(peticiones_futuro[i], layer, geoJSON); // Pasar peticiones_futuro como argumento
-                                }
-            
-                                var layerControl = L.control.layers(null, layers).addTo(map);
-                            }
-                            });
-                        
-                           
-                            console.log("listo")
-                        
-                        
-                    },
-                    error: function(xhr, status, error) {
-                        console.log(error);
+ 
+                      await obtenerRespuestas(subarrays["ssp126_2021-2040"]);
+                    } catch (error) {
+                      console.error("Error en la función addid:", error);
                     }
-                });
-                
+                  }
 
-                // Realizar la solicitud AJAX original para obtener el GeoJSON
-                
-
-                function getAndDrawMap(petition, layer, geoJSON) {
-                $.ajax({
-                    url: "https://covid19.c3.unam.mx/gateway/api/analysis/future/",
-                    type: "POST",
-                    dataType: "json",
-                    data: JSON.stringify(petition),
-                    contentType: "application/json",
-                    success: function (resp) {
-                    var gridData = resp.data_score_cell;
-                    var gridDataMap = {};
-
-                    for (var i = 0; i < gridData.length; i++) {
-                        var gridItem = gridData[i];
-                        gridDataMap[gridItem.gridid] = gridItem.tscore;
+              //subarrays es un objeto con llaves "ssp###_20##-20##"
+              function formarpeticion(object, id_analysis_worldclim) {
+                for (let llave in object) {
+                    // Access the array associated with each key
+                    const arrayDeObjetos = object[llave];
+                    
+                    for (let i = 0; i < arrayDeObjetos.length; i++) {
+                        // Change the key names according to the specified mappings
+                        arrayDeObjetos[i].gcm = arrayDeObjetos[i].label;
+                        arrayDeObjetos[i].ssp = arrayDeObjetos[i].parent.replace(/ssp/g, "");
+                        arrayDeObjetos[i].period = arrayDeObjetos[i].grandparent;
+                        
+                        // Delete the old key-value pairs
+                        delete arrayDeObjetos[i].label;
+                        delete arrayDeObjetos[i].parent;
+                        delete arrayDeObjetos[i].grandparent;
+                        
+                        // Add the property "id_analysis_worldclim" with the given value
+                        arrayDeObjetos[i].id_analysis_worldclim = id_analysis_worldclim;
                     }
-
-                    for (var i = 0; i < geoJSON.features.length; i++) {
-                        var feature = geoJSON.features[i];
-                        var gridid = feature.properties.gridid;
-                        if (gridDataMap.hasOwnProperty(gridid)) {
+                }
+            }
+            
+            function getAndDrawMap(response, layer, geoJSON) {
+                var gridData = response
+                var gridDataMap = {};
+            
+                for (var i = 0; i < gridData.length; i++) {
+                    var gridItem = gridData[i];
+                    gridDataMap[gridItem.gridid] = gridItem.tscore;
+                }
+            
+                for (var i = 0; i < geoJSON.features.length; i++) {
+                    var feature = geoJSON.features[i];
+                    var gridid = feature.properties.gridid;
+                    if (gridDataMap.hasOwnProperty(gridid)) {
                         feature.properties.tscore = gridDataMap[gridid];
-                        }
                     }
-
-                    L.geoJson(geoJSON, {
-                        style: function (feature) {
+                }
+            
+                L.geoJson(geoJSON, {
+                    style: function (feature) {
                         var tscore = feature.properties.tscore;
                         var color = getColor(tscore);
-
+            
                         return {
                             fillColor: color,
                             weight: 1,
@@ -1467,25 +1404,289 @@ var module_nicho = (function () {
                             dashArray: "3",
                             fillOpacity: 0.7
                         };
-                        }
-                    }).addTo(layer);
                     }
-                });
-                }
+                }).addTo(layer);
+            }
 
-                function getColor(tscore) {
-                if (tscore >= 0 && tscore <= -0.5) {
-                    return "red";
-                } else if (tscore > 0.5 && tscore <= 0.8) {
-                    return "blue";
+            function getColor(tscore) {
+                if (tscore >= 0) {
+                    return "#de2d26";
+                } else if (tscore <0) {
+                    return "#deebf7";
                 } else {
                     return "grey";
                 }
-                }
-
-
-
             }
+
+            // function generarPeticiones(arrayEmisionSelected, id_analysis_worldclim) {
+            //     var peticiones_futuro = [];
+                
+            //     arrayEmisionSelected.forEach(element => {
+            //         if (element.parent && element.grandparent) {
+            //             peticiones_futuro.push({
+            //                 "id_analysis_worldclim": id_analysis_worldclim,
+            //                 "ssp": element.parent.replace(/ssp/g, ""),
+            //                 "period": element.grandparent,
+            //                 "gcm": element.label
+            //             });
+            //         }
+            //     });
+
+            //     return peticiones_futuro;
+            // }
+
+            
+            function hacerPeticion(peticion) {
+                return new Promise((resolve, reject) => {
+                  $.ajax({
+                    url: "https://covid19.c3.unam.mx/gateway/api/analysis/future/",
+                    type: "POST",
+                    dataType: "json",
+                    data: JSON.stringify(peticion),
+                    contentType: "application/json",
+                    success:function(resp){
+                        response = resp.data_score_cell
+                        resolve(response);
+                    }
+                  })
+                  
+                });
+              }
+
+              async function obtenerRespuestas(peticiones) {
+                try {
+                  const promesas = peticiones.map(peticion => hacerPeticion(peticion));
+                  const respuesta = await Promise.all(promesas);
+                  const resultado = [];
+
+                        // Iterar sobre los arrays dentro de "respuesta"
+                        for (let i = 0; i < respuesta.length; i++) {
+                            const array = respuesta[i];
+
+                            // Iterar sobre los objetos dentro de cada array
+                            for (let j = 0; j < array.length; j++) {
+                                const objeto = array[j];
+                                const { gridid, tscore } = objeto;
+
+                                // Buscar si el objeto con el mismo "gridid" ya existe en "resultado"
+                                const existingObj = resultado.find((item) => item.gridid === gridid);
+
+                                if (existingObj) {
+                                    // Si existe, agregar el "tscore" al total y aumentar el contador
+                                    existingObj.tscoreTotal += tscore;
+                                    existingObj.count++;
+                                } else {
+                                    // Si no existe, crear un nuevo objeto con el "gridid" y el "tscore"
+                                    resultado.push({ gridid, tscoreTotal: tscore, count: 1 });
+                                }
+                            }
+                        }
+
+                        // Calcular el promedio para cada objeto en "resultado"
+                        resultado.forEach((item) => {
+                            item.tscore = item.tscoreTotal / item.count;
+                            delete item.tscoreTotal;
+                            delete item.count;
+                        });
+                  console.log(respuesta)
+                  console.log("-----Arriba respuesta, abajo resultado------")
+                  console.log(resultado)
+                  let query = "query{get_mesh(grid_res: \"mun\"){cve simplified_geom}}";
+                  var layers = {}
+                  $.ajax({
+                    method: "POST",
+                    url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                    contentType: "application/json",
+                    data: JSON.stringify({ query: query }),
+                    success: function (resp) {
+                        let data = resp["data"];
+                        let obj = data["get_mesh"];
+                        geoJSON = {
+                        type: "FeatureCollection",
+                        crs: {},
+                        features: []
+                        };
+    
+                        for (let i = 0; i < obj.length; i++) {
+                        let prop = new Object();
+                        let geom = new Object();
+                        geom = Object.assign({}, obj[i].simplified_geom);
+                        prop = parseInt(obj[i].cve);
+                        let prope = new Object();
+                        prope.gridid = prop;
+                        // Asignar valores nulos para los tscore por ahora, se actualizarán en cada llamada a getAndDrawMap
+                        prope.tscore = null;
+                        let type = new Object();
+                        type.type = "Feature";
+                        type.geometry = geom;
+                        type.properties = prope;
+                        geoJSON.features.push(type);
+                        geoJSON.crs = {
+                            type: "name",
+                            properties: {
+                            name: "urn:ogc:def:crs:EPSG::4326"
+                            }
+                        };
+                        }
+    
+                        
+                        
+                            var layer = L.layerGroup().addTo(map);
+                            layers['Layer ' ] = layer;
+                            getAndDrawMap(respuesta, layer, geoJSON); // Pasar peticiones_futuro como argumento
+                        
+                        
+    
+                        var layerControl = L.control.layers(null, layers).addTo(map);
+                    }
+                    });
+
+                } catch (error) {
+                  // Manejo de errores si ocurre algún problema en las peticiones AJAX
+                  console.error('Error en las peticiones AJAX:', error);
+                }
+              }
+            }
+
+
+            // Falta agregar la condición makesense. 
+            // Cuando se realiza una consulta por region seleccioanda se verica que la especie objetivo se encuentre dentro de esta area
+            //_res_display_module_nicho.refreshData(num_items, val_process, slider_value, min_occ, mapa_prob, rango_fechas, chkFecha, fossil, grid_res, footprint_region, disease, agent, val_process_temp);
+            
+            // if (body.covariables.includes('worldclim')) {
+            //     console.log('la petición trae worldclim')
+            //     var respuestaAjax;
+            //     _componente_fuente.getSubarrayEmisiones()
+
+            //     _componente_fuente.getEmisionesElement()
+            //     $.ajax({
+            //         url: "https://covid19.c3.unam.mx/gateway/api/analysis/cells/",
+            //         type: "POST",
+            //         dataType: "json",
+            //         data: JSON.stringify(body),
+            //         contentType: "application/json",
+            //         success: function(resp) {
+            //             respuestaAjax = resp.id_analysis_worldclim;
+            //             peticiones_futuro = generarPeticiones(arrayEmisionSelected, respuestaAjax);
+            //             var geoJSON; // Variable para almacenar el GeoJSON
+            //             let query = "query{get_mesh(grid_res: \"mun\"){cve simplified_geom}}";
+            //             var layers = {};
+                        // $.ajax({
+                        //     method: "POST",
+                        //     url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                        //     contentType: "application/json",
+                        //     data: JSON.stringify({ query: query }),
+                        //     success: function (resp) {
+                        //         let data = resp["data"];
+                        //         let obj = data["get_mesh"];
+                        //         geoJSON = {
+                        //         type: "FeatureCollection",
+                        //         crs: {},
+                        //         features: []
+                        //         };
+            
+                        //         for (let i = 0; i < obj.length; i++) {
+                        //         let prop = new Object();
+                        //         let geom = new Object();
+                        //         geom = Object.assign({}, obj[i].simplified_geom);
+                        //         prop = parseInt(obj[i].cve);
+                        //         let prope = new Object();
+                        //         prope.gridid = prop;
+                        //         // Asignar valores nulos para los tscore por ahora, se actualizarán en cada llamada a getAndDrawMap
+                        //         prope.tscore = null;
+                        //         let type = new Object();
+                        //         type.type = "Feature";
+                        //         type.geometry = geom;
+                        //         type.properties = prope;
+                        //         geoJSON.features.push(type);
+                        //         geoJSON.crs = {
+                        //             type: "name",
+                        //             properties: {
+                        //             name: "urn:ogc:def:crs:EPSG::4326"
+                        //             }
+                        //         };
+                        //         }
+            
+                                // for (var i = 0, j = 1; i < peticiones_futuro.length; i++, j++) {
+                                //     var layer = L.layerGroup().addTo(map);
+                                //     layers['Layer ' + j] = layer;
+                                //     getAndDrawMap(peticiones_futuro[i], layer, geoJSON); // Pasar peticiones_futuro como argumento
+                                // }
+            
+                        //         var layerControl = L.control.layers(null, layers).addTo(map);
+                        //     }
+                        //     });
+                        
+                           
+            //                 console.log("listo")
+                        
+                        
+            //         },
+            //         error: function(xhr, status, error) {
+            //             console.log(error);
+            //         }
+            //     });
+                
+
+            //     // Realizar la solicitud AJAX original para obtener el GeoJSON
+                
+
+                // function getAndDrawMap(petition, layer, geoJSON) {
+                // $.ajax({
+                //     url: "https://covid19.c3.unam.mx/gateway/api/analysis/future/",
+                //     type: "POST",
+                //     dataType: "json",
+                //     data: JSON.stringify(petition),
+                //     contentType: "application/json",
+                //     success: function (resp) {
+                //     var gridData = resp.data_score_cell;
+                //     var gridDataMap = {};
+
+                //     for (var i = 0; i < gridData.length; i++) {
+                //         var gridItem = gridData[i];
+                //         gridDataMap[gridItem.gridid] = gridItem.tscore;
+                //     }
+
+                //     for (var i = 0; i < geoJSON.features.length; i++) {
+                //         var feature = geoJSON.features[i];
+                //         var gridid = feature.properties.gridid;
+                //         if (gridDataMap.hasOwnProperty(gridid)) {
+                //         feature.properties.tscore = gridDataMap[gridid];
+                //         }
+                //     }
+
+                //     L.geoJson(geoJSON, {
+                //         style: function (feature) {
+                //         var tscore = feature.properties.tscore;
+                //         var color = getColor(tscore);
+
+                //         return {
+                //             fillColor: color,
+                //             weight: 1,
+                //             opacity: 1,
+                //             color: "white",
+                //             dashArray: "3",
+                //             fillOpacity: 0.7
+                //         };
+                //         }
+                //     }).addTo(layer);
+                //     }
+                // });
+                // }
+
+                // function getColor(tscore) {
+                // if (tscore >= 0) {
+                //     return "#de2d26";
+                // } else if (tscore <0) {
+                //     return "#deebf7";
+                // } else {
+                //     return "grey";
+                // }
+                // }
+
+
+
+            // }
 
 
 

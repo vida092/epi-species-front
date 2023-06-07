@@ -1741,6 +1741,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                             self.cleanVariables("jstree_variables_futurofuente", 'treeAddedPanel_' + id, _TYPE_ABIO);
                             var jstreeInstance = $('#jstree_variables_futurofuente').jstree(true);
                             jstreeInstance.deselect_all();
+                            subarrays={}
                           
                         })
                         .appendTo(tab_pane);
@@ -2290,22 +2291,38 @@ var variable_module = (function (verbose, url_zacatuche) {
         self.addEmisiones = function(arr) {
             // Iterar sobre cada objeto en el arreglo
             
-              // Crear el div con la clase "row_var_item" y el texto "Gpo Emisiones"
-              var $div = $('<div>', {class: 'row_var_item'}).text('Gpo Emisiones');
+              // Crear el div con la clase "row_var_item" y el texto "Gpo GCM"
+              var $div = $('<div>', {class: 'row_var_item'}).text('Gpo GCM');
               
               // Crear el botón con las clases "btn btn-danger glyphicon glyphicon-remove pull-right btn_item_var"
               var $button = $('<button>', {class: 'btn btn-danger glyphicon glyphicon-remove pull-right btn_item_var'});
               
               // Crear el div con la clase "cell_item" y el texto de las propiedades del objeto
-              arr.forEach(function(element) {
-              var $innerDiv = $('<div>', {class: 'cell_item'}).text(element.label + ', ' + element.parent + ', ' + element.grandparent);
+              
+              var $innerDiv = $('<div>', {class: 'cell_item'}).text("Grupo GCM");
                 
               // Agregar el botón y el div interno al div principal
               $div.append($button, $innerDiv);
-            });
-              // Agregar el div principal al documento HTML
-              $('#treeAddedPanel_fuente').append($div);
             
+       
+              $('#treeAddedPanel_fuente').append($div);
+              subarrays = {};
+
+                // Dividir el array en subarrays
+                arr.forEach(function(objeto) {
+                    if(objeto.parent && objeto.grandparent){
+                        var parent = objeto.parent;
+                        var grandparent = objeto.grandparent;
+                        var key = parent + '_' + grandparent;
+                        if (!(key in subarrays)) {
+                            subarrays[key] = [];
+                        }
+                        subarrays[key].push(objeto);
+                    }
+                });
+                console.log(subarrays);
+                return subarrays
+                
           }
 
         
@@ -2640,6 +2657,11 @@ var variable_module = (function (verbose, url_zacatuche) {
 
         self.getEmisionesElement = function (){
             return arrayEmisionSelected
+            
+        }
+
+        self.getSubarrayEmisiones = function(){
+            return subarrays
         }
 
         
