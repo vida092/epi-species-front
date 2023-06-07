@@ -1322,8 +1322,12 @@ var module_nicho = (function () {
             console.log(" <===== body para el análisis =====>")
             // console.log(body.covariables)
             // console.log(body.covariable_filter)
-            _res_display_module_nicho.refreshData(num_items, val_process, slider_value, min_occ, mapa_prob, rango_fechas, chkFecha, fossil, grid_res, footprint_region, disease, agent, val_process_temp);
+
+            //_res_display_module_nicho.refreshData(num_items, val_process, slider_value, min_occ, mapa_prob, rango_fechas, chkFecha, fossil, grid_res, footprint_region, disease, agent, val_process_temp);
+            
             _componente_fuente.getSubarrayEmisiones()
+
+
             if(body.covariables.includes('worldclim') && Object.keys(subarrays).length>0 ){
             console.log("el análisis tiene worldclim")
             
@@ -1491,6 +1495,9 @@ var module_nicho = (function () {
                   console.log(respuesta)
                   console.log("-----Arriba respuesta, abajo resultado------")
                   console.log(resultado)
+                  var minTscore = resultado.reduce((min, obj) => obj.tscore < min ? obj.tscore : min, Infinity);
+                  var maxTscore = resultado.reduce((max, obj) => obj.tscore > max ? obj.tscore : max, -Infinity); 
+                  console.log(minTscore, maxTscore)
                   let query = "query{get_mesh(grid_res: \"mun\"){cve simplified_geom}}";
                   var layers = {}
                   $.ajax({
@@ -1533,7 +1540,7 @@ var module_nicho = (function () {
                         
                             var layer = L.layerGroup().addTo(map);
                             layers['Layer ' ] = layer;
-                            getAndDrawMap(respuesta, layer, geoJSON); // Pasar peticiones_futuro como argumento
+                            getAndDrawMap(resultado, layer, geoJSON); // Pasar peticiones_futuro como argumento
                         
                         
     
