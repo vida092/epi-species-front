@@ -1323,7 +1323,7 @@ var module_nicho = (function () {
             // console.log(body.covariables)
             // console.log(body.covariable_filter)
 
-            //_res_display_module_nicho.refreshData(num_items, val_process, slider_value, min_occ, mapa_prob, rango_fechas, chkFecha, fossil, grid_res, footprint_region, disease, agent, val_process_temp);
+            _res_display_module_nicho.refreshData(num_items, val_process, slider_value, min_occ, mapa_prob, rango_fechas, chkFecha, fossil, grid_res, footprint_region, disease, agent, val_process_temp);
             
             _componente_fuente.getSubarrayEmisiones()
 
@@ -1378,7 +1378,7 @@ var module_nicho = (function () {
                 }
             }
             
-            function getAndDrawMap(response, layer, geoJSON) {
+            function getAndDrawMap(response, layer, geoJSON, puntosDivisionScoreNeg, puntosDivisionScorePos) {
                 var gridData = response
                 var gridDataMap = {};
             
@@ -1398,7 +1398,7 @@ var module_nicho = (function () {
                 L.geoJson(geoJSON, {
                     style: function (feature) {
                         var tscore = feature.properties.tscore;
-                        var color = getColor(tscore);
+                        var color = getColor(tscore, puntosDivisionScoreNeg, puntosDivisionScorePos);
             
                         return {
                             fillColor: color,
@@ -1412,13 +1412,29 @@ var module_nicho = (function () {
                 }).addTo(layer);
             }
 
-            function getColor(tscore) {
-                if (tscore >= 0) {
-                    return "#de2d26";
-                } else if (tscore <0) {
-                    return "#deebf7";
-                } else {
-                    return "grey";
+            // function getColor(tscore, puntosDivisionScoreNeg, puntosDivisionScorePos) {
+            //     var colorspos =['#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d']
+            //     var colorsneg =['#fff7fb','#ece7f2','#d0d1e6','#a6bddb','#74a9cf','#3690c0','#0570b0','#045a8d','#023858']
+            //     if (tscore >= 0) {
+            //         return "blue"
+            //     } else if (tscore <0) {
+            //         return "#deebf7";
+            //     } else {
+            //         return "grey";
+            //     }
+            // }
+
+            function getColor(tscore, puntosDivisionScoreNeg, puntosDivisionScorePos) {
+                var colorspos = ['#fff5f0', '#fee0d2', '#fcbba1', '#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d', '#a50f15', '#67000d'];
+                var colorsneg = ['#fff7fb', '#ece7f2', '#d0d1e6', '#a6bddb', '#74a9cf', '#3690c0', '#0570b0', '#045a8d', '#023858'];
+              
+                var colors = tscore >= 0 ? colorspos : colorsneg;
+                var puntosDivision = tscore >= 0 ? puntosDivisionScorePos : puntosDivisionScoreNeg;
+              
+                for (var i = 0; i < puntosDivision.length; i++) {
+                  if (tscore < puntosDivision[i]) {
+                    return colors[i];
+                  }
                 }
             }
 
@@ -1498,6 +1514,31 @@ var module_nicho = (function () {
                   var minTscore = resultado.reduce((min, obj) => obj.tscore < min ? obj.tscore : min, Infinity);
                   var maxTscore = resultado.reduce((max, obj) => obj.tscore > max ? obj.tscore : max, -Infinity); 
                   console.log(minTscore, maxTscore)
+
+                  var numIntervalos = 9;
+
+                  var tamañoIntervalo = (maxTscore - minTscore) / numIntervalos;
+
+                    // Generar los puntos de división
+                    var puntosDivisionScoreNeg = [];
+                    for (var i = 0; i < numIntervalos; i++) {
+                    var punto = minTscore + tamañoIntervalo * (i + 1);
+                    puntosDivisionScoreNeg.push(punto);
+                    }
+                    console.log(puntosDivisionScoreNeg)
+
+                    var tamañoIntervalo = maxTscore / numIntervalos;
+
+                    // Generar los puntos de división
+                    var puntosDivisionScorePos = [];
+                    for (var i = 1; i <= numIntervalos; i++) {
+                    var punto = tamañoIntervalo * i;
+                    puntosDivisionScorePos.push(punto);
+                    }
+                    console.log(puntosDivisionScorePos)
+
+
+
                   let query = "query{get_mesh(grid_res: \"mun\"){cve simplified_geom}}";
                   var layers = {}
                   $.ajax({
@@ -1540,7 +1581,7 @@ var module_nicho = (function () {
                         
                             var layer = L.layerGroup().addTo(map);
                             layers['Layer ' ] = layer;
-                            getAndDrawMap(resultado, layer, geoJSON); // Pasar peticiones_futuro como argumento
+                            getAndDrawMap(resultado, layer, geoJSON, puntosDivisionScoreNeg, puntosDivisionScorePos); // Pasar peticiones_futuro como argumento
                         
                         
     
