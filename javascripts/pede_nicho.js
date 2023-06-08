@@ -1323,7 +1323,10 @@ var module_nicho = (function () {
             // console.log(body.covariables)
             // console.log(body.covariable_filter)
 
-            _res_display_module_nicho.refreshData(num_items, val_process, slider_value, min_occ, mapa_prob, rango_fechas, chkFecha, fossil, grid_res, footprint_region, disease, agent, val_process_temp);
+            // Falta agregar la condición makesense. 
+            // Cuando se realiza una consulta por region seleccioanda se verica que la especie objetivo se encuentre dentro de esta area
+            
+            //_res_display_module_nicho.refreshData(num_items, val_process, slider_value, min_occ, mapa_prob, rango_fechas, chkFecha, fossil, grid_res, footprint_region, disease, agent, val_process_temp);
             
             _componente_fuente.getSubarrayEmisiones()
 
@@ -1417,6 +1420,7 @@ var module_nicho = (function () {
                 
                 
             }
+
             function createPopupContent(feature) {
                 var popupContent = "<div class='custom-popup'>" +
                                    "<strong>Grid ID: " + feature.properties.gridid + "</strong><br/>" +
@@ -1441,22 +1445,7 @@ var module_nicho = (function () {
                 }
             }
 
-            // function generarPeticiones(arrayEmisionSelected, id_analysis_worldclim) {
-            //     var peticiones_futuro = [];
-                
-            //     arrayEmisionSelected.forEach(element => {
-            //         if (element.parent && element.grandparent) {
-            //             peticiones_futuro.push({
-            //                 "id_analysis_worldclim": id_analysis_worldclim,
-            //                 "ssp": element.parent.replace(/ssp/g, ""),
-            //                 "period": element.grandparent,
-            //                 "gcm": element.label
-            //             });
-            //         }
-            //     });
-
-            //     return peticiones_futuro;
-            // }
+            
 
             
             function hacerPeticion(peticion) {
@@ -1559,31 +1548,29 @@ var module_nicho = (function () {
                         crs: {},
                         features: []
                         };
-    
                         for (let i = 0; i < obj.length; i++) {
-                        let prop = new Object();
-                        let geom = new Object();
-                        geom = Object.assign({}, obj[i].simplified_geom);
-                        prop = parseInt(obj[i].cve);
-                        let prope = new Object();
-                        prope.gridid = prop;
-                        // Asignar valores nulos para los tscore por ahora, se actualizarán en cada llamada a getAndDrawMap
-                        prope.tscore = null;
-                        let type = new Object();
-                        type.type = "Feature";
-                        type.geometry = geom;
-                        type.properties = prope;
-                        geoJSON.features.push(type);
-                        geoJSON.crs = {
-                            type: "name",
-                            properties: {
-                            name: "urn:ogc:def:crs:EPSG::4326"
-                            }
-                        };
-                        console.log("------------GEOJSON----------")
-                        
-                        
+                            let prop = new Object();
+                            let geom = new Object();
+                            geom = Object.assign({}, obj[i].simplified_geom);
+                            prop = obj[i].cve.toString(); // Convertir a cadena en lugar de número entero
+                            let prope = new Object();
+                            prope.gridid = prop;
+                            // Asignar valores nulos para los tscore por ahora, se actualizarán en cada llamada a getAndDrawMap
+                            prope.tscore = null;
+                            let type = new Object();
+                            type.type = "Feature";
+                            type.geometry = geom;
+                            type.properties = prope;
+                            geoJSON.features.push(type);
+                            geoJSON.crs = {
+                                type: "name",
+                                properties: {
+                                    name: "urn:ogc:def:crs:EPSG::4326"
+                                }
+                            };
                         }
+                        
+                            console.log(geoJSON)
                             var layer = L.layerGroup().addTo(map);
                             layers['Layer ' ] = layer;
                             getAndDrawMap(resultado, layer, geoJSON, puntosDivisionScoreNeg, puntosDivisionScorePos); // Pasar peticiones_futuro como argumento
@@ -1604,144 +1591,7 @@ var module_nicho = (function () {
             }
 
 
-            // Falta agregar la condición makesense. 
-            // Cuando se realiza una consulta por region seleccioanda se verica que la especie objetivo se encuentre dentro de esta area
-            //_res_display_module_nicho.refreshData(num_items, val_process, slider_value, min_occ, mapa_prob, rango_fechas, chkFecha, fossil, grid_res, footprint_region, disease, agent, val_process_temp);
             
-            // if (body.covariables.includes('worldclim')) {
-            //     console.log('la petición trae worldclim')
-            //     var respuestaAjax;
-            //     _componente_fuente.getSubarrayEmisiones()
-
-            //     _componente_fuente.getEmisionesElement()
-            //     $.ajax({
-            //         url: "https://covid19.c3.unam.mx/gateway/api/analysis/cells/",
-            //         type: "POST",
-            //         dataType: "json",
-            //         data: JSON.stringify(body),
-            //         contentType: "application/json",
-            //         success: function(resp) {
-            //             respuestaAjax = resp.id_analysis_worldclim;
-            //             peticiones_futuro = generarPeticiones(arrayEmisionSelected, respuestaAjax);
-            //             var geoJSON; // Variable para almacenar el GeoJSON
-            //             let query = "query{get_mesh(grid_res: \"mun\"){cve simplified_geom}}";
-            //             var layers = {};
-                        // $.ajax({
-                        //     method: "POST",
-                        //     url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
-                        //     contentType: "application/json",
-                        //     data: JSON.stringify({ query: query }),
-                        //     success: function (resp) {
-                        //         let data = resp["data"];
-                        //         let obj = data["get_mesh"];
-                        //         geoJSON = {
-                        //         type: "FeatureCollection",
-                        //         crs: {},
-                        //         features: []
-                        //         };
-            
-                        //         for (let i = 0; i < obj.length; i++) {
-                        //         let prop = new Object();
-                        //         let geom = new Object();
-                        //         geom = Object.assign({}, obj[i].simplified_geom);
-                        //         prop = parseInt(obj[i].cve);
-                        //         let prope = new Object();
-                        //         prope.gridid = prop;
-                        //         // Asignar valores nulos para los tscore por ahora, se actualizarán en cada llamada a getAndDrawMap
-                        //         prope.tscore = null;
-                        //         let type = new Object();
-                        //         type.type = "Feature";
-                        //         type.geometry = geom;
-                        //         type.properties = prope;
-                        //         geoJSON.features.push(type);
-                        //         geoJSON.crs = {
-                        //             type: "name",
-                        //             properties: {
-                        //             name: "urn:ogc:def:crs:EPSG::4326"
-                        //             }
-                        //         };
-                        //         }
-            
-                                // for (var i = 0, j = 1; i < peticiones_futuro.length; i++, j++) {
-                                //     var layer = L.layerGroup().addTo(map);
-                                //     layers['Layer ' + j] = layer;
-                                //     getAndDrawMap(peticiones_futuro[i], layer, geoJSON); // Pasar peticiones_futuro como argumento
-                                // }
-            
-                        //         var layerControl = L.control.layers(null, layers).addTo(map);
-                        //     }
-                        //     });
-                        
-                           
-            //                 console.log("listo")
-                        
-                        
-            //         },
-            //         error: function(xhr, status, error) {
-            //             console.log(error);
-            //         }
-            //     });
-                
-
-            //     // Realizar la solicitud AJAX original para obtener el GeoJSON
-                
-
-                // function getAndDrawMap(petition, layer, geoJSON) {
-                // $.ajax({
-                //     url: "https://covid19.c3.unam.mx/gateway/api/analysis/future/",
-                //     type: "POST",
-                //     dataType: "json",
-                //     data: JSON.stringify(petition),
-                //     contentType: "application/json",
-                //     success: function (resp) {
-                //     var gridData = resp.data_score_cell;
-                //     var gridDataMap = {};
-
-                //     for (var i = 0; i < gridData.length; i++) {
-                //         var gridItem = gridData[i];
-                //         gridDataMap[gridItem.gridid] = gridItem.tscore;
-                //     }
-
-                //     for (var i = 0; i < geoJSON.features.length; i++) {
-                //         var feature = geoJSON.features[i];
-                //         var gridid = feature.properties.gridid;
-                //         if (gridDataMap.hasOwnProperty(gridid)) {
-                //         feature.properties.tscore = gridDataMap[gridid];
-                //         }
-                //     }
-
-                //     L.geoJson(geoJSON, {
-                //         style: function (feature) {
-                //         var tscore = feature.properties.tscore;
-                //         var color = getColor(tscore);
-
-                //         return {
-                //             fillColor: color,
-                //             weight: 1,
-                //             opacity: 1,
-                //             color: "white",
-                //             dashArray: "3",
-                //             fillOpacity: 0.7
-                //         };
-                //         }
-                //     }).addTo(layer);
-                //     }
-                // });
-                // }
-
-                // function getColor(tscore) {
-                // if (tscore >= 0) {
-                //     return "#de2d26";
-                // } else if (tscore <0) {
-                //     return "#deebf7";
-                // } else {
-                //     return "grey";
-                // }
-                // }
-
-
-
-            // }
 
 
 
