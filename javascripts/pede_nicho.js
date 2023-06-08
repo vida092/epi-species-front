@@ -1406,7 +1406,7 @@ var module_nicho = (function () {
                             opacity: 1,
                             color: "white",
                             dashArray: "3",
-                            fillOpacity: 0.7
+                            fillOpacity: 1
                         };
                     }
                 }).addTo(layer);
@@ -1426,7 +1426,7 @@ var module_nicho = (function () {
 
             function getColor(tscore, puntosDivisionScoreNeg, puntosDivisionScorePos) {
                 var colorspos = ['#fff5f0', '#fee0d2', '#fcbba1', '#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d', '#a50f15', '#67000d'];
-                var colorsneg = ['#fff7fb', '#ece7f2', '#d0d1e6', '#a6bddb', '#74a9cf', '#3690c0', '#0570b0', '#045a8d', '#023858'];
+                var colorsneg = ['#f7fbff','#deebf7','#c6dbef','#9ecae1','#6baed6','#4292c6','#2171b5','#08519c','#08306b'];
               
                 var colors = tscore >= 0 ? colorspos : colorsneg;
                 var puntosDivision = tscore >= 0 ? puntosDivisionScorePos : puntosDivisionScoreNeg;
@@ -1511,31 +1511,33 @@ var module_nicho = (function () {
                   console.log(respuesta)
                   console.log("-----Arriba respuesta, abajo resultado------")
                   console.log(resultado)
+                  _module_toast.showToast_CenterCenter("El mapa se está cargando ...","info")
                   var minTscore = resultado.reduce((min, obj) => obj.tscore < min ? obj.tscore : min, Infinity);
                   var maxTscore = resultado.reduce((max, obj) => obj.tscore > max ? obj.tscore : max, -Infinity); 
                   console.log(minTscore, maxTscore)
 
                   var numIntervalos = 9;
 
-                  var tamañoIntervalo = (maxTscore - minTscore) / numIntervalos;
-
-                    // Generar los puntos de división
-                    var puntosDivisionScoreNeg = [];
-                    for (var i = 0; i < numIntervalos; i++) {
-                    var punto = minTscore + tamañoIntervalo * (i + 1);
-                    puntosDivisionScoreNeg.push(punto);
-                    }
-                    console.log(puntosDivisionScoreNeg)
-
-                    var tamañoIntervalo = maxTscore / numIntervalos;
+                  var tamañoIntervaloPos = (maxTscore) / numIntervalos;
 
                     // Generar los puntos de división
                     var puntosDivisionScorePos = [];
-                    for (var i = 1; i <= numIntervalos; i++) {
-                    var punto = tamañoIntervalo * i;
+                    for (var i = 0; i < numIntervalos; i++) {
+                    var punto = 0 + tamañoIntervaloPos * (i + 1);
                     puntosDivisionScorePos.push(punto);
                     }
                     console.log(puntosDivisionScorePos)
+
+                    var tamañoIntervaloNeg = minTscore / numIntervalos;
+
+                    // Generar los puntos de división
+                    var puntosDivisionScoreNeg = [];
+                    for (var i = 1; i <= numIntervalos; i++) {
+                    var punto = tamañoIntervaloNeg * i;
+                    puntosDivisionScoreNeg.push(punto);
+                    }
+                    puntosDivisionScoreNeg = puntosDivisionScoreNeg.reverse()
+                    console.log(puntosDivisionScoreNeg)
 
 
 
@@ -1582,7 +1584,7 @@ var module_nicho = (function () {
                             var layer = L.layerGroup().addTo(map);
                             layers['Layer ' ] = layer;
                             getAndDrawMap(resultado, layer, geoJSON, puntosDivisionScoreNeg, puntosDivisionScorePos); // Pasar peticiones_futuro como argumento
-                        
+                            _module_toast.showToast_CenterCenter("El mapa se cargó adecuadamente","success")
                         
     
                         var layerControl = L.control.layers(null, layers).addTo(map);

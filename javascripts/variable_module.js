@@ -532,7 +532,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             console.log("self.getTreeFuturo")
             var root = ['2021-2040'] //'2041-2060', '2061-2080', '2081-2100'];
             var firstchilds = ['ssp126'] //'ssp245', 'ssp585'];
-            var secondchilds = ['MPI-ESM1-2-HR', "HadGEM3-GC31-LL", "CNRM-CM6-1", "FIO-ESM-2-0", "ACCES-CM2", "EC-Earth3-Veg", "INM-CM5-0", "MRI-ESM2-0", "MIROC6","IPSL-CM6A-LR", "UKESM1-0-LL", "CMCC-ESM2"];
+            var secondchilds = ['MPI-ESM1-2-HR', "HadGEM3-GC31-LL", "CNRM-CM6-1", "FIO-ESM-2-0", "ACCESS-CM2", "EC-Earth3-Veg", "INM-CM5-0", "MRI-ESM2-0", "MIROC6","IPSL-CM6A-LR", "UKESM1-0-LL", "CMCC-ESM2"];
 
             var data = [];
 
