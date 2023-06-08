@@ -1402,27 +1402,30 @@ var module_nicho = (function () {
             
                         return {
                             fillColor: color,
-                            weight: 1,
+                            weight: 0.4,
                             opacity: 1,
                             color: "white",
-                            dashArray: "3",
+                            dashArray: "0",
                             fillOpacity: 1
                         };
-                    }
+                    },
+                    onEachFeature: function(feature, layer) {
+                        var popupContent = createPopupContent(feature);
+                        layer.bindPopup(popupContent);
+                      }
                 }).addTo(layer);
+                
+                
             }
+            function createPopupContent(feature) {
+                var popupContent = "<div class='custom-popup'>" +
+                                   "<strong>Grid ID: " + feature.properties.gridid + "</strong><br/>" +
+                                   "T-score: " + feature.properties.tscore +
+                                   "</div>";
+                return popupContent;
+              }
 
-            // function getColor(tscore, puntosDivisionScoreNeg, puntosDivisionScorePos) {
-            //     var colorspos =['#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d']
-            //     var colorsneg =['#fff7fb','#ece7f2','#d0d1e6','#a6bddb','#74a9cf','#3690c0','#0570b0','#045a8d','#023858']
-            //     if (tscore >= 0) {
-            //         return "blue"
-            //     } else if (tscore <0) {
-            //         return "#deebf7";
-            //     } else {
-            //         return "grey";
-            //     }
-            // }
+           
 
             function getColor(tscore, puntosDivisionScoreNeg, puntosDivisionScorePos) {
                 var colorspos = ['#fff5f0', '#fee0d2', '#fcbba1', '#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d', '#a50f15', '#67000d'];
@@ -1577,14 +1580,16 @@ var module_nicho = (function () {
                             name: "urn:ogc:def:crs:EPSG::4326"
                             }
                         };
+                        console.log("------------GEOJSON----------")
+                        
+                        
                         }
-    
-                        
-                        
                             var layer = L.layerGroup().addTo(map);
                             layers['Layer ' ] = layer;
                             getAndDrawMap(resultado, layer, geoJSON, puntosDivisionScoreNeg, puntosDivisionScorePos); // Pasar peticiones_futuro como argumento
+                            
                             _module_toast.showToast_CenterCenter("El mapa se cargó adecuadamente","success")
+                           
                         
     
                         var layerControl = L.control.layers(null, layers).addTo(map);
