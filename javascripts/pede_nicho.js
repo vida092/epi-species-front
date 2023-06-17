@@ -1332,10 +1332,10 @@ var module_nicho = (function () {
 
 
             if(body.covariables.includes('worldclim') && Object.keys(subarrays).length>0 ){
-            console.log("el análisis tiene worldclim")
-            
-            console.log(subarrays)
-            addid()
+                console.log("el análisis tiene worldclim")
+                
+                console.log(subarrays)
+                addid()
                 async function addid() {
                     try {
                       const resp = await $.ajax({
@@ -1443,6 +1443,7 @@ var module_nicho = (function () {
                     return colors[i];
                   }
                 }
+                
             }
 
             

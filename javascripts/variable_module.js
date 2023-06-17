@@ -2289,7 +2289,22 @@ var variable_module = (function (verbose, url_zacatuche) {
         }
 
         self.addEmisiones = function(arr) {
-            // Iterar sobre cada objeto en el arreglo
+            subarrays = {};
+
+            // Dividir el array en subarrays
+            arr.forEach(function(objeto) {
+                if(objeto.parent && objeto.grandparent){
+                    var parent = objeto.parent;
+                    var grandparent = objeto.grandparent;
+                    var key = parent + '_' + grandparent;
+                    if (!(key in subarrays)) {
+                        subarrays[key] = [];
+                    }
+                    subarrays[key].push(objeto);
+                }
+            });
+            console.log(subarrays);
+            
             
               // Crear el div con la clase "row_var_item" y el texto "Gpo GCM"
               var $div = $('<div>', {class: 'row_var_item'}).text('Gpo GCM');
@@ -2298,30 +2313,26 @@ var variable_module = (function (verbose, url_zacatuche) {
               var $button = $('<button>', {class: 'btn btn-danger glyphicon glyphicon-remove pull-right btn_item_var'});
               
               // Crear el div con la clase "cell_item" y el texto de las propiedades del objeto
+              $div.append($button)
               
-              var $innerDiv = $('<div>', {class: 'cell_item'}).text("Grupo GCM");
-                
-              // Agregar el botón y el div interno al div principal
-              $div.append($button, $innerDiv);
+              Object.keys(subarrays).forEach(element =>{
+                var $innerDiv = $('<div>', {class: 'cell_item'}).text(element).hide();
+                $div.append($innerDiv)
+              })
+            
+
+              $button.on('click', function() {
+                $div.remove()
+              });
+
+              $div.on('click', function() {
+                $div.find('.cell_item').toggle();
+              });
+            
             
        
               $('#treeAddedPanel_fuente').append($div);
-              subarrays = {};
-
-                // Dividir el array en subarrays
-                arr.forEach(function(objeto) {
-                    if(objeto.parent && objeto.grandparent){
-                        var parent = objeto.parent;
-                        var grandparent = objeto.grandparent;
-                        var key = parent + '_' + grandparent;
-                        if (!(key in subarrays)) {
-                            subarrays[key] = [];
-                        }
-                        subarrays[key].push(objeto);
-                    }
-                });
-                console.log(subarrays);
-                return subarrays
+            return subarrays
                 
           }
 
