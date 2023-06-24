@@ -1319,9 +1319,7 @@ var module_nicho = (function () {
                 "lim_sup_validation": "2021-07-02"
             }
 
-            console.log(" <===== body para el análisis =====>")
-            // console.log(body.covariables)
-            // console.log(body.covariable_filter)
+            
 
             // Falta agregar la condición makesense. 
             // Cuando se realiza una consulta por region seleccioanda se verica que la especie objetivo se encuentre dentro de esta area
@@ -1333,8 +1331,8 @@ var module_nicho = (function () {
 
             if(body.covariables.includes('worldclim') && Object.keys(subarrays).length>0 ){
                 console.log("el análisis tiene worldclim")
-                
                 console.log(subarrays)
+                
                 addid()
                 async function addid() {
                     try {
@@ -1349,12 +1347,26 @@ var module_nicho = (function () {
                       var id_analysis_worldclim = resp.id_analysis_worldclim;
                       formarpeticion(subarrays, id_analysis_worldclim);
                       console.log(subarrays);
-                      
+                      var layers= {}
+                      var loadingToast = _module_toast.showToast_CenterCenter("Cargando el mapa...", "info", false);
 
- 
-                      await obtenerRespuestas(subarrays["ssp126_2021-2040"]);
+                      var keys = Object.keys(subarrays);
+                        for (let i = 0; i < keys.length; i++) {
+                            const key = keys[i];
+                            const layer = await obtenerRespuestas(subarrays[key], key, layers);
+
+                            if (Object.keys(layers).length === Object.keys(subarrays).length) {
+                                // All layers have been added, create the layer control here
+                                if (!layerControl) {
+                                var layerControl = L.control.layers(null, layers).addTo(map);
+                                loadingToast.hide();
+                                }
+                            }
+                        }
+                      
                     } catch (error) {
                       console.error("Error en la función addid:", error);
+                      _module_toast.showToast_CenterCenter("Ha ocurrido un error al cargar el mapa", "error");
                     }
                   }
 
@@ -1379,94 +1391,94 @@ var module_nicho = (function () {
                         arrayDeObjetos[i].id_analysis_worldclim = id_analysis_worldclim;
                     }
                 }
-            }
-            
-            function getAndDrawMap(response, layer, geoJSON, puntosDivisionScoreNeg, puntosDivisionScorePos) {
-                var gridData = response
-                var gridDataMap = {};
-            
-                for (var i = 0; i < gridData.length; i++) {
-                    var gridItem = gridData[i];
-                    gridDataMap[gridItem.gridid] = gridItem.tscore;
                 }
             
-                for (var i = 0; i < geoJSON.features.length; i++) {
-                    var feature = geoJSON.features[i];
-                    var gridid = feature.properties.gridid;
-                    if (gridDataMap.hasOwnProperty(gridid)) {
-                        feature.properties.tscore = gridDataMap[gridid];
+                function getAndDrawMap(response, layer, geoJSON, puntosDivisionScoreNeg, puntosDivisionScorePos) {
+                    var gridData = response
+                    var gridDataMap = {};
+                
+                    for (var i = 0; i < gridData.length; i++) {
+                        var gridItem = gridData[i];
+                        gridDataMap[gridItem.gridid] = gridItem.tscore;
                     }
+                
+                    for (var i = 0; i < geoJSON.features.length; i++) {
+                        var feature = geoJSON.features[i];
+                        var gridid = feature.properties.gridid;
+                        if (gridDataMap.hasOwnProperty(gridid)) {
+                            feature.properties.tscore = gridDataMap[gridid];
+                        }
+                    }
+                
+                    L.geoJson(geoJSON, {
+                        style: function (feature) {
+                            var tscore = feature.properties.tscore;
+                            var color = getColor(tscore, puntosDivisionScoreNeg, puntosDivisionScorePos);
+                
+                            return {
+                                fillColor: color,
+                                weight: 0.4,
+                                opacity: 1,
+                                color: "white",
+                                dashArray: "0",
+                                fillOpacity: 1
+                            };
+                        },
+                        onEachFeature: function(feature, layer) {
+                            var popupContent = createPopupContent(feature);
+                            layer.bindPopup(popupContent);
+                        }
+                    }).addTo(layer);
+                    
+                    
                 }
-            
-                L.geoJson(geoJSON, {
-                    style: function (feature) {
-                        var tscore = feature.properties.tscore;
-                        var color = getColor(tscore, puntosDivisionScoreNeg, puntosDivisionScorePos);
-            
-                        return {
-                            fillColor: color,
-                            weight: 0.4,
-                            opacity: 1,
-                            color: "white",
-                            dashArray: "0",
-                            fillOpacity: 1
-                        };
-                    },
-                    onEachFeature: function(feature, layer) {
-                        var popupContent = createPopupContent(feature);
-                        layer.bindPopup(popupContent);
-                      }
-                }).addTo(layer);
-                
-                
-            }
 
-            function createPopupContent(feature) {
-                var popupContent = "<div class='custom-popup'>" +
-                                   "<strong>Grid ID: " + feature.properties.gridid + "</strong><br/>" +
-                                   "T-score: " + feature.properties.tscore +
-                                   "</div>";
-                return popupContent;
-              }
+                function createPopupContent(feature) {
+                    var popupContent = "<div class='custom-popup'>" +
+                                    "<strong>Grid ID: " + feature.properties.gridid + "</strong><br/>" +
+                                    "T-score: " + feature.properties.tscore +
+                                    "</div>";
+                    return popupContent;
+                }
 
            
 
-            function getColor(tscore, puntosDivisionScoreNeg, puntosDivisionScorePos) {
-                var colorspos = ['#fff5f0', '#fee0d2', '#fcbba1', '#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d', '#a50f15', '#67000d'];
-                var colorsneg = ['#f7fbff','#deebf7','#c6dbef','#9ecae1','#6baed6','#4292c6','#2171b5','#08519c','#08306b'];
-              
-                var colors = tscore >= 0 ? colorspos : colorsneg;
-                var puntosDivision = tscore >= 0 ? puntosDivisionScorePos : puntosDivisionScoreNeg;
-              
-                for (var i = 0; i < puntosDivision.length; i++) {
-                  if (tscore < puntosDivision[i]) {
-                    return colors[i];
-                  }
-                }
+                function getColor(tscore, puntosDivisionScoreNeg, puntosDivisionScorePos) {
+                    var colorspos = ['#fff5f0', '#fee0d2', '#fcbba1', '#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d', '#a50f15', '#67000d'];
+                    var colorsneg = ['#f7fbff','#deebf7','#c6dbef','#9ecae1','#6baed6','#4292c6','#2171b5','#08519c','#08306b'];
                 
-            }
-
-            
-
-            
-            function hacerPeticion(peticion) {
-                return new Promise((resolve, reject) => {
-                  $.ajax({
-                    url: "https://covid19.c3.unam.mx/gateway/api/analysis/future/",
-                    type: "POST",
-                    dataType: "json",
-                    data: JSON.stringify(peticion),
-                    contentType: "application/json",
-                    success:function(resp){
-                        response = resp.data_score_cell
-                        resolve(response);
+                    var colors = tscore >= 0 ? colorspos : colorsneg;
+                    var puntosDivision = tscore >= 0 ? puntosDivisionScorePos : puntosDivisionScoreNeg;
+                
+                    for (var i = 0; i < puntosDivision.length; i++) {
+                    if (tscore < puntosDivision[i]) {
+                        return colors[i];
                     }
-                  })
-                  
-                });
-              }
+                    }
+                    
+                }
 
-              async function obtenerRespuestas(peticiones) {
+            
+
+            
+                function hacerPeticion(peticion) {
+                    return new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: "https://covid19.c3.unam.mx/gateway/api/analysis/future/",
+                        type: "POST",
+                        dataType: "json",
+                        data: JSON.stringify(peticion),
+                        contentType: "application/json",
+                        success:function(resp){
+                            response = resp.data_score_cell
+                            resolve(response);
+                        }
+                    })
+                    
+                    });
+                }
+
+              async function obtenerRespuestas(peticiones, key, layers) {
                 try {
                   const promesas = peticiones.map(peticion => hacerPeticion(peticion));
                   const respuesta = await Promise.all(promesas);
@@ -1501,41 +1513,44 @@ var module_nicho = (function () {
                             delete item.tscoreTotal;
                             delete item.count;
                         });
+
                   console.log(respuesta)
                   console.log("-----Arriba respuesta, abajo resultado------")
+                  console.log(key)
                   console.log(resultado)
                   _module_toast.showToast_CenterCenter("El mapa se está cargando ...","info")
+                  
                   var minTscore = resultado.reduce((min, obj) => obj.tscore < min ? obj.tscore : min, Infinity);
                   var maxTscore = resultado.reduce((max, obj) => obj.tscore > max ? obj.tscore : max, -Infinity); 
-                  console.log(minTscore, maxTscore)
+                  
 
                   var numIntervalos = 9;
 
                   var tamañoIntervaloPos = (maxTscore) / numIntervalos;
 
-                    // Generar los puntos de división
+                    // Generar los deciles del rango de la respuesta positivos
                     var puntosDivisionScorePos = [];
                     for (var i = 0; i < numIntervalos; i++) {
                     var punto = 0 + tamañoIntervaloPos * (i + 1);
                     puntosDivisionScorePos.push(punto);
                     }
-                    console.log(puntosDivisionScorePos)
+                    //console.log(puntosDivisionScorePos)
 
                     var tamañoIntervaloNeg = minTscore / numIntervalos;
 
-                    // Generar los puntos de división
+                    // Generar los deciles del rango de la respuesta negativos
                     var puntosDivisionScoreNeg = [];
                     for (var i = 1; i <= numIntervalos; i++) {
                     var punto = tamañoIntervaloNeg * i;
                     puntosDivisionScoreNeg.push(punto);
                     }
                     puntosDivisionScoreNeg = puntosDivisionScoreNeg.reverse()
-                    console.log(puntosDivisionScoreNeg)
+                    //console.log(puntosDivisionScoreNeg)
 
 
 
                   let query = "query{get_mesh(grid_res: \"mun\"){cve simplified_geom}}";
-                  var layers = {}
+                  
                   $.ajax({
                     method: "POST",
                     url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
@@ -1553,7 +1568,7 @@ var module_nicho = (function () {
                             let prop = new Object();
                             let geom = new Object();
                             geom = Object.assign({}, obj[i].simplified_geom);
-                            prop = obj[i].cve.toString(); // Convertir a cadena en lugar de número entero
+                            prop = obj[i].cve.toString(); // Convertir a cadena en lugar de número entero para no modificar los gridid
                             let prope = new Object();
                             prope.gridid = prop;
                             // Asignar valores nulos para los tscore por ahora, se actualizarán en cada llamada a getAndDrawMap
@@ -1573,16 +1588,19 @@ var module_nicho = (function () {
                         
                             console.log(geoJSON)
                             var layer = L.layerGroup().addTo(map);
-                            layers['Layer ' ] = layer;
+                            layers[key ] = layer;
+
+                            if (Object.keys(layers).length === Object.keys(subarrays).length) {
+                                // Para este punto se agregaron todos los layers, ahora se agrega el control
+                                var layerControl = L.control.layers(null, layers).addTo(map);
+                              }
+
                             getAndDrawMap(resultado, layer, geoJSON, puntosDivisionScoreNeg, puntosDivisionScorePos); // Pasar peticiones_futuro como argumento
                             
                             _module_toast.showToast_CenterCenter("El mapa se cargó adecuadamente","success")
-                           
-                        
-    
-                        var layerControl = L.control.layers(null, layers).addTo(map);
                     }
                     });
+                    
 
                 } catch (error) {
                   // Manejo de errores si ocurre algún problema en las peticiones AJAX
