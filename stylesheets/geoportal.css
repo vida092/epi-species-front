@@ -1334,7 +1334,7 @@ h3{
     -moz-transition: opacity 500ms linear;
     -webkit-transition: opacity 500ms linear;
 
-    transition-delay: 500ms
+    transition-delay: 500ms;
         -moz-transition-delay: 500ms;
     -webkit-transition-delay: 500ms;
 
@@ -2480,3 +2480,4 @@ display: none;
     display:inline-block;
     width: 33% !important;
 }
+

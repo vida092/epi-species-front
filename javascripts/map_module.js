@@ -2254,7 +2254,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         
         console.log(label_target)
 
-        var subquery = _LABEL_MAP.map(taxon => `${label_target}= \'${taxon}\'`).join(" OR ")
+        var subquery = _LABEL_MAP.map(taxon => `${label_target}= \'${taxon}\'`).join(" OR ") //cambiar label , aparece orden y no nombre científico
         console.log(subquery)       
 
 

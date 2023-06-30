@@ -354,7 +354,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
                                 $("#jstree_variables_species_target").on('loaded.jstree', self.loadNodes);
                                 
-                                
+                                console.log(data)
                                 $('#jstree_variables_species_target').jstree({
                                     'plugins': ["wholerow", "checkbox"],                            
                                     'core': {
@@ -1725,10 +1725,13 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .attr('type', 'button')
                         .addClass('btn btn-primary glyphicon glyphicon-plus pull-left')
                         .click(function (e) {
-                            console.log(arrayEmisionSelected)                                                     
-                            //self.addOtherGroup("jstree_variables_futurofuente", arrayEmisionSelected, 'Emisiones', 'treeAddedPanel_' + id, _TYPE_ABIO)                         
-                            self.addEmisiones(arrayEmisionSelected)
-                            //e.preventDefault();                         
+                            
+                                console.log(arrayEmisionSelected)                                                     
+                                //self.addOtherGroup("jstree_variables_futurofuente", arrayEmisionSelected, 'Emisiones', 'treeAddedPanel_' + id, _TYPE_ABIO)                         
+                                self.addEmisiones(arrayEmisionSelected)
+                                //e.preventDefault();   
+                            
+                                                  
                         })
                         .appendTo(tab_pane);
 

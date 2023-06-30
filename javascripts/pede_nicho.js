@@ -1331,7 +1331,7 @@ var module_nicho = (function () {
 
             if(body.covariables.includes('worldclim') && Object.keys(subarrays).length>0 ){
                 console.log("el análisis tiene worldclim")
-                console.log(subarrays)
+                //console.log(subarrays)
                 
                 addid()
                 async function addid() {
@@ -1359,16 +1359,58 @@ var module_nicho = (function () {
                                 // All layers have been added, create the layer control here
                                 if (!layerControl) {
                                 var layerControl = L.control.layers(null, layers).addTo(map);
-                                loadingToast.hide();
+                                
                                 }
+                                
                             }
+                            var downloadLink = document.getElementById('emisiones_download');
+                            downloadLink.addEventListener('click', function(event) {
+                            event.preventDefault();
+                            downloadGeoJSON(layers);
+                            });
+
+
                         }
+
+                      
                       
                     } catch (error) {
                       console.error("Error en la función addid:", error);
                       _module_toast.showToast_CenterCenter("Ha ocurrido un error al cargar el mapa", "error");
                     }
                   }
+
+                  
+
+                  function downloadGeoJSON(layers) {
+                    var allLayers = Object.values(layers); // Layers es el obj con las capas
+                    var features = [];
+                  
+                    allLayers.forEach(function(layer) {
+                      layer.eachLayer(function(leafletLayer) {
+                        var geoJSON = leafletLayer.toGeoJSON();
+                        features.push(geoJSON);
+                      });
+                    });
+                  
+                    var geoJSONData = JSON.stringify({
+                      type: "FeatureCollection",
+                      features: features
+                    });
+                  
+                    var blob = new Blob([geoJSONData], { type: "application/json" });
+                    var url = URL.createObjectURL(blob);
+                  
+                    var a = document.createElement("a");
+                    a.href = url;
+                    a.download = "map.geojson";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                  }
+
+                 
 
               //subarrays es un objeto con llaves "ssp###_20##-20##"
               function formarpeticion(object, id_analysis_worldclim) {
@@ -1484,7 +1526,7 @@ var module_nicho = (function () {
                   const respuesta = await Promise.all(promesas);
                   const resultado = [];
 
-                        // Iterar sobre los arrays dentro de "respuesta"
+                        // Iterar sobre los arrays dentro de respuesta
                         for (let i = 0; i < respuesta.length; i++) {
                             const array = respuesta[i];
 
@@ -1497,11 +1539,11 @@ var module_nicho = (function () {
                                 const existingObj = resultado.find((item) => item.gridid === gridid);
 
                                 if (existingObj) {
-                                    // Si existe, agregar el "tscore" al total y aumentar el contador
+                                    // Si existe, agregar el score al total y aumentar el contador
                                     existingObj.tscoreTotal += tscore;
                                     existingObj.count++;
                                 } else {
-                                    // Si no existe, crear un nuevo objeto con el "gridid" y el "tscore"
+                                    // Si no existe crear un nuevo objeto con el "gridid" y score
                                     resultado.push({ gridid, tscoreTotal: tscore, count: 1 });
                                 }
                             }
@@ -1588,7 +1630,7 @@ var module_nicho = (function () {
                         
                             console.log(geoJSON)
                             var layer = L.layerGroup().addTo(map);
-                            layers[key ] = layer;
+                            layers[key.replace(/_/g, " ") ] = layer;
 
                             if (Object.keys(layers).length === Object.keys(subarrays).length) {
                                 // Para este punto se agregaron todos los layers, ahora se agrega el control
@@ -1605,6 +1647,7 @@ var module_nicho = (function () {
                 } catch (error) {
                   // Manejo de errores si ocurre algún problema en las peticiones AJAX
                   console.error('Error en las peticiones AJAX:', error);
+                  _module_toast.showToast_CenterCenter("Ocurrió un error ","error")
                 }
               }
             }
