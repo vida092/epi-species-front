@@ -271,6 +271,11 @@ var utils_module = (function (verbose) {
 
         // debug(data_cell.length)
         // debug(delta)
+        data_cell.sort(function(a, b) {
+            return b.tscore - a.tscore;
+        });
+        console.log("************* data cell *************")
+        console.log(data_cell)
 
         data_cell.reverse()
         data_cell.forEach(function (item, index) {

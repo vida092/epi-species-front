@@ -1184,9 +1184,11 @@ var res_display_module = (function (verbose, url_zacatuche) {
      * @param {josn} decildata - Json con la configuración seleccionada por el usuario
      * @param {boolean} hasChildren - Bandera que indica si la configuración enviada es un conjunto de las variables seleccionadas o es una variable del grupo
      * @param {boolean} isTotal - Bandera que indica si la configuración enviada es el total de los conjuntos de las variables seleccionadas 
+     * 
      */
     function _createScore_Decil(decildata, petition) {
         //console.log(decildata)        
+        console.log("<====================================================>1")
 
         _VERBOSE ? console.log("_createScore_Decil") : _VERBOSE;
 
@@ -1198,13 +1200,14 @@ var res_display_module = (function (verbose, url_zacatuche) {
         //var data_request = JSON.stringify(body)
 
         data_request["decil_selected"] = [_default_decil]
-        console.log("<====================================================>1")
+        
         console.log(data_request)
         
 
         // _TREE_GENERATED.groups = _TREE_GENERATED.groups.filter(function(obj) {
         //     return !obj.name.includes("Emisiones");
         //   });
+        console.log("<====================TREE GENERATED ===================>")
         console.log(_TREE_GENERATED)
         
 
@@ -1217,7 +1220,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
         var  verbo = _val_process_temp ? "countsTaxonsGroupTimeValidation" : "countsTaxonsGroup"  
         
         
-        // Si se esta haciendo bien la peticion al servidor de epi-puma 2.0
+        // Sí se esta haciendo bien la peticion al servidor de epi-puma 2.0
         fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
             method:"POST",
             //body: JSON.stringify(data_request),
@@ -1250,6 +1253,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
             
 
             // PROCESANDO PETICIONES INDIVIDUALES
+            console.log("<============= PROCESO DE PETICIONES IDIVIDUALES ===============>")
             var data_response = jQuery.extend(true, [], respuesta.data);
             //var data_response = respuesta.data
             
@@ -1268,7 +1272,12 @@ var res_display_module = (function (verbose, url_zacatuche) {
             console.log(_REQUESTS_DONE)
 
             // todas las peticiones han sido realizadas
+            
             if (_REQUESTS_NUMBER === 0) {
+                console.log("<-------- _REQUEST_DONE AFTER SLICE ------->")
+                console.log(_REQUESTS_DONE)
+                
+                console.log("<----------- todas las peticiones individuales han sido realizadas ---------->")
 
                 // confirma la desaparición del boton anterior de seguimiento
                 // $("#specie_next").css('visibility', 'hidden');
@@ -1413,7 +1422,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
                     verbo = _val_process_temp ? "countsTaxonsGroupTimeValidation" : "countsTaxonsGroup" 
                     ///ojo 
                     console.log("<------------------------ULTIMA PETICION----------------------------->")
-                    console.log(body)
+                    
 
                     fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
                         method:"POST",
@@ -1466,6 +1475,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                             _RESULTS_TODISPLAY.push(data_decil_byanalysis);
 
+                            console.log("------RESULTS TO DISPLAY ------")
                             console.log(_RESULTS_TODISPLAY)
 
                             _histogram_module_nicho.createMultipleBarChart(_RESULTS_TODISPLAY, [], _id_chartscr_decil, d3.map([]));

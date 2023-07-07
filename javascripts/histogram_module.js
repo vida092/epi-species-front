@@ -212,6 +212,9 @@ var histogram_module = (function (verbose) {
 
         console.log("----------json decil ---------------")
         console.log(json_decil)
+        console.log(array_recall)
+        console.log(idComponent)
+        console.log("----------MultipleBarChart-----------")
 
         _VERBOSE ? console.log("createMultipleBarChart") : _VERBOSE;
         
