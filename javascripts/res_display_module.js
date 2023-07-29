@@ -1240,6 +1240,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
                 // TODO: mandar mensaje de error
                 _module_toast.showToast_BottomCenter("Error al ejecutar el análisis", "error");
                 $('#chartdiv_score_decil').loading('stop');
+                alert(respuesta.message);
+
                 return
             }
 

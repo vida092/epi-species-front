@@ -2242,15 +2242,13 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
                 var label_target = "genero";
                 break;
             case("species"):
-                var label_target= "species"
+                var label_target= "nombrecientifico"
                 break;
             default:
                 console.log("nada que hacer")
         }    
         
-        if(label_target === "species"){
-            label_target = "nombrecientifico"
-        }
+       
         
         console.log(label_target)
 
@@ -2260,9 +2258,9 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
 
         if ( fecha_ini.length < 3)
-            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND ' + subquery +' "){individuosinfectados gridid_'+ _grid_res + '}}'
+            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND ' + "("+ subquery+")" +' "){individuosinfectados gridid_'+ _grid_res + '}}'
         else
-            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ subquery +'  AND aniocolecta >= \''+ fecha_ini + ' \' AND aniocolecta <= \'' + fecha_fin + ' \'"){individuosinfectados gridid_'+ _grid_res + '}}'
+            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ "("+ subquery+")" +'  AND aniocolecta >= \''+ fecha_ini + ' \' AND aniocolecta <= \'' + fecha_fin + ' \'"){individuosinfectados gridid_'+ _grid_res + '}}'
 
 
         console.log(query)

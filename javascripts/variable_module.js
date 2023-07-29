@@ -349,16 +349,18 @@ var variable_module = (function (verbose, url_zacatuche) {
                                     })
                                 })
 
-                                
                                 $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
                                 $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
                                 $("#jstree_variables_species_target").on('loaded.jstree', self.loadNodes);
                                 
-                                console.log(data)
+                                var apiResponse = JSON.stringify(data)
+                                apiResponse = apiResponse.replace(/\xa0/g, ' ');
+                                var data2 = JSON.parse(apiResponse);
+
                                 $('#jstree_variables_species_target').jstree({
                                     'plugins': ["wholerow", "checkbox"],                            
                                     'core': {
-                                        'data': data,
+                                        'data': data2,
                                         'themes': {
                                             'name': 'proton',
                                             'responsive': true
@@ -410,9 +412,10 @@ var variable_module = (function (verbose, url_zacatuche) {
                                     })
                           
                                 })
-                                console.log("/******/")
-                                console.log(generos)
-                                console.log(nombrescientificos)
+                                var apiResponse = JSON.stringify(data)
+                                apiResponse = apiResponse.replace(/\xa0/g, ' ');
+                                var data2 = JSON.parse(apiResponse);
+                                // cambiar data2 cuando se soluciones el problema de codificación 
                                 console.log(data)
                                 $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
                                 $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
@@ -422,7 +425,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 $('#jstree_variables_species_target').jstree({
                                     'plugins': ["wholerow", "checkbox"],                            
                                     'core': {
-                                        'data': data,
+                                        'data': data2,
                                         'themes': {
                                             'name': 'proton',
                                             'responsive': true
@@ -468,12 +471,13 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
                                 $("#jstree_variables_species_target").on('loaded.jstree', self.loadNodes);
                                 
-                                console.log(nombrescientificos)
-                                console.log(data)
+                                var apiResponse = JSON.stringify(data)
+                                apiResponse = apiResponse.replace(/\xa0/g, ' ');
+                                var data2 = JSON.parse(apiResponse);
                                 $('#jstree_variables_species_target').jstree({
                                     'plugins': ["wholerow", "checkbox"],                            
                                     'core': {
-                                        'data': data,
+                                        'data': data2,
                                         'themes': {
                                             'name': 'proton',
                                             'responsive': true
