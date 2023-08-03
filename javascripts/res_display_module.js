@@ -1131,21 +1131,36 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
         // Crear las copias del JSON y actualizar "covariable_filter"
         const copies = [];
+        
 
-        for (let i = 0; i < covariablesCount; i++) {
-            const copy = JSON.parse(JSON.stringify(body)); // Copia profunda del JSON original
-            copy.covariables = [body.covariables[i]]; // Cambiar el valor de "covariables"
 
-            // Actualizar "covariable_filter" solo si los valores son iguales
-            if (body.covariable_filter && body.covariable_filter[body.covariables[i]]) {
-            copy.covariable_filter = {
-                [body.covariables[i]]: body.covariable_filter[body.covariables[i]]
-            };
-            } else {
-            copy.covariable_filter = null;
+        if(body.covariables.length === 1 && body.covariables[0] === "snib"  && body.covariable_filter.snib.length > 1){
+            
+            body.covariable_filter.snib.forEach((covariableEntry) => {
+                const copia = JSON.parse(JSON.stringify(body));
+                copia.covariable_filter.snib = [covariableEntry];
+                copies.push(copia);
+            });
+            
+
+        }else{
+            for (let i = 0; i < covariablesCount; i++) {
+                const copy = JSON.parse(JSON.stringify(body)); // Copia profunda del JSON original
+                copy.covariables = [body.covariables[i]]; // Cambiar el valor de "covariables"
+    
+                // Actualizar "covariable_filter" solo si los valores son iguales
+                if (body.covariable_filter && body.covariable_filter[body.covariables[i]]) {
+                copy.covariable_filter = {
+                    [body.covariables[i]]: body.covariable_filter[body.covariables[i]]
+                };
+                } else {
+                copy.covariable_filter = null;
+                }
+    
+                copies.push(copy);
+                
             }
 
-            copies.push(copy);
         }
 
         
@@ -1189,6 +1204,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
     function _createScore_Decil(decildata, petition) {
         //console.log(decildata)        
         console.log("<====================================================>1")
+        
 
         _VERBOSE ? console.log("_createScore_Decil") : _VERBOSE;
 
@@ -1294,6 +1310,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                 // CONCATENA LAS DIFERENTES PETICIONES SOLICITADAS AL SERVIDOR, EN CASO DE VALIDACION LOS VALORES POR PETICIÓN YA VIENEN PROMEDIADOS
                 _REQUESTS_DONE.forEach(function (item, index) {
+                    console.log(item.data)
                     total_eps_scr = total_eps_scr.concat(item.data)
                     
                     total_score_cell = total_score_cell.concat(item.data_score_cell);
@@ -1319,7 +1336,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
                console.log(cell_summary);
 
                 // PETICION EN SERVER, SUMATORIA EN CLIENTE - getGeoRel - Tabla General
-                _createTableEpSc(total_eps_scr);
+                //_createTableEpSc(total_eps_scr);
 
 
                 // PROCESO EJECUTADO DEL LADO DEL CLIENTE - getFreqSpecie - Histogramas por especie
@@ -1424,6 +1441,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
                     verbo = _val_process_temp ? "countsTaxonsGroupTimeValidation" : "countsTaxonsGroup" 
                     ///ojo 
                     console.log("<------------------------ULTIMA PETICION----------------------------->")
+
                     
 
                     fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/",{
@@ -1483,6 +1501,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
                             _histogram_module_nicho.createMultipleBarChart(_RESULTS_TODISPLAY, [], _id_chartscr_decil, d3.map([]));
 
                             loadDecilDataTable([_default_decil], "Total", true, percentage_avg, decil_cells);
+                            _createTableEpSc(resp.data)
 
                         }
 

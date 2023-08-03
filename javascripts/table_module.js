@@ -322,7 +322,7 @@ var table_module = (function(verbose) {
     function createEspList(rawdata = null) {
 
         _VERBOSE ? console.log("createEspList") : _VERBOSE;
-        console.log("cambiar a 3 decimales")
+        console.log(rawdata)
 
         // var data_list = rawdata.data;    
         _data_list_eps = rawdata ? rawdata.data : _data_list_eps

@@ -1295,6 +1295,7 @@ var module_nicho = (function () {
                     break;
             }  
             
+            covariables_filter.snib.splice(0, snib.length, ...[].concat(...snib));
             body={
                 "selected_decile": [10],
                 "mesh": grid_res,
@@ -1318,6 +1319,24 @@ var module_nicho = (function () {
                 "lim_inf_validation": "2021-06-03",
                 "lim_sup_validation": "2021-07-02"
             }
+
+            // Función para hacer copias con un solo elemento en "covariable_filter"
+            // function CopiasSnib(jsonOriginal) {
+            //     const copias = [];
+            
+            //     jsonOriginal.covariable_filter.snib.forEach((covariableEntry) => {
+            //     const copia = JSON.parse(JSON.stringify(jsonOriginal));
+            //     copia.covariable_filter.snib = covariableEntry;
+            //     copias.push(copia);
+            //     });
+            
+            //     return copias;
+            // }
+
+            // if(snib.length>1){
+            //     singletons = CopiasSnib(body)
+            // }
+            
 
             
 
@@ -1370,6 +1389,7 @@ var module_nicho = (function () {
                             });
 
 
+
                         }
 
                       
@@ -1409,6 +1429,8 @@ var module_nicho = (function () {
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
                   }
+                  
+                  
 
                  
 
@@ -1471,7 +1493,9 @@ var module_nicho = (function () {
                             layer.bindPopup(popupContent);
                         }
                     }).addTo(layer);
-                    
+                    console.log("*******************")
+                    console.log(geoJSON)
+                    console.log("/////////////////")
                     
                 }
 

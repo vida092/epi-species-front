@@ -142,6 +142,7 @@ var variable_module = (function (verbose, url_zacatuche) {
         self.groupvar_dataset = [];
         self.var_sel_array = [];
         //self.arrayBioclimSelected2 = [];
+        snib = [];
          
         
 
@@ -2258,7 +2259,7 @@ var variable_module = (function (verbose, url_zacatuche) {
         }
         inegi = [];
         worldclim = [];
-        snib = [];
+        //snib = [];
         target_species = []
         //Evento que guarda la selección de (co)variables para el elemento covariable_filter
         self.formQuery = function (idTree, arraySelected2){
@@ -2278,7 +2279,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                     console.log(worldclim)   
                     break;
                 case "jstree_variables_species_fuente" :
-                    snib=[...arraySelected2]
+                    snib.push(arraySelected2)
                     console.log("se agrego información a snib")
                     console.log(snib)
                     break;
