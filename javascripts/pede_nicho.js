@@ -1294,8 +1294,10 @@ var module_nicho = (function () {
                     var agente = agent.normalize('NFD').replace(/[\u0300-\u036f]/g,"").toLowerCase().substring(0, agent.length - 1);
                     break;
             }  
+            if(covariables_filter.snib && covariables_filter.snib.length>1){
+                covariables_filter.snib.splice(0, snib.length, ...[].concat(...snib));
+            }
             
-            covariables_filter.snib.splice(0, snib.length, ...[].concat(...snib));
             body={
                 "selected_decile": [10],
                 "mesh": grid_res,
