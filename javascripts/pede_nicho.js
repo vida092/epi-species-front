@@ -1150,8 +1150,8 @@ var module_nicho = (function () {
 
         $("#specie_next").css('visibility', 'hidden');
 
-        $("#show_gen").css('visibility', 'visible');
-        $("#btn_tuto_steps_result").css('visibility', 'visible');
+        //$("#show_gen").css('visibility', 'visible');
+        //$("#btn_tuto_steps_result").css('visibility', 'visible');
 
         // _cleanTutorialButtons();
         console.log(_taxones)
@@ -1294,9 +1294,10 @@ var module_nicho = (function () {
                     var agente = agent.normalize('NFD').replace(/[\u0300-\u036f]/g,"").toLowerCase().substring(0, agent.length - 1);
                     break;
             }  
-            if(covariables_filter.snib && covariables_filter.snib.length>1){
-                covariables_filter.snib.splice(0, snib.length, ...[].concat(...snib));
-            }
+
+
+            
+            
             
             body={
                 "selected_decile": [10],
@@ -1321,6 +1322,9 @@ var module_nicho = (function () {
                 "lim_inf_validation": "2021-06-03",
                 "lim_sup_validation": "2021-07-02"
             }
+            if ("covariable_filter" in body && "snib" in body.covariable_filter) {
+                covariables_filter.snib.splice(0, snib.length, ...[].concat(...snib));
+              } 
 
             // Función para hacer copias con un solo elemento en "covariable_filter"
             // function CopiasSnib(jsonOriginal) {

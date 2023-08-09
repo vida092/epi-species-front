@@ -1202,7 +1202,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
      * 
      */
     function _createScore_Decil(decildata, petition) {
-        //console.log(decildata)        
+        console.log(decildata)        
         console.log("<====================================================>1")
         
 
@@ -1224,7 +1224,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
         //     return !obj.name.includes("Emisiones");
         //   });
         console.log("<====================TREE GENERATED ===================>")
-        console.log(_TREE_GENERATED)
+        console.log(_TREE_GENERATED) ///VERIFICAR QUE PASA CON GRUPO SOCIO PORQUE EL ATRIBUTO CHILDREN TIENE UN OBJETO DE MÁS
+        console.log(JSON.stringify(_TREE_GENERATED))
         
 
         // decildata["with_data_freq"] = false;
@@ -1265,7 +1266,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
             console.log("----PETICIONES----")
             console.log(_REQUESTS_NUMBER)
             _REQUESTS_NUMBER = _REQUESTS_NUMBER - 1;
-            console.log("----PETICIONES MENOS UNO----")
+            console.log("----PETICIONES RESTANTES----")
             console.log(_REQUESTS_NUMBER)
 
             
@@ -1278,7 +1279,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
             console.log(data_response)
             var validation_data = respuesta.validation_data
 
-            processSingleResponse(data_response, data_request, validation_data); 
+            processSingleResponse(data_response, data_request, validation_data); // hacer modificaciones para cuando el análisis no pide validación espacial
 
             
             console.log(_REQUESTS_DONE)
@@ -1337,6 +1338,9 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                 // PETICION EN SERVER, SUMATORIA EN CLIENTE - getGeoRel - Tabla General
                 //_createTableEpSc(total_eps_scr);
+                if(body.covariables.length == 1){
+                    _createTableEpSc(total_eps_scr)
+                }
 
 
                 // PROCESO EJECUTADO DEL LADO DEL CLIENTE - getFreqSpecie - Histogramas por especie
@@ -1501,7 +1505,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
                             _histogram_module_nicho.createMultipleBarChart(_RESULTS_TODISPLAY, [], _id_chartscr_decil, d3.map([]));
 
                             loadDecilDataTable([_default_decil], "Total", true, percentage_avg, decil_cells);
-                            _createTableEpSc(resp.data)
+                            _createTableEpSc(resp.data) //Sólo funciona cuando covariable tiene más de un elemento
 
                         }
 
@@ -2421,7 +2425,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
 
         // $("#csv_request").attr("title", $.i18n.prop('lb_descarga_tbl'));
-        $("#deletePointsButton").attr("title", $.i18n.prop('lb_borra_puntos'));
+        //$("#deletePointsButton").attr("title", $.i18n.prop('lb_borra_puntos'));
 
         $("#btn_decil").prop("value", $.i18n.prop('btn_decil'));
 

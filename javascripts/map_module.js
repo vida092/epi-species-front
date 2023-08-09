@@ -2041,9 +2041,9 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
                 _VERBOSE ? console.log(_iTrans.prop('lb_borra_puntos')) : _VERBOSE;
 
-                var controlUI = L.DomUtil.create('div', 'leaflet-control-command-interior glyphicon glyphicon-erase', controlDiv);
-                controlUI.title = _iTrans.prop('lb_borra_puntos');
-                controlUI.id = "deletePointsButton";
+                //var controlUI = L.DomUtil.create('div', 'leaflet-control-command-interior glyphicon glyphicon-erase', controlDiv);
+                //controlUI.title = _iTrans.prop('lb_borra_puntos');
+                //controlUI.id = "deletePointsButton";
 
                 return controlDiv;
             }
@@ -2221,8 +2221,10 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
         let nodo = _AGENT_SELECTED.toLowerCase()
 
-        let fecha_ini = document.getElementById("yearPicker_start").value.trim()
-        let fecha_fin = document.getElementById("yearPicker_end").value.trim()
+        //let fecha_ini = document.getElementById("yearPicker_start").value.trim()
+        //let fecha_fin = document.getElementById("yearPicker_end").value.trim()
+        let fecha_ini = "" //temporalmente se cambia fecha ini y fecha fin
+        let fecha_fin = ""
         console.log( _PARENT_FIELD)
         //_PARENT_FIELD.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
         switch(_PARENT_FIELD){
@@ -2326,9 +2328,9 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
 
                 // inicializa variables para eliminar celdas
-                _DELETE_STATE_CELLS = false;
-                _excludedcells = []
-                $("#deletePointsButton").css("backgroundColor", "#fff");
+                //_DELETE_STATE_CELLS = false;
+                //_excludedcells = []
+                //$("#deletePointsButton").css("backgroundColor", "#fff");
 
 
                 _data_sp_occ = vec
@@ -2545,7 +2547,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
                    _fillSpeciesData(_allowedPoints.values().length, occ_cell);
 
-                   $("#deletePointsButton").attr("title", $.i18n.prop('lb_borra_puntos'));
+                   //$("#deletePointsButton").attr("title", $.i18n.prop('lb_borra_puntos'));
 
                },
                error: function (jqXHR, textStatus, errorThrown) {
