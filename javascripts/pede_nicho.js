@@ -1147,6 +1147,7 @@ var module_nicho = (function () {
         _VERBOSE ? console.log("get_esc_ep") : _VERBOSE;
         var num_items = 0, spid, idreg, subgroups, sp_target;
         
+       
 
         $("#specie_next").css('visibility', 'hidden');
 
@@ -1231,6 +1232,9 @@ var module_nicho = (function () {
 
 
             var val_process = $("#chkValidation").is(':checked');
+            //val_process ? body.validation=true : body.validation= false
+            console.log(val_process)
+            console.log("65654654654654654")
             var val_process_temp = $("#chkValidationTemp").is(':checked');
             var min_occ = $("#chkMinOcc").is(':checked');
             var mapa_prob = $("#chkMapaProb").is(':checked');
@@ -1320,30 +1324,15 @@ var module_nicho = (function () {
                 "lim_inf_training": "2021-05-03",
                 "lim_sup_training": "2021-06-02",
                 "lim_inf_validation": "2021-06-03",
-                "lim_sup_validation": "2021-07-02"
+                "lim_sup_validation": "2021-07-02",
+                "validation": false
             }
             if ("covariable_filter" in body && "snib" in body.covariable_filter) {
                 covariables_filter.snib.splice(0, snib.length, ...[].concat(...snib));
               } 
+            body.validation = val_process
 
-            // Función para hacer copias con un solo elemento en "covariable_filter"
-            // function CopiasSnib(jsonOriginal) {
-            //     const copias = [];
-            
-            //     jsonOriginal.covariable_filter.snib.forEach((covariableEntry) => {
-            //     const copia = JSON.parse(JSON.stringify(jsonOriginal));
-            //     copia.covariable_filter.snib = covariableEntry;
-            //     copias.push(copia);
-            //     });
-            
-            //     return copias;
-            // }
-
-            // if(snib.length>1){
-            //     singletons = CopiasSnib(body)
-            // }
-            
-
+            console.log(JSON.stringify(body))
             
 
             // Falta agregar la condición makesense. 

@@ -2260,9 +2260,9 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
 
         if ( fecha_ini.length < 3)
-            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND ' + "("+ subquery+")" +' "){individuosinfectados gridid_'+ _grid_res + '}}'
+            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND ' + "("+ subquery+")" +' "){numeroindividuos gridid_'+ _grid_res + '}}'
         else
-            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ "("+ subquery+")" +'  AND aniocolecta >= \''+ fecha_ini + ' \' AND aniocolecta <= \'' + fecha_fin + ' \'"){individuosinfectados gridid_'+ _grid_res + '}}'
+            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ "("+ subquery+")" +'  AND aniocolecta >= \''+ fecha_ini + ' \' AND aniocolecta <= \'' + fecha_fin + ' \'"){numeroindividuos gridid_'+ _grid_res + '}}'
 
 
         console.log(query)
@@ -2307,7 +2307,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
                             //console.log(arr)
                         }
                     var occurrences = arr.reduce(function (prev, cur) {
-                        return prev + cur.individuosinfectados;
+                        return prev + cur.numeroindividuos;
                     }, 0);
 
                     //console.log('Total:', occurrences);

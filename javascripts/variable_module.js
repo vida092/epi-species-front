@@ -335,7 +335,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                         if(!generos.includes(specie.genero)&& specie.familia ==familia){
                                             generos.push(specie.genero)
                                             data.push({"id":specie.genero, "parent": specie.familia, "text":specie.genero, 'state': {'opened': false},
-                                            "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 5, "type": 0}})
+                                            "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 7, "type": 0}})
                                         }
                                     })
                                     generos.forEach(genero=>{
@@ -624,6 +624,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                             }
                         })
                     })
+                    
                     $("#jstree_variables_socio_fuente").jstree({
                        "plugins":["wholerow", "checkbox"],
                        "core":{
@@ -682,7 +683,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 awc.forEach(element=>{
                                   labels.forEach(label=>{
                                     if(intervals.includes(element.interval) && element.label===label){
-                                      data.push({"id":element.interval, "parent":element.label, "text":element.interval, 'state': {'opened': false}, "icon": "plugins/jstree/images/termometro.png",
+                                      data.push({"id":element.interval, "parent":element.label, "text":`<b>${element.interval} ${element.icat}</b>`, 'state': {'opened': false}, "icon": "plugins/jstree/images/termometro.png",
                                                                  'attr': {'nivel': 8, "type": 1, "id": element.id}})
                                     }
                                   })
@@ -1697,8 +1698,9 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .addClass('btn btn-primary glyphicon glyphicon-trash pull-left')
                         .click(function (e) {
                             // self.groupbioclimvar_dataset = [];
-                            self.cleanVariables("jstree_variables_socio_" + id, 'treeAddedPanel_' + id, _TYPE_ABIO);
-                            $("jstree_variables_socio_" + id).jstree(true).deselect_all();
+                            self.cleanVariables("jstree_variables_socio_" + id, 'treeAddedPanel_' + id, _TYPE_ABIO);                            
+                            var jstreeInstance = $("#jstree_variables_socio_fuente").jstree(true);
+                            jstreeInstance.deselect_all();
                         })
                         .appendTo(tab_pane);
 
@@ -1750,6 +1752,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                             var jstreeInstance = $('#jstree_variables_futurofuente').jstree(true);
                             jstreeInstance.deselect_all();
                             subarrays={}
+                            
                           
                         })
                         .appendTo(tab_pane);
@@ -1995,6 +1998,7 @@ var variable_module = (function (verbose, url_zacatuche) {
         
         self.getChangeTreeVarSocio =  function(e, data){
             _VERBOSE ? console.log("self.getChangeTreeVarSocio") : _VERBOSE;
+            
             self.arraySocioSelected=[];
             self.arraySocioSelected2=[]; 
             console.log("socioselected2 es ")
@@ -2040,12 +2044,12 @@ var variable_module = (function (verbose, url_zacatuche) {
                     _VERBOSE ? console.log(node_temp) : _VERBOSE;
                     if (node_temp.attr.nivel === 7){                        
                         
-                        self.arraySocioSelected.push({label: node_temp.text, id: node_temp.attr, parent: node_temp.parent, level: node_temp.attr.level, type: node_temp.attr.type});
+                        self.arraySocioSelected.push({label: node_temp.text, id: node_temp.attr.code, parent: node_temp.parent, level: node_temp.attr.level, type: node_temp.attr.type});
                         self.arraySocioSelected2.push({taxon: "code", value: node_temp.attr.code}) 
 
                     }else if(node_temp.attr.nivel === 8){
-                        self.arraySocioSelected.push({label: node_temp.text, id: node_temp.attr, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
-                        self.arraySocioSelected2.push({taxon: "id", value:node_temp.attr.id  }) 
+                        self.arraySocioSelected.push({label: node_temp.text, id: node_temp.attr.code, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
+                        self.arraySocioSelected2.push({taxon: "id", value:node_temp.attr.code  }) 
                     }
                 }
 
@@ -2513,7 +2517,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         var gpo_deleted;
                         
 
-                        $.each(self.groupDatasetTotal, function (index, obj) {
+                        $.each(self.groupDatasetTotal, function (index, obj) {deselect_all()
                             if (obj.groupid == d.groupid) {
                                 // _VERBOSE ? console.log(d) : _VERBOSE;
                                 gpo_deleted = self.groupDatasetTotal.splice(index, 1);
@@ -2549,6 +2553,7 @@ var variable_module = (function (verbose, url_zacatuche) {
         self.updateVarSelArray = function (item, operacion) {
             // item - llega en forma de array, por tanto para obtener su valor se accede al primer valor  
             console.log("<----------->") 
+            console.log(item)
             console.log("updateVarSelArray")         
             console.log(self.var_sel_array)
             

@@ -1279,8 +1279,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
             console.log(data_response)
             var validation_data = respuesta.validation_data
 
-            processSingleResponse(data_response, data_request, validation_data); // hacer modificaciones para cuando el análisis no pide validación espacial
-
+            processSingleResponse(data_response, data_request, validation_data); 
             
             console.log(_REQUESTS_DONE)
             _REQUESTS_DONE.push(respuesta);

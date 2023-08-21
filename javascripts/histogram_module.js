@@ -815,7 +815,7 @@ var histogram_module = (function (verbose) {
 
 
        // Despliega grafica de resultados de validación
-       // if ($("#chkValidation").is(':checked')) {
+        if ($("#chkValidation").is(':checked')) {
 
         var tip_recall = d3.tip()
                .attr('class', 'd3-tip')
@@ -924,7 +924,7 @@ var histogram_module = (function (verbose) {
 
            // adding recall line
            _VERBOSE ? console.log(array_recall) : _VERBOSE;
-
+           
            $.each(array_recall, function (i, recall_item) {
 
                console.log(recall_item);
@@ -994,8 +994,9 @@ var histogram_module = (function (verbose) {
 
 
            });
+        
 
-       // }
+       }
 
 
     }
