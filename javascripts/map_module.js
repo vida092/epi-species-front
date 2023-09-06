@@ -793,15 +793,15 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
 
                  // agrega listener para generar pop en celda
-                 map.on('click', function (e) {
+                //  map.on('click', function (e) {
 
-                     console.log(e.latlng.lat + ", " + e.latlng.lng);
+                //      console.log(e.latlng.lat + ", " + e.latlng.lng);
 
-                     if (_tipo_modulo === _MODULO_NICHO) {
-                         _display_module.showGetFeatureInfo(e.latlng.lat, e.latlng.lng, _taxones, _REGION_SELECTED);
-                     }
+                //      if (_tipo_modulo === _MODULO_NICHO) {
+                //          _display_module.showGetFeatureInfo(e.latlng.lat, e.latlng.lng, _taxones, _REGION_SELECTED);
+                //      }
 
-                 });
+                //  });
 
                  if (_tipo_modulo === _MODULO_NICHO) {
 
