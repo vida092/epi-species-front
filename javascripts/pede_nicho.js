@@ -1345,7 +1345,7 @@ var module_nicho = (function () {
 
             if(body.covariables.includes('worldclim') && Object.keys(subarrays).length>0 ){
                 console.log("el análisis tiene worldclim")
-                //console.log(subarrays)
+                
                 
                 addid()
                 async function addid() {
@@ -1362,68 +1362,98 @@ var module_nicho = (function () {
                       formarpeticion(subarrays, id_analysis_worldclim);
                       console.log(subarrays);
                       var layers= {}
-                      var loadingToast = _module_toast.showToast_CenterCenter("Cargando el mapa...", "info", false);
+                      //var loadingToast = _module_toast.showToast_CenterCenter("Cargando el mapa...", "info", false);
 
                       var keys = Object.keys(subarrays);
                         for (let i = 0; i < keys.length; i++) {
                             const key = keys[i];
                             const layer = await obtenerRespuestas(subarrays[key], key, layers);
 
-                            if (Object.keys(layers).length === Object.keys(subarrays).length) {
-                                // All layers have been added, create the layer control here
-                                if (!layerControl) {
-                                var layerControl = L.control.layers(null, layers).addTo(map);
-                                
-                                }
-                                
-                            }
-                            var downloadLink = document.getElementById('emisiones_download');
-                            downloadLink.addEventListener('click', function(event) {
-                            event.preventDefault();
-                            downloadGeoJSON(layers);
-                            });
-
-
-
                         }
+                        
+
+                        // Add the download event listener after the layers and layer control are set up
+                        var downloadLink = document.getElementById('emisiones_download');
+                        downloadLink.addEventListener('click', function(event) {
+                            event.preventDefault();
+
+                            // Initialize an array to store active layer names
+                            var activeLayers = [];
+
+                            // Iterate through the layers to find the active ones
+                            for (var layerName in layers) {
+                                if (map.hasLayer(layers[layerName])) {
+                                    activeLayers.push(layerName);
+                                }
+                            }
+
+                            // Download GeoJSON files for all active layers
+                            activeLayers.forEach(function(layerName) {
+                                downloadGeoJSON(layers[layerName], layerName);
+                            });
+                        });
 
                       
                       
                     } catch (error) {
                       console.error("Error en la función addid:", error);
-                      _module_toast.showToast_CenterCenter("Ha ocurrido un error al cargar el mapa", "error");
+                      
                     }
+
                   }
 
                   
 
-                  function downloadGeoJSON(layers) {
-                    var allLayers = Object.values(layers); // Layers es el obj con las capas
-                    var features = [];
-                  
-                    allLayers.forEach(function(layer) {
-                      layer.eachLayer(function(leafletLayer) {
-                        var geoJSON = leafletLayer.toGeoJSON();
-                        features.push(geoJSON);
-                      });
-                    });
-                  
-                    var geoJSONData = JSON.stringify({
-                      type: "FeatureCollection",
-                      features: features
-                    });
-                  
-                    var blob = new Blob([geoJSONData], { type: "application/json" });
-                    var url = URL.createObjectURL(blob);
-                  
-                    var a = document.createElement("a");
-                    a.href = url;
-                    a.download = "map.geojson";
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
+                  function downloadGeoJSON(layer, layerName) {
+                      // Create a GeoJSON object representing the layer
+                      var geoJSON = {
+                          type: "FeatureCollection",
+                          name: layerName, // Set the GeoJSON name to the layer name
+                          crs: {
+                              type: "name",
+                              properties: {
+                                  name: "urn:ogc:def:crs:EPSG::4326"
+                              }
+                          },
+                          features: [] // Initialize an empty array for features
+                      };
+
+                      // Loop through the layer and add its GeoJSON features to the geoJSON object
+                      if (layer.toGeoJSON) {
+                          var layerGeoJSON = layer.toGeoJSON();
+
+                          // Modify the properties of each feature to include 'gridid' and 'tscore'
+                          layerGeoJSON.features.forEach(function (feature) {
+                              var properties = feature.properties || {};
+                              properties.gridid = feature.properties.gridid; // Assuming 'gridid' is already present
+                              properties.tscore = feature.properties.tscore; // Assuming 'tscore' is already present
+                              feature.properties = properties;
+                          });
+
+                          geoJSON.features = geoJSON.features.concat(layerGeoJSON.features);
+                      }
+
+                      // Convert the GeoJSON object to a JSON string
+                      var geoJSONString = JSON.stringify(geoJSON);
+
+                      // Create a Blob object with the JSON string
+                      var blob = new Blob([geoJSONString], { type: "application/json" });
+
+                      // Generate a unique filename with a timestamp
+                      var timestamp = new Date().getTime(); // Unique timestamp
+                      var filename = layerName + "_" + timestamp + "_layer.geojson";
+
+                      // Create a download link and trigger the download
+                      var a = document.createElement("a");
+                      a.href = URL.createObjectURL(blob);
+                      a.download = filename; // Set the filename
+                      a.style.display = "none";
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
                   }
+
+
                   
                   
 
@@ -1431,6 +1461,7 @@ var module_nicho = (function () {
 
               //subarrays es un objeto con llaves "ssp###_20##-20##"
               function formarpeticion(object, id_analysis_worldclim) {
+
                 for (let llave in object) {
                     // Access the array associated with each key
                     const arrayDeObjetos = object[llave];
@@ -1449,8 +1480,10 @@ var module_nicho = (function () {
                         // Add the property "id_analysis_worldclim" with the given value
                         arrayDeObjetos[i].id_analysis_worldclim = id_analysis_worldclim;
                     }
+
+
                 }
-                }
+              }
             
                 function getAndDrawMap(response, layer, geoJSON, puntosDivisionScoreNeg, puntosDivisionScorePos) {
                     var gridData = response
@@ -1579,7 +1612,8 @@ var module_nicho = (function () {
                   console.log("-----Arriba respuesta, abajo resultado------")
                   console.log(key)
                   console.log(resultado)
-                  _module_toast.showToast_CenterCenter("El mapa se está cargando ...","info")
+                  
+                  console.log("el mapa se esta cargando ")
                   
                   var minTscore = resultado.reduce((min, obj) => obj.tscore < min ? obj.tscore : min, Infinity);
                   var maxTscore = resultado.reduce((max, obj) => obj.tscore > max ? obj.tscore : max, -Infinity); 
@@ -1643,6 +1677,7 @@ var module_nicho = (function () {
                                 type: "name",
                                 properties: {
                                     name: "urn:ogc:def:crs:EPSG::4326"
+                                    //"urn:ogc:def:crs:OGC:1.3:CRS84"
                                 }
                             };
                         }
@@ -1650,6 +1685,7 @@ var module_nicho = (function () {
                             console.log(geoJSON)
                             var layer = L.layerGroup().addTo(map);
                             layers[key.replace(/_/g, " ") ] = layer;
+                            
 
                             if (Object.keys(layers).length === Object.keys(subarrays).length) {
                                 // Para este punto se agregaron todos los layers, ahora se agrega el control
@@ -1658,7 +1694,7 @@ var module_nicho = (function () {
 
                             getAndDrawMap(resultado, layer, geoJSON, puntosDivisionScoreNeg, puntosDivisionScorePos); // Pasar peticiones_futuro como argumento
                             
-                            _module_toast.showToast_CenterCenter("El mapa se cargó adecuadamente","success")
+                            
                     }
                     });
                     
@@ -1669,6 +1705,8 @@ var module_nicho = (function () {
                   _module_toast.showToast_CenterCenter("Ocurrió un error ","error")
                 }
               }
+
+              
             }
 
 
