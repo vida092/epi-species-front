@@ -1346,6 +1346,8 @@ var module_nicho = (function () {
             if(body.covariables.includes('worldclim') && Object.keys(subarrays).length>0 ){
                 console.log("el análisis tiene worldclim")
                 
+                console.log("el análisis tiene worldclim")
+                console.log(subarrays)
                 
                 addid()
                 async function addid() {
@@ -1405,53 +1407,50 @@ var module_nicho = (function () {
                   
 
                   function downloadGeoJSON(layer, layerName) {
-                      // Create a GeoJSON object representing the layer
-                      var geoJSON = {
-                          type: "FeatureCollection",
-                          name: layerName, // Set the GeoJSON name to the layer name
-                          crs: {
-                              type: "name",
-                              properties: {
-                                  name: "urn:ogc:def:crs:EPSG::4326"
-                              }
-                          },
-                          features: [] // Initialize an empty array for features
-                      };
+                    var geoJSON = {
+                        type: "FeatureCollection",
+                        name: layerName, 
+                        crs: {
+                            type: "name",
+                            properties: {
+                                name: "urn:ogc:def:crs:EPSG::4326"
+                            }
+                        },
+                        features: [] 
+                    };
 
-                      // Loop through the layer and add its GeoJSON features to the geoJSON object
-                      if (layer.toGeoJSON) {
-                          var layerGeoJSON = layer.toGeoJSON();
+                   
+                    if (layer.toGeoJSON) {
+                        var layerGeoJSON = layer.toGeoJSON();
 
-                          // Modify the properties of each feature to include 'gridid' and 'tscore'
-                          layerGeoJSON.features.forEach(function (feature) {
-                              var properties = feature.properties || {};
-                              properties.gridid = feature.properties.gridid; // Assuming 'gridid' is already present
-                              properties.tscore = feature.properties.tscore; // Assuming 'tscore' is already present
-                              feature.properties = properties;
-                          });
+                        
+                        layerGeoJSON.features.forEach(function (feature) {
+                            var properties = feature.properties || {};
+                            properties.gridid = feature.properties.gridid; 
+                            properties.tscore = feature.properties.tscore; 
+                            feature.properties = properties;
 
-                          geoJSON.features = geoJSON.features.concat(layerGeoJSON.features);
-                      }
+                            feature.type = feature.type.charAt(0).toUpperCase() + feature.type.slice(1);
+                        });
 
-                      // Convert the GeoJSON object to a JSON string
-                      var geoJSONString = JSON.stringify(geoJSON);
+                        geoJSON.features = geoJSON.features.concat(layerGeoJSON.features);
+                    }
 
-                      // Create a Blob object with the JSON string
-                      var blob = new Blob([geoJSONString], { type: "application/json" });
+                    
+                    var geoJSONString = JSON.stringify(geoJSON);
+                    var blob = new Blob([geoJSONString], { type: "application/json" });
+                   
+                    var filename = layerName + "_layer.geojson";
 
-                      // Generate a unique filename with a timestamp
-                      var timestamp = new Date().getTime(); // Unique timestamp
-                      var filename = layerName + "_" + timestamp + "_layer.geojson";
-
-                      // Create a download link and trigger the download
-                      var a = document.createElement("a");
-                      a.href = URL.createObjectURL(blob);
-                      a.download = filename; // Set the filename
-                      a.style.display = "none";
-                      document.body.appendChild(a);
-                      a.click();
-                      document.body.removeChild(a);
-                  }
+                
+                    var a = document.createElement("a");
+                    a.href = URL.createObjectURL(blob);
+                    a.download = filename; 
+                    a.style.display = "none";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }
 
 
                   
@@ -1521,9 +1520,7 @@ var module_nicho = (function () {
                             layer.bindPopup(popupContent);
                         }
                     }).addTo(layer);
-                    console.log("*******************")
-                    console.log(geoJSON)
-                    console.log("/////////////////")
+                    
                     
                 }
 
@@ -1609,8 +1606,7 @@ var module_nicho = (function () {
                         });
 
                   console.log(respuesta)
-                  console.log("-----Arriba respuesta, abajo resultado------")
-                  console.log(key)
+                  console.log("-----Arriba respuesta, abajo resultado------ de  " + key )
                   console.log(resultado)
                   
                   console.log("el mapa se esta cargando ")
@@ -1666,7 +1662,7 @@ var module_nicho = (function () {
                             prop = obj[i].cve.toString(); // Convertir a cadena en lugar de número entero para no modificar los gridid
                             let prope = new Object();
                             prope.gridid = prop;
-                            // Asignar valores nulos para los tscore por ahora, se actualizarán en cada llamada a getAndDrawMap
+                            
                             prope.tscore = null;
                             let type = new Object();
                             type.type = "Feature";
@@ -1705,6 +1701,7 @@ var module_nicho = (function () {
                   _module_toast.showToast_CenterCenter("Ocurrió un error ","error")
                 }
               }
+
 
               
             }
