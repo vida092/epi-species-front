@@ -3601,50 +3601,127 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         return out;
     }
 
-    function getGridMap2Export() {
+//     function getGridMap2Export() {
 
-        _VERBOSE ? console.log("getGridMap") : _VERBOSE;
-        var date = new Date();
-        var sufijo = "_Exp_" + date.getFullYear() + "_" + date.getMonth() + "_" + date.getDay() + "_" + date.getHours() + ":" + date.getMinutes();
-        $("#map_download").attr("download", "map" + sufijo + ".geojson");
+//         _VERBOSE ? console.log("getGridMap") : _VERBOSE;
+//         var date = new Date();
+//         var sufijo = "_Exp_" + date.getFullYear() + "_" + date.getMonth() + "_" + date.getDay() + "_" + date.getHours() + ":" + date.getMinutes();
+//         $("#map_download").attr("download", "map" + sufijo + ".geojson");
 
-        var grid_map_2export = {"type": "FeatureCollection", "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}}, "features": []}
-        var features = [];
+//         var grid_map_2export = {"type": "FeatureCollection", "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}}, "features": []}
+//         var features = [];
 
-        for (var i = 0; i < _grid_map.features.length; i++) {
+//         for (var i = 0; i < _grid_map.features.length; i++) {
 
-            if (_grid_map.features[i].properties.score !== null) {
-                features.push(_grid_map.features[i]);
+//             if (_grid_map.features[i].properties.score !== null) {
+//                 features.push(_grid_map.features[i]);
+//             }
+
+//         }
+
+//         grid_map_2export.features = features;
+//         return grid_map_2export;
+
+//     }
+
+//     function getSP2Export() {
+
+//         _VERBOSE ? console.log("getSP2Export") : _VERBOSE;
+
+//         var date = new Date();
+//         var sufijo = "_Exp_" + date.getFullYear() + "_" + date.getMonth() + "_" + date.getDay() + "_" + date.getHours() + ":" + date.getMinutes();
+// //        $("#sp_download").attr("download", _specie_target.label.replace(/\s/g, '')  + sufijo + ".geojson");
+//         $("#sp_download").attr("download", _specie_target.label.replace(/\s/g, '') + sufijo + ".geojson");
+
+//         var sp_target_2export = {"type": "FeatureCollection", "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}}, "features": []}
+//         var features = [];
+//         var temp_features = _allowedPoints.values();
+
+//         for (var i = 0; i < temp_features.length; i++) {
+//             features.push(temp_features[i]);
+//         }
+//         ///aqui
+
+//         sp_target_2export.features = features;
+//         return sp_target_2export;
+
+//     }
+
+function getGridMap2Export() {
+    _VERBOSE ? console.log("getGridMap") : _VERBOSE;
+    var date = new Date();
+    var sufijo = "_Exp_" + date.getFullYear() + "_" + date.getMonth() + "_" + date.getDate() + "_" + date.getHours() + ":" + date.getMinutes();
+    $("#map_download").attr("download", "map" + sufijo + ".geojson");
+
+    var grid_map_2export = {
+        "type": "FeatureCollection",
+        "crs": {
+            "type": "name",
+            "properties": {
+                "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
             }
+        },
+        "features": []
+    };
 
+    var features = [];
+
+    for (var i = 0; i < _grid_map.features.length; i++) {
+        if (_grid_map.features[i].properties.score !== null) {
+            features.push(_grid_map.features[i]);
         }
-
-        grid_map_2export.features = features;
-        return grid_map_2export;
-
     }
 
-    function getSP2Export() {
-
-        _VERBOSE ? console.log("getSP2Export") : _VERBOSE;
-
-        var date = new Date();
-        var sufijo = "_Exp_" + date.getFullYear() + "_" + date.getMonth() + "_" + date.getDay() + "_" + date.getHours() + ":" + date.getMinutes();
-//        $("#sp_download").attr("download", _specie_target.label.replace(/\s/g, '')  + sufijo + ".geojson");
-        $("#sp_download").attr("download", _specie_target.label.replace(/\s/g, '') + sufijo + ".geojson");
-
-        var sp_target_2export = {"type": "FeatureCollection", "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}}, "features": []}
-        var features = [];
-        var temp_features = _allowedPoints.values();
-
-        for (var i = 0; i < temp_features.length; i++) {
-            features.push(temp_features[i]);
+    // Modificar el valor "type" de cada objeto en el array "features"
+    for (var i = 0; i < features.length; i++) {
+        var feature = features[i];
+        if (feature.type && feature.type.toLowerCase() === "feature") {
+            feature.type = "Feature";
         }
-
-        sp_target_2export.features = features;
-        return sp_target_2export;
-
     }
+
+    grid_map_2export.features = features;
+    return grid_map_2export;
+}
+
+function getSP2Export() {
+    _VERBOSE ? console.log("getSP2Export") : _VERBOSE;
+
+    var date = new Date();
+    var sufijo = "_Exp_" + date.getFullYear() + "_" + date.getMonth() + "_" + date.getDate() + "_" + date.getHours() + ":" + date.getMinutes();
+    $("#sp_download").attr("download", _specie_target.label.replace(/\s/g, '') + sufijo + ".geojson");
+
+    var sp_target_2export = {
+        "type": "FeatureCollection",
+        "crs": {
+            "type": "name",
+            "properties": {
+                "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+            }
+        },
+        "features": []
+    };
+
+    var features = [];
+    var temp_features = _allowedPoints.values();
+
+    for (var i = 0; i < temp_features.length; i++) {
+        features.push(temp_features[i]);
+    }
+
+    // Modificar el valor "type" de cada objeto en el array "features"
+    for (var i = 0; i < features.length; i++) {
+        var feature = features[i];
+        if (feature.type && feature.type.toLowerCase() === "feature") {
+            feature.type = "Feature";
+        }
+    }
+
+    sp_target_2export.features = features;
+    return sp_target_2export;
+}
+
+
 
 
     function changeRegionView(region) {

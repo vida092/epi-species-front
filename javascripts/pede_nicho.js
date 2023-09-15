@@ -1345,8 +1345,8 @@ var module_nicho = (function () {
 
             if(body.covariables.includes('worldclim') && Object.keys(subarrays).length>0 ){
                 console.log("el análisis tiene worldclim")
-                
-                console.log("el análisis tiene worldclim")
+                var layersCreatedInThisCodeBlock = {};
+
                 console.log(subarrays)
                 
                 addid()
@@ -1405,56 +1405,73 @@ var module_nicho = (function () {
                   }
 
                   
-
-                  function downloadGeoJSON(layer, layerName) {
-                    var geoJSON = {
-                        type: "FeatureCollection",
-                        name: layerName, 
-                        crs: {
-                            type: "name",
-                            properties: {
-                                name: "urn:ogc:def:crs:EPSG::4326"
-                            }
-                        },
-                        features: [] 
-                    };
-
-                   
-                    if (layer.toGeoJSON) {
-                        var layerGeoJSON = layer.toGeoJSON();
-
-                        
-                        layerGeoJSON.features.forEach(function (feature) {
-                            var properties = feature.properties || {};
-                            properties.gridid = feature.properties.gridid; 
-                            properties.tscore = feature.properties.tscore; 
-                            feature.properties = properties;
-
-                            feature.type = feature.type.charAt(0).toUpperCase() + feature.type.slice(1);
-                        });
-
-                        geoJSON.features = geoJSON.features.concat(layerGeoJSON.features);
+                  function replaceFeaturesWithNestedFeatures(geojson) {
+                    if (geojson.type === "FeatureCollection" && geojson.features) {
+                      // Reemplazar la propiedad "features" con el valor de "features[0].features"
+                      geojson.features = geojson.features[0].geometry.features;
+                  
+                      // Eliminar la propiedad "geometry" ya que no se necesita más
+                      delete geojson.features[0].geometry;
                     }
+                    return geojson;
+                  }
+                  
+                  
 
-                    
-                    var geoJSONString = JSON.stringify(geoJSON);
-                    var blob = new Blob([geoJSONString], { type: "application/json" });
-                   
-                    var filename = layerName + "_layer.geojson";
-
+                  function cleanEmptyProperties(geojson) {
+                    if (geojson.type === "FeatureCollection" && geojson.features) {
+                      geojson.features.forEach(function (feature) {
+                        if (feature.properties && Object.keys(feature.properties).length === 0) {
+                          delete feature.properties;
+                        }
+                      });
+                    }
+                    return geojson;
+                  }
+                  
+                  
+                  
+                  
+                  
+                  function downloadGeoJSON(layer, layerName) {
+                    // Check if the layer exists in the tracking object
+                    if (layersCreatedInThisCodeBlock[layerName]) {
+                      // Convert the layer to GeoJSON format
+                      var geoJSON = layer.toGeoJSON();
+                      geoJSON = cleanEmptyProperties(geoJSON);
+                  
+                      // Use the function to replace "features" with nested "features"
+                      geoJSON = replaceFeaturesWithNestedFeatures(geoJSON);
+                  
+                      // Convert the GeoJSON object to a JSON string
+                      var geoJSONString = JSON.stringify(geoJSON, null, 2);
+                  
+                      // Create a Blob object with the JSON string
+                      var blob = new Blob([geoJSONString], { type: "application/json" });
+                  
+                      var timestamp = new Date().getTime();
+                      var filename = layerName + "_" + timestamp + "_layer.geojson";
+                  
+                      // Create a download link and trigger the download
+                      var a = document.createElement("a");
+                      a.href = URL.createObjectURL(blob);
+                      a.download = filename; // Set the filename
+                      a.style.display = "none";
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    } else {
+                      console.error("Layer not found in layersCreatedInThisCodeBlock:", layerName);
+                    }
+                  }
+                  
+                  
+                  
+                  
+                  
                 
-                    var a = document.createElement("a");
-                    a.href = URL.createObjectURL(blob);
-                    a.download = filename; 
-                    a.style.display = "none";
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                }
-
-
-                  
-                  
+                
+                
 
                  
 
@@ -1520,7 +1537,10 @@ var module_nicho = (function () {
                             layer.bindPopup(popupContent);
                         }
                     }).addTo(layer);
-                    
+                    // console.log("*******************")
+                    // console.log(geoJSON)
+                    // console.log("/////////////////")
+                    _module_toast.showToast_CenterCenter("Se ha cargado ","success")
                     
                 }
 
@@ -1574,6 +1594,8 @@ var module_nicho = (function () {
                   const promesas = peticiones.map(peticion => hacerPeticion(peticion));
                   const respuesta = await Promise.all(promesas);
                   const resultado = [];
+                  var layer = L.layerGroup().addTo(map);
+                  layersCreatedInThisCodeBlock[key.replace(/_/g, " ")] = layer;
 
                         // Iterar sobre los arrays dentro de respuesta
                         for (let i = 0; i < respuesta.length; i++) {
@@ -1606,10 +1628,11 @@ var module_nicho = (function () {
                         });
 
                   console.log(respuesta)
-                  console.log("-----Arriba respuesta, abajo resultado------ de  " + key )
+                  console.log("-----Arriba respuesta, abajo resultado------")
+                  console.log(key)
                   console.log(resultado)
                   
-                  console.log("el mapa se esta cargando ")
+                  _module_toast.showToast_CenterCenter("Cargando mapa ","info")
                   
                   var minTscore = resultado.reduce((min, obj) => obj.tscore < min ? obj.tscore : min, Infinity);
                   var maxTscore = resultado.reduce((max, obj) => obj.tscore > max ? obj.tscore : max, -Infinity); 
@@ -1662,7 +1685,7 @@ var module_nicho = (function () {
                             prop = obj[i].cve.toString(); // Convertir a cadena en lugar de número entero para no modificar los gridid
                             let prope = new Object();
                             prope.gridid = prop;
-                            
+                            // Asignar valores nulos para los tscore por ahora, se actualizarán en cada llamada a getAndDrawMap
                             prope.tscore = null;
                             let type = new Object();
                             type.type = "Feature";
@@ -1701,6 +1724,9 @@ var module_nicho = (function () {
                   _module_toast.showToast_CenterCenter("Ocurrió un error ","error")
                 }
               }
+
+                
+                
 
 
               
