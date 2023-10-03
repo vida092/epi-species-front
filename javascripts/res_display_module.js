@@ -1224,7 +1224,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
         //     return !obj.name.includes("Emisiones");
         //   });
         console.log("<====================TREE GENERATED ===================>")
-        console.log(_TREE_GENERATED) ///VERIFICAR QUE PASA CON GRUPO SOCIO PORQUE EL ATRIBUTO CHILDREN TIENE UN OBJETO DE MÁS
+        console.log(_TREE_GENERATED) 
+        //if(_TREE_GENERATED.groups[0])
         console.log(JSON.stringify(_TREE_GENERATED))
         
 
