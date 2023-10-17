@@ -1099,6 +1099,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                 var data_request = jQuery.extend(true, {}, _decil_data);
                 _REQUESTS_MADE.push(data_request);
+                console.log("++++++++++++++++++-----+++++++++")
+                console.log( merge_vars)
 
                 if (!temp_group.children) {
                     // temp_group.children = [single_filter[0]];
@@ -1225,7 +1227,6 @@ var res_display_module = (function (verbose, url_zacatuche) {
         //   });
         console.log("<====================TREE GENERATED ===================>")
         console.log(_TREE_GENERATED) 
-        //if(_TREE_GENERATED.groups[0])
         console.log(JSON.stringify(_TREE_GENERATED))
         
 
