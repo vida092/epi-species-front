@@ -1170,6 +1170,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
         copies.forEach((copy, index) => {
             console.log(`Copia ${index + 1}:`, copy);
         });
+        console.log(copies)
 
         // copies.forEach(function (item, index) {
         //     _createScore_Decil(item);

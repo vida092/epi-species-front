@@ -1332,7 +1332,7 @@ var module_nicho = (function () {
               } 
             body.validation = val_process
 
-            console.log(JSON.stringify(body))
+            //console.log(JSON.stringify(body))
             
 
             // Falta agregar la condición makesense. 
