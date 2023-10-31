@@ -705,7 +705,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 
                                 $(function () { $('#treeVariableBioclim_' + id).jstree(); });
                                 $("#treeVariableBioclim_" + id).on('changed.jstree', self.getChangeTreeVarRaster);
-                                //$('#treeVariableBioclim_' + id).on('open_node.jstree', self.getTreeVarRaster);
+                               
             
                             }
             
@@ -1630,7 +1630,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .attr('type', 'button')
                         .addClass('btn btn-primary glyphicon glyphicon-plus pull-left')
                         .click(function (e) {
-                            
+                            $("#treeVariableBioclim_fuente").css("cursor", "not-allowed")
+                            $("#treeVariableBioclim_fuente").css("pointer-events", "none")
                             self.formQuery('jstree_variables_bioclim_' + id, self.arrayBioclimSelected2)
                             self.addOtherGroup('jstree_variables_bioclim_' + id, self.arrayBioclimSelected,  'Raster', 'treeAddedPanel_' + id, _TYPE_ABIO);
                             e.preventDefault();
@@ -1643,6 +1644,9 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .attr('type', 'button')
                         .addClass('btn btn-primary glyphicon glyphicon-trash pull-left')
                         .click(function (e) {
+                            
+                            $("#treeVariableBioclim_fuente").css("pointer-events", "auto")
+                            $("#treeVariableBioclim_fuente").css("cursor", "auto")
 
                             self.arrayBioclimSelected = [];
                             // self.groupbioclimvar_dataset = [];
@@ -2302,6 +2306,10 @@ var variable_module = (function (verbose, url_zacatuche) {
 
         self.addEmisiones = function(arr) {
             subarrays = {};
+            
+            $("#treeVariableFuturofuente").css("pointer-events", "none")
+            $("#treeVariableFuturofuente").css("cursor", "not-allowed")
+
 
             // Dividir el array en subarrays
             arr.forEach(function(objeto) {
@@ -2335,6 +2343,9 @@ var variable_module = (function (verbose, url_zacatuche) {
 
               $button.on('click', function() {
                 $div.remove()
+                $("#treeVariableFuturofuente").css("pointer-events", "auto")
+                $("#treeVariableFuturofuente").css("cursor", "auto")
+                subarrays = {}
               });
 
               $div.on('click', function() {
@@ -2351,12 +2362,23 @@ var variable_module = (function (verbose, url_zacatuche) {
         
         // Evento que es generado cuando se desea agregar un grupo seleccionado previamente, realiza la adición del grupo seleccionado al conjunto de variables con las cuales se realizan los cálculos de épsilon y score en ambos sistemas
         self.addOtherGroup = function (idTree, arraySelected,  gpoName, idDivContainer, typeVar) {
+            
+            switch(idTree){
+                case "jstree_variables_bioclim_fuente":
+                    var TreeDivContainer = "treeVariableBioclim_fuente"
+                    break
+                case "jstree_variables_socio_fuente":
+                    var TreeDivContainer = "treeVariableSociofuente"
+                    break
+
+            }
 
             _VERBOSE ? console.log("self.addOtherGroup") : _VERBOSE;
 
            console.log("***** addOtherGroup variables *****")
-        //    console.log(idTree)
-        //    console.log(arraySelected)
+            console.log(idTree)
+            console.log(idDivContainer)
+            console.log(arraySelected)
             const iterator = arraySelected.values();
 
            _LABEL_MAP = []
@@ -2458,6 +2480,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         return d.elements;
                     })
                     .text(function (d) {
+                        console.log(d.title)
                         return d.title
                     })
                     .on('click', function (d) {
@@ -2491,6 +2514,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                         // _VERBOSE ? console.log("remove item") : _VERBOSE;
                                         d3.select(this.parentNode).remove();
                                         var gpo_deleted;
+                                        
 
                                         $.each(self.groupDatasetTotal, function (index, obj) {
                                             if (obj.groupid == d.groupid) {
@@ -2513,11 +2537,17 @@ var variable_module = (function (verbose, url_zacatuche) {
                     .attr("class", "btn btn-danger glyphicon glyphicon-remove pull-right btn_item_var")
                     .on("click", function (d) {
                         // _VERBOSE ? console.log("remove item") : _VERBOSE;
+
                         d3.select(this.parentNode).remove();
                         var gpo_deleted;
+                        console.log(self.groupDatasetTotal)
+                        $("#"+TreeDivContainer).css("pointer-events", "auto")
+                        $("#"+TreeDivContainer).css("cursor", "auto")
+                        console.log("#" + idTree)
+                        $("#" + idTree).jstree("deselect_all")
                         
 
-                        $.each(self.groupDatasetTotal, function (index, obj) {deselect_all()
+                        $.each(self.groupDatasetTotal, function (index, obj) {
                             if (obj.groupid == d.groupid) {
                                 // _VERBOSE ? console.log(d) : _VERBOSE;
                                 gpo_deleted = self.groupDatasetTotal.splice(index, 1);

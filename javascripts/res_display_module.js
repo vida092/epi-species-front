@@ -1127,6 +1127,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
         console.log("se empiezan a generar las peticiones")
         console.log(body)
+        console.log(JSON.stringify(body))
 
             // Obtener la cantidad de elementos en "covariables"
         const covariablesCount = body.covariables.length;
@@ -1146,22 +1147,36 @@ var res_display_module = (function (verbose, url_zacatuche) {
             
 
         }else{
-            for (let i = 0; i < covariablesCount; i++) {
-                const copy = JSON.parse(JSON.stringify(body)); // Copia profunda del JSON original
-                copy.covariables = [body.covariables[i]]; // Cambiar el valor de "covariables"
-    
-                // Actualizar "covariable_filter" solo si los valores son iguales
-                if (body.covariable_filter && body.covariable_filter[body.covariables[i]]) {
-                copy.covariable_filter = {
-                    [body.covariables[i]]: body.covariable_filter[body.covariables[i]]
-                };
-                } else {
-                copy.covariable_filter = null;
+
+            for(var i=0; i < body.covariables.length; i++){
+                var copia = JSON.parse(JSON.stringify(body));
+                copia.covariables = [copia.covariables[i]]
+
+                for(var covariable in copia.covariable_filter){
+                    if(covariable!== copia.covariables[0]){
+                        delete copia.covariable_filter[covariable];
+                    }
                 }
-    
-                copies.push(copy);
-                
+                copies.push(copia)
             }
+            copies.push(body)
+            console.log(copias)
+            // for (let i = 0; i < covariablesCount; i++) {
+            //     const copy = JSON.parse(JSON.stringify(body)); // Copia profunda del JSON original
+            //     copy.covariables = [body.covariables[i]]; // Cambiar el valor de "covariables"
+    
+            //     // Actualizar "covariable_filter" solo si los valores son iguales
+            //     if (body.covariable_filter && body.covariable_filter[body.covariables[i]]) {
+            //     copy.covariable_filter = {
+            //         [body.covariables[i]]: body.covariable_filter[body.covariables[i]]
+            //     };
+            //     } else {
+            //     copy.covariable_filter = null;
+            //     }
+    
+            //     copies.push(copy);
+                
+            // }
 
         }
 
