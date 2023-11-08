@@ -1125,6 +1125,21 @@ var res_display_module = (function (verbose, url_zacatuche) {
         console.log("<///////////  ******* request made  ******///////////> ")
         console.log(_REQUESTS_MADE);
 
+        const uniqueRequests = _REQUESTS_MADE.reduce((accumulator, request) => {
+            const name = request.covariables[0].name;
+            const existingIndex = accumulator.findIndex(item => item.covariables[0].name === name);
+          
+            if (existingIndex === -1) {
+              // Crear un nuevo objeto que copie las otras propiedades
+              const uniqueRequest = { ...request };
+              accumulator.push(uniqueRequest);
+            }
+          
+            return accumulator;
+          }, []);
+
+        console.log(uniqueRequests);
+
         console.log("se empiezan a generar las peticiones")
         console.log(body)
         console.log(JSON.stringify(body))
@@ -1138,7 +1153,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
 
         if(body.covariables.length === 1 && body.covariables[0] === "snib"  && body.covariable_filter.snib.length > 1){
-            
+            console.log("copias de snib sin mas covariables")
             body.covariable_filter.snib.forEach((covariableEntry) => {
                 const copia = JSON.parse(JSON.stringify(body));
                 copia.covariable_filter.snib = [covariableEntry];
@@ -1147,6 +1162,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
             
 
         }else{
+            console.log("copias de covariables")
 
             for(var i=0; i < body.covariables.length; i++){
                 var copia = JSON.parse(JSON.stringify(body));
@@ -1160,23 +1176,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
                 copies.push(copia)
             }
             copies.push(body)
-            console.log(copias)
-            // for (let i = 0; i < covariablesCount; i++) {
-            //     const copy = JSON.parse(JSON.stringify(body)); // Copia profunda del JSON original
-            //     copy.covariables = [body.covariables[i]]; // Cambiar el valor de "covariables"
-    
-            //     // Actualizar "covariable_filter" solo si los valores son iguales
-            //     if (body.covariable_filter && body.covariable_filter[body.covariables[i]]) {
-            //     copy.covariable_filter = {
-            //         [body.covariables[i]]: body.covariable_filter[body.covariables[i]]
-            //     };
-            //     } else {
-            //     copy.covariable_filter = null;
-            //     }
-    
-            //     copies.push(copy);
-                
-            // }
+            console.log(copies)
+            
 
         }
 
@@ -1280,7 +1281,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
                 return
             }
 
-            ///talvez modificar
+            
             console.log("----PETICIONES----")
             console.log(_REQUESTS_NUMBER)
             _REQUESTS_NUMBER = _REQUESTS_NUMBER - 1;
