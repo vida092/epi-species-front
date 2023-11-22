@@ -580,8 +580,70 @@ var variable_module = (function (verbose, url_zacatuche) {
 
 
 
+        // self.getTreeSocio = function (){
+        //     var query = "query{all_censo_inegi_2020_covariables(limit: 2400, filter:\"\"){id name interval bin code}}"
+        //     _VERBOSE ? console.log("self.getTreeSocio") : _VERBOSE;
+        //     console.log(id)
+        //     $.ajax({
+        //         url:"https://covid19.c3.unam.mx/gateway/api/nodes/",
+        //         method: "POST",
+        //         contentType: "application/json",
+        //         data: JSON.stringify({query: query}),
+        //         success: function(resp){
+        //             var sei=resp.data.all_censo_inegi_2020_covariables
+        //             data = [{"id": "inegi", "parent": "#", "text": "CENSO INEGI 2020", "state":{"opened":true}, "icon": "plugins/jstree/images/rep.png", "attr":{"nivel":6, "type":0}}]
+        //             var intervals = []
+        //             sei.forEach(element =>{
+        //                 if(!intervals.includes(element.interval)){
+        //                     intervals.push(element.interval)
+        //                 }
+        //             })
+        //             var names=[]
+
+        //             sei.forEach(element=>{
+        //                 if(!names.includes(element.name)){
+        //                     names.push(element.name)
+        //                 }
+        //             })
+                    
+
+        //             var codes={}
+        //             sei.forEach(element=>{
+        //                 codes[element.name]=element.code
+        //             })
+                    
+                    
+        //             names.forEach(element=>{
+        //                 data.push({"id":element, "parent":"inegi","text":element,"state":{"opened":false}, "icon":"plugins/jstree/images/group.png","attr":{"nivel":7, "type":2,"code":codes[element]}})
+        //             })
+
+        //             sei.forEach(element=>{
+        //                 names.forEach(name=>{
+        //                     if(intervals.includes(element.interval) && element.name === name){
+        //                         data.push({"id":element.interval, "parent": element.name, "text":element.interval, "state":{"opened":false}, "icon":"plugins/jstree/images/percent.png", "attr":{"nivel":8, "type":2, "bin":element.bin, "code":element.code}})
+        //                     }
+        //                 })
+        //             })
+                    
+        //             $("#jstree_variables_socio_fuente").jstree({
+        //                "plugins":["wholerow", "checkbox"],
+        //                "core":{
+        //                     "data": data,
+        //                     "themes":{
+        //                         "name":"proton",
+        //                         "responsive":true
+        //                     },
+        //                 "check_callback":true
+        //                }
+        //             })
+        //             $(function () { $('#jstree_variables_socio_fuente').jstree(); });
+        //             $("#jstree_variables_socio_fuente").on("changed.jstree", self.getChangeTreeVarSocio)
+        //         }
+        //     })
+            
+        // }
         self.getTreeSocio = function (){
-            var query = "query{all_censo_inegi_2020_covariables(limit: 2400, filter:\"\"){id name interval bin code}}"
+            var query = "query{all_censo_inegi_2020_covariables(limit: 2400, filter:\"\"){id name interval bin code categoria}}"
             _VERBOSE ? console.log("self.getTreeSocio") : _VERBOSE;
             console.log(id)
             $.ajax({
@@ -590,41 +652,63 @@ var variable_module = (function (verbose, url_zacatuche) {
                 contentType: "application/json",
                 data: JSON.stringify({query: query}),
                 success: function(resp){
-                    var sei=resp.data.all_censo_inegi_2020_covariables
-                    data = [{"id": "inegi", "parent": "#", "text": "CENSO INEGI 2020", "state":{"opened":true}, "icon": "plugins/jstree/images/rep.png", "attr":{"nivel":6, "type":0}}]
-                    var intervals = []
-                    sei.forEach(element =>{
-                        if(!intervals.includes(element.interval)){
-                            intervals.push(element.interval)
+                sei = resp.data.all_censo_inegi_2020_covariables
+                // const uniqueArray = Array.from(new Set(sei.map(JSON.stringify))).map(JSON.parse);
+                // console.log(uniqueArray);
+                data = [{"id": "inegi", "parent": "#", "text": "CENSO INEGI 2020", "state":{"opened":true}, "icon": "plugins/jstree/images/rep.png", "attr":{"nivel":6, "type":0}}]
+                var categorias =[];
+                    sei.forEach(element=>{
+                        if(!categorias.includes(element.categoria)){
+                            categorias.push(element.categoria)
+                            data.push({
+                                "id":element.categoria,
+                                "parent": "inegi",
+                                "text":element.categoria,
+                                "state":{"opened":false},
+                                "icon":"plugins/jstree/images/group.png",
+                                "attr":{"nivel":7, "type":1}
+                            })
                         }
                     })
                     var names=[]
-
-                    sei.forEach(element=>{
-                        if(!names.includes(element.name)){
-                            names.push(element.name)
-                        }
-                    })
-                    
-
+                    var intervals =[]
                     var codes={}
                     sei.forEach(element=>{
                         codes[element.name]=element.code
                     })
-                    
-                    
-                    names.forEach(element=>{
-                        data.push({"id":element, "parent":"inegi","text":element,"state":{"opened":false}, "icon":"plugins/jstree/images/group.png","attr":{"nivel":7, "type":2,"code":codes[element]}})
-                    })
 
-                    sei.forEach(element=>{
-                        names.forEach(name=>{
-                            if(intervals.includes(element.interval) && element.name === name){
-                                data.push({"id":element.interval, "parent": element.name, "text":element.interval, "state":{"opened":false}, "icon":"plugins/jstree/images/percent.png", "attr":{"nivel":8, "type":2, "bin":element.bin, "code":element.code}})
+                    categorias.forEach(categoria=>{
+                        sei.forEach(element=>{
+                            if(!names.includes(element.name) && element.categoria == categoria){
+                                names.push(element.name)
+                                data.push({
+                                    "id": element.name,
+                                    "parent":element.categoria,
+                                    "text": element.name,
+                                    "state":{"opened":false},
+                                    "icon":"plugins/jstree/images/group.png",
+                                    "attr":{"nivel":8, "type":1, "code":codes[element.name]}
+                                    
+                                })
                             }
                         })
+                        // names.forEach(name=>{
+                        //     sei.forEach(element=>{
+                        //         if(!intervals.includes(element.interval)&& element.name === name){
+                        //             intervals.push(element.interval)
+                        //             data.push({
+                        //                 "id": element.interval,
+                        //                 "parent": element.name,
+                        //                 "text": element.interval,
+                        //                 "state": {"opened":true},
+                        //                 "attr": {"nivel": 8, "type":1}
+                        //             })
+                        //         }
+                        //     })
+                        // })
+
                     })
-                    
+
                     $("#jstree_variables_socio_fuente").jstree({
                        "plugins":["wholerow", "checkbox"],
                        "core":{
@@ -1967,31 +2051,66 @@ var variable_module = (function (verbose, url_zacatuche) {
                         
                     }
                 })             
-            }else if ($("#treeVariableBioclim_fuente").jstree(true).get_top_selected().length > 0) {
-                console.log("elegiste algúnos nodos")
-                var headers_selected = $("#treeVariableBioclim_fuente").jstree(true).get_top_selected().length;
+            }else if(true){
+                var selected_nodes = $("#treeVariableBioclim_fuente").jstree(true).get_selected()
+                console.log("elegiste algunos nodos")
+                var jstreeInstance = $("#treeVariableBioclim_fuente").jstree(true)
+                var selectedNodeTemplates = [];
 
-                for (i = 0; i < headers_selected; i++) {
-                    var node_temp = $("#treeVariableBioclim_fuente").jstree(true).get_node($("#treeVariableBioclim_fuente").jstree(true).get_top_selected()[i]).original;
-                    
-                    _VERBOSE ? console.log(node_temp) : _VERBOSE;
-                    if(node_temp.attr.nivel===7){      
+                selected_nodes.forEach(function(nodeID){
+                    var node = jstreeInstance.get_node(nodeID)
+                    var nodeTemplate = node.original
+                    selectedNodeTemplates.push(nodeTemplate)
+                });
+                console.log( selectedNodeTemplates)
+                
+                
+                // const uniqueparents = selectedNodeTemplates.filter(obj => obj.attr.nivel === 6)
+                // .map(obj=> obj.id);
+                const uniqueparents = [...new Set(selectedNodeTemplates.map(obj => obj.parent))];
 
-                        self.arrayBioclimSelected.push({label: node_temp.text, id: node_temp.attr.layer, parent: node_temp.parent, level: node_temp.attr.level, type: node_temp.attr.type});
-                        self.arrayBioclimSelected2.push({taxon:"layer" , value: node_temp.attr.layer})
-
-                    }else if(node_temp.attr.nivel ===8){
-
-                        self.arrayBioclimSelected.push({label: node_temp.text, id: node_temp.attr.layer, parent: node_temp.parent, level: node_temp.attr.level, type: node_temp.attr.type});
-                        self.arrayBioclimSelected2.push({taxon:"id" , value: node_temp.attr.id})
-
+                selectedNodeTemplates.forEach(node =>{
+                    if(node.attr.nivel === 7){
+                        if(!uniqueparents.includes(node.parent)){
+                            uniqueparents.push(node.parent)
+                        }
+                        console.log(node.parent)
+                        self.arrayBioclimSelected2.push({taxon: "layer", value: node.attr.layer})
                     }
-                }                
-
+                })
+                console.log(uniqueparents)
+                self.arrayBioclimSelected.push({label: uniqueparents.join(", "), id:"" , parent: "Raster ", level: 8, type: 1})
             }
+            
+            
+            // else if ($("#treeVariableBioclim_fuente").jstree(true).get_top_selected().length > 0) {
+            //     console.log("elegiste algúnos nodos")
+            //     var headers_selected = $("#treeVariableBioclim_fuente").jstree(true).get_top_selected().length;
+
+            //     for (i = 0; i < headers_selected; i++) {
+            //         var node_temp = $("#treeVariableBioclim_fuente").jstree(true).get_node($("#treeVariableBioclim_fuente").jstree(true).get_top_selected()[i]).original;
+                    
+            //         _VERBOSE ? console.log(node_temp) : _VERBOSE;
+            //         if(node_temp.attr.nivel===7){      
+
+            //             self.arrayBioclimSelected.push({label: node_temp.text, id: node_temp.attr.layer, parent: node_temp.parent, level: node_temp.attr.level, type: node_temp.attr.type});
+            //             self.arrayBioclimSelected2.push({taxon:"layer" , value: node_temp.attr.layer})
+
+            //         }else if(node_temp.attr.nivel ===8){
+
+            //             self.arrayBioclimSelected.push({label: node_temp.text, id: node_temp.attr.layer, parent: node_temp.parent, level: node_temp.attr.level, type: node_temp.attr.type});
+            //             self.arrayBioclimSelected2.push({taxon:"id" , value: node_temp.attr.id})
+
+            //         }
+            //     }                
+
+            // }
+
+            console.log("elemento para el front")
 
             
             _VERBOSE ? console.log(self.arrayBioclimSelected) : _VERBOSE;
+            console.log("elemento para el body")
             
             _VERBOSE ? console.log(self.arrayBioclimSelected2) : _VERBOSE;           
 
@@ -2038,26 +2157,59 @@ var variable_module = (function (verbose, url_zacatuche) {
                     }
                 })
 
-            }else if ($("#jstree_variables_socio_fuente").jstree(true).get_top_selected().length > 0) {
+            }else if ( true) {
+                var selected_nodes = $("#jstree_variables_socio_fuente").jstree(true).get_selected()
                 console.log("elegiste alguno de los nodos")
-                var headers_selected = $("#jstree_variables_socio_fuente").jstree(true).get_top_selected().length;
+                var jstreeInstance = $("#jstree_variables_socio_fuente").jstree(true);
+                var selectedNodeTemplates = [];
+                
+                selected_nodes.forEach(function (nodeID) {
+                    var node = jstreeInstance.get_node(nodeID);
+                    var nodeTemplate = node.original 
+                    selectedNodeTemplates.push(nodeTemplate);
+                });
+                console.log(selectedNodeTemplates)
 
-                for (i = 0; i < headers_selected; i++) {
-                    var node_temp = $("#jstree_variables_socio_fuente").jstree(true).get_node($("#jstree_variables_socio_fuente").jstree(true).get_top_selected()[i]).original;
+                const uniqueparents = selectedNodeTemplates
+                    .filter(obj => obj.attr.nivel === 7)
+                    .map(obj => obj.id);
 
-                    _VERBOSE ? console.log(node_temp) : _VERBOSE;
-                    if (node_temp.attr.nivel === 7){                        
-                        
-                        self.arraySocioSelected.push({label: node_temp.text, id: node_temp.attr.code, parent: node_temp.parent, level: node_temp.attr.level, type: node_temp.attr.type});
-                        self.arraySocioSelected2.push({taxon: "code", value: node_temp.attr.code}) 
-
-                    }else if(node_temp.attr.nivel === 8){
-                        self.arraySocioSelected.push({label: node_temp.text, id: node_temp.attr.code, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
-                        self.arraySocioSelected2.push({taxon: "id", value:node_temp.attr.code  }) 
+                selectedNodeTemplates.forEach(node=>{
+                    if(node.attr.nivel ===8){
+                        //console.log(node.attr.code)
+                        if(!uniqueparents.includes(node.parent)){
+                            uniqueparents.push(node.parent)
+                        }
+                        console.log(node.parent)
+                        self.arraySocioSelected2.push({taxon: "code", value: node.attr.code})
                     }
-                }
+                })
+                console.log(uniqueparents)
+                self.arraySocioSelected.push({label: uniqueparents.join(", "), id:"" , parent: "Socio ", level: 8, type: 1});
+
+                
 
             }
+            // else if ($("#jstree_variables_socio_fuente").jstree(true).get_top_selected().length > 0) {
+            //     console.log("elegiste alguno de los nodos")
+            //     var headers_selected = $("#jstree_variables_socio_fuente").jstree(true).get_top_selected().length;
+
+            //     for (i = 0; i < headers_selected; i++) {
+            //         var node_temp = $("#jstree_variables_socio_fuente").jstree(true).get_node($("#jstree_variables_socio_fuente").jstree(true).get_top_selected()[i]).original;
+
+            //         _VERBOSE ? console.log(node_temp) : _VERBOSE;
+            //         if (node_temp.attr.nivel === 7){                        
+                        
+            //             self.arraySocioSelected.push({label: node_temp.text, id: node_temp.attr.code, parent: node_temp.parent, level: node_temp.attr.level, type: node_temp.attr.type});
+            //             self.arraySocioSelected2.push({taxon: "code", value: node_temp.attr.code}) 
+
+            //         }else if(node_temp.attr.nivel === 8){
+            //             self.arraySocioSelected.push({label: node_temp.text, id: node_temp.attr.code, parent: node_temp.attr.parent, level: node_temp.attr.level, type: node_temp.attr.type});
+            //             self.arraySocioSelected2.push({taxon: "id", value:node_temp.attr.code  }) 
+            //         }
+            //     }
+
+            // }
             console.log("Array para el front")
             _VERBOSE ? console.log(self.arraySocioSelected) : _VERBOSE;
             console.log("Array para el body")

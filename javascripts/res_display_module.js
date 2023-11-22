@@ -1125,32 +1125,14 @@ var res_display_module = (function (verbose, url_zacatuche) {
         console.log("<///////////  ******* request made  ******///////////> ")
         console.log(_REQUESTS_MADE);
 
-        const uniqueRequests = _REQUESTS_MADE.reduce((accumulator, request) => {
-            const name = request.covariables[0].name;
-            const existingIndex = accumulator.findIndex(item => item.covariables[0].name === name);
-          
-            if (existingIndex === -1) {
-              // Crear un nuevo objeto que copie las otras propiedades
-              const uniqueRequest = { ...request };
-              accumulator.push(uniqueRequest);
-            }
-          
-            return accumulator;
-          }, []);
-
-        console.log(uniqueRequests);
-
         console.log("se empiezan a generar las peticiones")
-        console.log(body)
-        console.log(JSON.stringify(body))
 
-            // Obtener la cantidad de elementos en "covariables"
+
+        // Obtener la cantidad de covariables
         const covariablesCount = body.covariables.length;
 
         // Crear las copias del JSON y actualizar "covariable_filter"
         const copies = [];
-        
-
 
         if(body.covariables.length === 1 && body.covariables[0] === "snib"  && body.covariable_filter.snib.length > 1){
             console.log("copias de snib sin mas covariables")
@@ -1175,22 +1157,35 @@ var res_display_module = (function (verbose, url_zacatuche) {
                 }
                 copies.push(copia)
             }
-            copies.push(body)
-            console.log(copies)
-            
-
         }
 
-        
+        console.log("------copias de body-----")
+        function compararCovariables(a, b) {
+            const orden = ["snib", "worldclim", "inegi2020"];
+          
+            const indexA = orden.indexOf(a.covariables[0]);
+            const indexB = orden.indexOf(b.covariables[0]);
+          
+            return indexA - indexB;
+          }
+          
+          // Aplicar el método sort al array copies
+          copies.sort(compararCovariables);
+          
+          // El array copies ahora está reorganizado según tus criterios
+          console.log(copies);
+
         // Imprimir las copias
         copies.forEach((copy, index) => {
             console.log(`Copia ${index + 1}:`, copy);
         });
-        console.log(copies)
+
+        
 
         // copies.forEach(function (item, index) {
         //     _createScore_Decil(item);
         // });
+        console.log("----- copias de REQUESTS_MADE -------")
         _REQUESTS_MADE.forEach(function (item, index) {
             console.log(item);
         });
