@@ -1545,6 +1545,8 @@ var module_nicho = (function () {
                 }
 
                 function createPopupContent(feature) {
+                    console.log("servicio aporte score por especie")
+                    console.log(feature)
                     var popupContent = "<div class='custom-popup'>" +
                                     "<strong>Grid ID: " + feature.properties.gridid + "</strong><br/>" +
                                     "T-score: " + feature.properties.tscore +

@@ -339,6 +339,7 @@ var histogram_module = (function (verbose) {
 
                 // _display_module_nicho.loadDecilDataTable(d.decil, d.name, false, [], []);
                 _display_module_nicho.loadDecilDataTable(deciles, grupos[0], false, [], []);
+                // pintar mapa con resultado
 
             })
             

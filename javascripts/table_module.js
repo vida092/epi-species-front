@@ -133,6 +133,7 @@ var table_module = (function(verbose) {
                 // }
                 item_list.push(d.species)
                 
+                
                 item_list.push(d.epsilon.toFixed(3))
                 item_list.push(d.score.toFixed(3))
                 item_list.push(d.occ)
@@ -140,6 +141,7 @@ var table_module = (function(verbose) {
                 _data_list_decil.push(item_list)
                                 
             })
+           
             
 
         }

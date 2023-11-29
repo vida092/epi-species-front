@@ -150,6 +150,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
     var _getSpeciesInProcess = false;
 
 
+
     function _loadCountrySelect() {
 
         console.log("_loadCountrySelect");
@@ -360,16 +361,15 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
     var _pad;
 
     function whenClicked(e) {
-        // e = event
+        
         console.log(e);
-        // You can make your ajax call declaration here
-        //$.ajax(... 
+        
     }
 
     function onEachFeature(feature, layer) {
 
         console.log("onEachFeature");
-        //bind click
+       
         layer.on({
             click: whenClicked
         });
@@ -559,11 +559,13 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         if (_tipo_modulo === _MODULO_NICHO) {
             document.getElementById("dShape").style.display = "none";
             document.getElementById("return_map").style.display = "none";
-//            _addControls();
+          //_addControls();
 
         }
 
-//        _loadD3GridMX();
+
+
+      // _loadD3GridMX();
 
 
     }
@@ -784,24 +786,112 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
                      colorizeFeaturesSelectedStateMun([], _grid_map_state_mun, _tileLayerStateMun);
                      _tileIndexStateMun = geojsonvt(_grid_map_state_mun, _tileOptions);
                      _tileLayerStateMun.redraw();
+                     
 
 
                  }
 
                  _first_loaded = false;
 
-
-
                  // agrega listener para generar pop en celda
-                //  map.on('click', function (e) {
+                 map.on('click', function (e) {
+                    _grid_map.features.forEach(function (feature) {
+                        if (turf.booleanPointInPolygon(turf.point([e.latlng.lng, e.latlng.lat]), feature.geometry)) {
+                            var prop = feature.properties;
+                            var body_copy = JSON.parse(JSON.stringify(body));
+                            body_copy.for_specific_cell = true;
 
-                //      console.log(e.latlng.lat + ", " + e.latlng.lng);
+                            body_copy.cell_id = feature.properties.gridid;
 
-                //      if (_tipo_modulo === _MODULO_NICHO) {
-                //          _display_module.showGetFeatureInfo(e.latlng.lat, e.latlng.lng, _taxones, _REGION_SELECTED);
-                //      }
+                            var a=body_copy.cell_id.toString();
+                            console.log(body_copy.cell_id)
+                            if (a.length === 4) {
+                               a = "0" + a;                            
+                            }
+                            body_copy.cell_id = a
+                            console.log(body_copy)
+                                                        
 
-                //  });
+                
+                            if (_tipo_modulo === _MODULO_NICHO) {
+                                _display_module.getFeatureInfo(JSON.stringify(body_copy), function (rows_data) {
+                                    // Aquí puedes utilizar rows_data para mostrar un popup en el mapa
+                                    console.log(rows_data);
+                
+                                    // Por ejemplo, puedes usar una función de visualización de popup personalizada
+                                    mostrarPopupEnMapa(rows_data);
+                                });
+                            }
+                        }
+                    });
+                });
+                
+                function mostrarPopupEnMapa(data) {
+                    // Crear el modal
+                    console.log(data)
+                    var modal = document.createElement("div");
+                    modal.className = "modal fade";
+                    modal.id = "popupModal";
+                    modal.tabIndex = "-1";
+                    modal.role = "dialog";
+                    modal.setAttribute("aria-labelledby", "popupModalLabel");
+                    modal.setAttribute("aria-hidden", "true");
+                
+                    // Crear el contenido del modal
+                    var modalContent = document.createElement("div");
+                    modalContent.className = "modal-dialog";
+                    modalContent.role = "document";
+                
+                    // Crear el contenido del modal
+                    var modalBody = document.createElement("div");
+                    modalBody.className = "modal-content";
+                
+                    // Crear el encabezado del modal
+                    var modalHeader = document.createElement("div");
+                    modalHeader.className = "modal-header";
+                    modalHeader.innerHTML = "<h5 class='modal-title' id='popupModalLabel'>Aporte de Score por specie</h5>";
+                
+                    // Crear el cuerpo del modal
+                    var modalTable = document.createElement("table");
+                    modalTable.className = "table";
+                    var tableBody = document.createElement("tbody");
+                
+                    
+                    data.forEach(function (rowData) {
+                        var row = tableBody.insertRow(-1);
+                        var especieCell = row.insertCell(0);
+                        var scoreCell = row.insertCell(1);
+                        especieCell.innerHTML = rowData.especievalida;
+                        scoreCell.innerHTML = rowData.score.toFixed(3);
+                    });
+
+                    var totalScore = data.reduce(function (total, rowData) {
+                        return total + rowData.score;
+                    }, 0);
+                    var totalRow = tableBody.insertRow(-1);
+                    var totalEspecieCell = totalRow.insertCell(0);
+                    var totalScoreCell = totalRow.insertCell(1);
+                    totalEspecieCell.innerHTML = "Total";
+                    totalScoreCell.innerHTML = totalScore.toFixed(3);
+                
+                    modalTable.appendChild(tableBody);
+                
+                    // Agregar el cuerpo del modal al modal
+                    modalBody.appendChild(modalHeader);
+                    modalBody.appendChild(modalTable);
+                    modalContent.appendChild(modalBody);
+                    modal.appendChild(modalContent);
+                
+                    // Agregar el modal al cuerpo del documento
+                    document.body.appendChild(modal);
+                
+                    // Mostrar el modal
+                    $("#popupModal").modal("show");
+                }
+                
+                
+                
+                
 
                  if (_tipo_modulo === _MODULO_NICHO) {
 
@@ -860,7 +950,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
                  console.log(error);
                  console.log(errorThrown);
                  // alert("Existe un error en la conexión con el servidor, intente mas tarde");
-//                console.log("abort");
+               // console.log("abort");
                  $('#map').loading('stop');
                  $('#map2').loading('stop');
              }
@@ -2676,6 +2766,8 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
                 return L.circleMarker(latlng, _geojsonMarkerOptions);
             },
             onEachFeature: function (feature, layer) {
+                console.log("------------------ feature ----------")
+                console.log(feature)
                 var message = _getMessagePopup(feature);
                 layer.bindPopup(message, _customOptions);
             }

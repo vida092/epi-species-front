@@ -1498,9 +1498,11 @@ var res_display_module = (function (verbose, url_zacatuche) {
                             console.log("<====================================================>8")
                             console.log(percentage_avg)                            
                             console.log(validation_data)
-                            console.log(data_score_cell)
+                            console.log()
                             console.log(">====================================================<8")
                             // console.log(cell_summary)
+                            _current_data_score_cell = _utils_module.reduceScoreCell(data_score_cell, val_apriori, numr);
+                            _configureStyleMap();
 
                             
                             $("#div_munlist").hide();
@@ -1514,6 +1516,8 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                             console.log("------RESULTS TO DISPLAY ------")
                             console.log(_RESULTS_TODISPLAY)
+
+
 
                             _histogram_module_nicho.createMultipleBarChart(_RESULTS_TODISPLAY, [], _id_chartscr_decil, d3.map([]));
 
@@ -2141,6 +2145,11 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                 var range = d.tag.split(":")
                 var label = d.label.replace(/[^a-zA-Z0-9]/g, "").replace(/ /g,'')
+                
+                if(d.group_name ==="inegi2020"){                    
+                    var label = d.label.replace(/[^a-zA-Z0-9\sÀ-ÿ]/g, "")                    
+                }
+                
 
                 var min = (parseFloat(range[0]) * d.coeficiente).toFixed(3) + " " + d.unidad
                 var max = (parseFloat(range[1]) * d.coeficiente).toFixed(3) + " " + d.unidad
@@ -2149,9 +2158,9 @@ var res_display_module = (function (verbose, url_zacatuche) {
                 
                 
                 if(d.tag.split(":").length > 1){
-                            var value = _iTrans.prop(label) + " (" + d.tag + ") ";
+                            var value = label + " (" + d.tag + ") ";
                         }else {
-                            var value = _iTrans.prop(label) + ' (' +  d.tag + ')'; 
+                            var value = label + ' (' +  d.tag + ')'; 
                         }
 
 
@@ -2956,6 +2965,36 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
     }
 
+    /**
+     * Este método manda petición al servidor cuando una celda del mapa de análisis es seleccionada para obtener los datos de la celda
+     * @function getFeatureInfo 
+     * @public 
+     * @memberof! res_display_module
+     * 
+     * 
+     * @param {string} request       
+     */
+    function getFeatureInfo(request, callback) {
+        //console.log(request)
+        $.ajax({
+            url: "https://covid19.c3.unam.mx/gateway/api/analysis/cells/",
+            method: "POST",
+            contentType: "application/json",
+            data: request,
+            success: function (resp) {
+                console.log(resp);
+                var arr = resp.data
+                var rows_data = arr.map(obj => ({
+                    especievalida: obj.especievalida,
+                    score: obj.score,
+                }));
+                // callback llama a los datos procesados
+                callback(rows_data);
+            }
+        });
+    }
+    
+
 
     /**
      * Éste método realiza la petición al servidor cuando una celda es seleccionada por el usuario y obtiene el valor de score que se encuentran dentro de la celda en conjunto con el módulo mapa.
@@ -3453,6 +3492,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
         setMapModule: setMapModule,
         showGetFeatureInfo: showGetFeatureInfo,
         showGetFeatureInfoOccCell: showGetFeatureInfoOccCell,
+        getFeatureInfo:getFeatureInfo,
         get_cData: get_cData,
         getValidationTable: getValidationTable,
         updateLabels: updateLabels,
