@@ -1106,7 +1106,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         _VERBOSE ? console.log("colorizeTargetFeatures") : _VERBOSE;
         console.log(grid_map);
         console.log(tileLayer)
-        console.log("<------------Colores--------------->")
+        
 
         var gridid_occ = []
         
@@ -1132,13 +1132,13 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
             if(gridid_occ.indexOf(parseInt(grid_map.features[i].properties.gridid)) !== -1){
 
                 console.log("celda objetivo")
-                // grid_map.features[i].properties.stroke = 'rgba(0,255,255,1)';
-                // grid_map.features[i].properties.stroke = 'rgba(152,78,173,1)';
-                // grid_map.features[i].properties.stroke = 'rgba(247,129,191,1)';
+                grid_map.features[i].properties.stroke = 'rgba(0,255,255,1)';
+                grid_map.features[i].properties.stroke = 'rgba(152,78,173,1)';
+                grid_map.features[i].properties.stroke = 'rgba(247,129,191,1)';
 
-                // grid_map.features[i].properties.stroke = 'rgba(152,78,163,1)';
-                // grid_map.features[i].properties.stroke = 'rgba(77,175,74,1)';
-                // grid_map.features[i].properties.stroke = 'rgba(255,127,0,1)';
+                grid_map.features[i].properties.stroke = 'rgba(152,78,163,1)';
+                grid_map.features[i].properties.stroke = 'rgba(77,175,74,1)';
+                grid_map.features[i].properties.stroke = 'rgba(255,127,0,1)';
 
                 grid_map.features[i].properties.stroke = 'rgba(255,0,0,0.6)';
                 
@@ -1147,7 +1147,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
             }
             else{
 
-                // console.log("no match")
+                console.log("no match")
                 grid_map.features[i].properties.stroke = 'rgba(0,0,0,0)';
 
             }
@@ -1994,8 +1994,8 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
       tbl.forEach(function(obj) {
         Cells_id.push(obj.gridid);
       });
-    //   console.log(Cells_id);
-      
+       console.log(Cells_id);
+      console.log(_grid_map.features )
       for (var i = 0; i < _grid_map.features.length; i++) {
         
         if (Cells_id.includes(_grid_map.features[i].properties.gridid)) {        
@@ -3055,7 +3055,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
             
             var no_cells = 0
             console.log("<====================================================>3")
-            map_type = 'range'
+            // map_type = 'range'
             console.log(scales)
             console.log(map_type)
             console.log(">====================================================<3")

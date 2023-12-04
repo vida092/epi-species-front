@@ -427,7 +427,6 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
             var language_selected = e.target.getAttribute("value");
             var language_label_selected = e.target.getAttribute("label");
-            console.log("-*/-*/-*/-*/-*/-*/-*/")
             console.log(language_label_selected)
 
             _VERBOSE ? console.log("value: " + language_selected) : _VERBOSE;
