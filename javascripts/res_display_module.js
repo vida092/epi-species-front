@@ -1880,7 +1880,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
                     .then(resp => resp.json())
                     .then(resp => {
                         console.log(resp)
-                        resp.decil_cells=[{cell: 196, decile: 5},{cell: 1051, decile: 5},{cell: 1118, decile: 5},{cell: 1988, decile: 5},{cell: 251, decile: 5},{cell: 1492, decile: 5},{cell: 887, decile: 5},{cell: 1342, decile: 5},{cell: 209, decile: 5},{cell: 700, decile: 5},{cell: 532, decile: 5}]
+                        //resp.decil_cells=[{cell: 196, decile: 5},{cell: 1051, decile: 5},{cell: 1118, decile: 5},{cell: 1988, decile: 5},{cell: 251, decile: 5},{cell: 1492, decile: 5},{cell: 887, decile: 5},{cell: 1342, decile: 5},{cell: 209, decile: 5},{cell: 700, decile: 5},{cell: 532, decile: 5}]
 
                         // $("#map_next").css('visibility', 'visible');
                         // $("#map_next").show("slow");
@@ -1892,14 +1892,15 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                             var percentage_avg = resp.percentage_avg;
 
-                            //var decil_cells = resp.data_score_cell;
-                            var decil_cells = resp.decil_cells;                            
+                            var decil_cells = resp.data_score_cell;
+                            //var decil_cells = resp.decil_cells;                            
 
                             console.log(percentage_avg)
 
                             console.log(decil_cells)
 
-                            activeDecilOccurrences(decil_cells, deciles)
+                            activeDecilOccurrences2(decil_cells, deciles)
+
 
                             createTableDecil(percentage_avg)
 
@@ -2204,9 +2205,21 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
     }
 
+    function activeDecilOccurrences2 (decil_cells,deciles){
+
+        _VERBOSE ? console.log("pintar celdas deciles"): _VERBOSE
+        _map_module_nicho.updateDecilLayer(deciles)
+
+        _map_module_nicho.setDecilCells(decil_cells);
+        _map_module_nicho.colorizeDecileFeatures2(decil_cells,deciles);
+        $('#map').loading('stop');
+
+    }
+
     function activeDecilOccurrences(decil_cells, deciles){
 
         _VERBOSE ? console.log("activeDecilOccurrences") : _VERBOSE;
+        
         
         console.log(decil_cells)
         
@@ -2973,25 +2986,27 @@ var res_display_module = (function (verbose, url_zacatuche) {
      * 
      * @param {string} request       
      */
-    function getFeatureInfo(request, callback) {
-        //console.log(request)
+    function getFeatureInfo(request, feature, callback) {
+        
         $.ajax({
             url: "https://covid19.c3.unam.mx/gateway/api/analysis/cells/",
             method: "POST",
             contentType: "application/json",
             data: request,
             success: function (resp) {
-                console.log(resp);
-                var arr = resp.data
+                var arr = resp.data;
                 var rows_data = arr.map(obj => ({
                     especievalida: obj.especievalida,
                     score: obj.score,
                 }));
-                // callback llama a los datos procesados
-                callback(rows_data);
+                console.log("getFeatureInfo")
+                console.log(rows_data)
+                // feature information in the callback
+                callback(feature, rows_data);
             }
         });
     }
+    
     
 
 

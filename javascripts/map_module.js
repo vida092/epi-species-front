@@ -531,7 +531,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
             _overlayMaps = {
                 "Result": _tileLayer, 
                 "Target": _tileLayerSpecies,  
-                // "Decile": _tileDecilLayer 
+                "Decile": _tileDecilLayer 
             }
 
         }
@@ -542,7 +542,8 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
                 zoom: _zoom_module,
                 layers: [
                     _OSM_layer,
-                    _tileLayer 
+                    _tileLayer,
+                    _tileDecilLayer
                 ]
             });
 
@@ -795,39 +796,41 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
                  // agrega listener para generar pop en celda
                  map.on('click', function (e) {
+                    $('#map2').loading({
+                        stoppable: true
+                    });
                     _grid_map.features.forEach(function (feature) {
                         if (turf.booleanPointInPolygon(turf.point([e.latlng.lng, e.latlng.lat]), feature.geometry)) {
                             var prop = feature.properties;
                             var body_copy = JSON.parse(JSON.stringify(body));
                             body_copy.for_specific_cell = true;
-
                             body_copy.cell_id = feature.properties.gridid;
-
-                            var a=body_copy.cell_id.toString();
-                            console.log(body_copy.cell_id)
+                    
+                            var a = body_copy.cell_id.toString();
                             if (a.length === 4) {
-                               a = "0" + a;                            
+                                a = "0" + a;
                             }
-                            body_copy.cell_id = a
-                            console.log(body_copy)
-                                                        
-
-                
+                            body_copy.cell_id = a;
+                            console.log(prop.gridid)
+                    
                             if (_tipo_modulo === _MODULO_NICHO) {
-                                _display_module.getFeatureInfo(JSON.stringify(body_copy), function (rows_data) {
-                                    // Aquí puedes utilizar rows_data para mostrar un popup en el mapa
-                                    console.log(rows_data);
-                
-                                    // Por ejemplo, puedes usar una función de visualización de popup personalizada
-                                    mostrarPopupEnMapa(rows_data);
+                                // Pass the feature information to the getFeatureInfo function
+                                _display_module.getFeatureInfo(JSON.stringify(body_copy), feature, function (feature, rows_data) {
+                                    $('#map2').loading('stop');
+                                    mostrarPopupEnMapa(feature, rows_data);
                                 });
                             }
                         }
                     });
+                    
                 });
                 
-                function mostrarPopupEnMapa(data) {
+                function mostrarPopupEnMapa(feature, data) {
                     // Crear el modal
+                    var existingModal = document.getElementById("popupModal");
+                    if (existingModal) {
+                        existingModal.remove();
+                    }
                     console.log(data)
                     var modal = document.createElement("div");
                     modal.className = "modal fade";
@@ -839,8 +842,10 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
                 
                     // Crear el contenido del modal
                     var modalContent = document.createElement("div");
-                    modalContent.className = "modal-dialog";
+                    modalContent.className = "modal-dialog modal-dialog-scrollable"; 
                     modalContent.role = "document";
+                    modalContent.style.maxHeight = "50%";
+                    modalContent.style.marginTop = "10%"
                 
                     // Crear el contenido del modal
                     var modalBody = document.createElement("div");
@@ -848,8 +853,8 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
                 
                     // Crear el encabezado del modal
                     var modalHeader = document.createElement("div");
-                    modalHeader.className = "modal-header";
-                    modalHeader.innerHTML = "<h5 class='modal-title' id='popupModalLabel'>Aporte de Score por specie</h5>";
+                    modalHeader.className = "modal-header text-center";
+                    modalHeader.innerHTML = "<h4 class='modal-title font-weight-bold' id='popupModalLabel'>Aporte de Score por especie</h4>";
                 
                     // Crear el cuerpo del modal
                     var modalTable = document.createElement("table");
@@ -1099,11 +1104,56 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
     }
 
 
+    function colorizeDecileFeatures2(decileData , deciles , grid_map = _grid_map_decil,  tileLayer = _tileDecilLayer) {
+
+        _VERBOSE ? console.log("colorizeDecileFeatures2") : _VERBOSE;
+        console.log(grid_map)    
+        
+        var filteredDecileData = decileData.filter(function(d) {
+            return deciles.includes(d.bin);
+        });
+        console.log(filteredDecileData)
+    
+        var cells_map = filteredDecileData.map(function(d) { return d.gridid; });
+        var decile_map = filteredDecileData.map(function(d) { return d.bin; });
+    
+        var verdes = ["#ffffe5", "#f7fcb9", "#d9f0a3", "#addd8e", "#78c679", "#41ab5d", "#238443", "#006837", "#00542d", "#004529"];
+    
+        var scale_color_function = d3.scale.ordinal()
+            .domain(deciles)
+            .range(verdes);
+    
+        for (var i = 0; i < grid_map.features.length; i++) {
+            var index = cells_map.indexOf(grid_map.features[i].properties.gridid);
+            
+            if (index !== -1) {
+                grid_map.features[i].properties.color = scale_color_function(decile_map[index]);
+                grid_map.features[i].properties.stroke = 'rgba(0,0,0,0.3)';
+            } else {
+                grid_map.features[i].properties.color = 'rgba(0,0,0,0)';
+                grid_map.features[i].properties.stroke = 'rgba(0,0,0,0)';
+            }
+        }
+        console.log(grid_map.features)
+    
+        tileLayer.redraw();
+        map.invalidateSize();
+    
+        if (!_first_loaded) {
+            var values_occ = d3.range(1,11)
+            _cargaPaletaColorDecil(verdes, deciles);
+        }
+    }
+    
+        
+
+
 
 
     function colorizeTargetFeatures(grid_map = _grid_map_target, tileLayer = _tileLayerSpecies) {
 
         _VERBOSE ? console.log("colorizeTargetFeatures") : _VERBOSE;
+        
         console.log(grid_map);
         console.log(tileLayer)
         
@@ -1124,14 +1174,15 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
         console.log(gridid_occ)
         // console.log(_grid_map_target)
-
+        console.log(grid_map.features)
         for (var i = 0; i < grid_map.features.length; i++) {
 
 
             // verifica si en la celda tiene presencia de la especie objetivo
             if(gridid_occ.indexOf(parseInt(grid_map.features[i].properties.gridid)) !== -1){
 
-                console.log("celda objetivo")
+                //console.log("celda objetivo")
+
                 grid_map.features[i].properties.stroke = 'rgba(0,255,255,1)';
                 grid_map.features[i].properties.stroke = 'rgba(152,78,173,1)';
                 grid_map.features[i].properties.stroke = 'rgba(247,129,191,1)';
@@ -1147,7 +1198,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
             }
             else{
 
-                console.log("no match")
+                //console.log("no match")
                 grid_map.features[i].properties.stroke = 'rgba(0,0,0,0)';
 
             }
@@ -3900,6 +3951,7 @@ function getSP2Export() {
         colorizeFeatures: colorizeFeatures,
         colorizeFeaturesNet: colorizeFeaturesNet,
         colorizeTargetFeatures: colorizeTargetFeatures,
+        colorizeDecileFeatures2: colorizeDecileFeatures2,
         loadD3GridMX: loadD3GridMX,
         updateLabels: updateLabels,
         clearMap: clearMap,
