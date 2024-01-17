@@ -1899,6 +1899,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
 
                             console.log(decil_cells)
 
+                            //activeDecilOccurrences(decil_cells, deciles)
                             activeDecilOccurrences2(decil_cells, deciles)
 
 

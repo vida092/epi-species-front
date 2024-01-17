@@ -1103,11 +1103,66 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
     }
 
+    // function colorizeDecileFeatures2(decileData, deciles, grid_map = _grid_map_decil, tileLayer = _tileDecilLayer) {
+
+    //     _VERBOSE ? console.log("colorizeDecileFeatures2") : _VERBOSE;
+    //     console.log(grid_map)
+    //     console.log(decileData)
+    //     for (var i = 0; i < grid_map.features.length; i++) {
+    //         // pasar gridid a string
+    //         var grididString = String(grid_map.features[i].properties.gridid);
+    
+    //         // si hay 4 digitos se agrega 0
+    //         if (grididString.length === 4) {
+    //             grididString = "0" + grididString;
+    //         }
+    //         grid_map.features[i].properties.gridid = grididString 
+    //     }
+    //     console.log("new grid map")
+    //     console.log(grid_map)
+    
+    //     // Extract grid IDs from decileData
+    //     var cells_map = decileData.map(function (d) { return d.gridid; });
+    
+    //     // Define the array of colors
+    //     var verdes = ["#ffffe5", "#f7fcb9", "#d9f0a3", "#addd8e", "#78c679", "#41ab5d", "#238443", "#006837", "#00542d", "#004529"];
+    
+    //     // Iterate over features in grid_map and assign a random color
+    //     for (var i = 0; i < grid_map.features.length; i++) {
+    //         // Generate a random index to get a random color from verdes array
+    //         var randomIndex = Math.floor(Math.random() * verdes.length);
+    
+    //         // Assign the random color to the feature
+    //         grid_map.features[i].properties.color = verdes[randomIndex];
+    //         grid_map.features[i].properties.stroke = 'rgba(0,0,0,0.3)';
+    //     }
+    
+    //     tileLayer.redraw();
+    //     map.invalidateSize();
+    
+    //     if (!_first_loaded) {
+    //         var values_occ = d3.range(1, 11);
+    //         _cargaPaletaColorDecil(verdes, deciles);
+    //     }
+    // }
+    
+
 
     function colorizeDecileFeatures2(decileData , deciles , grid_map = _grid_map_decil,  tileLayer = _tileDecilLayer) {
 
         _VERBOSE ? console.log("colorizeDecileFeatures2") : _VERBOSE;
-        console.log(grid_map)    
+          
+        for (var i = 0; i < grid_map.features.length; i++) {
+            // pasar gridid a string
+            var grididString = String(grid_map.features[i].properties.gridid);
+    
+            // si hay 4 digitos se agrega 0
+            if (grididString.length === 4) {
+                grididString = "0" + grididString;
+            }
+            grid_map.features[i].properties.gridid = grididString 
+        }
+        console.log(grid_map)  
         
         var filteredDecileData = decileData.filter(function(d) {
             return deciles.includes(d.bin);
@@ -1134,7 +1189,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
                 grid_map.features[i].properties.stroke = 'rgba(0,0,0,0)';
             }
         }
-        console.log(grid_map.features)
+        console.log(grid_map)
     
         tileLayer.redraw();
         map.invalidateSize();
