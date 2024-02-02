@@ -2348,8 +2348,8 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         // console.log("footprint_region: " + footprint_region);
 
 
-        var liminf = $("#date_timepicker_start").val();
-        var limsup = $("#date_timepicker_end").val();
+        var liminf = $("#yearPicker_start").val();
+        var limsup = $("#yearPicker_end").val();
 
         // console.log("liminf: " + liminf)
         // console.log("limsup: " + limsup)
@@ -2419,8 +2419,8 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
         //let fecha_ini = document.getElementById("yearPicker_start").value.trim()
         //let fecha_fin = document.getElementById("yearPicker_end").value.trim()
-        let fecha_ini = "" //temporalmente se cambia fecha ini y fecha fin
-        let fecha_fin = ""
+        let fecha_ini = $('#yearPicker_start').val() //temporalmente se cambia fecha ini y fecha fin
+        let fecha_fin = $('#yearPicker_end').val()
         console.log( _PARENT_FIELD)
         //_PARENT_FIELD.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
         switch(_PARENT_FIELD){
@@ -2447,7 +2447,8 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         }    
         
        
-        
+        console.log( fecha_ini )
+        console.log( fecha_fin)
         console.log(label_target)
 
         var subquery = _LABEL_MAP.map(taxon => `${label_target}= \'${taxon}\'`).join(" OR ") //cambiar label , aparece orden y no nombre científico
@@ -2458,7 +2459,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         if ( fecha_ini.length < 3)
             var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND ' + "("+ subquery+")" +' "){numeroindividuos gridid_'+ _grid_res + '}}'
         else
-            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ "("+ subquery+")" +'  AND aniocolecta >= \''+ fecha_ini + ' \' AND aniocolecta <= \'' + fecha_fin + ' \'"){numeroindividuos gridid_'+ _grid_res + '}}'
+            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ "("+ subquery+")" +'  AND añocolecta >= \''+ fecha_ini + ' \' AND añocolecta <= \'' + fecha_fin + ' \'"){numeroindividuos gridid_'+ _grid_res + '}}'
 
 
         console.log(query)

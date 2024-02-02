@@ -708,6 +708,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         // })
 
                     })
+                    
 
                     $("#jstree_variables_socio_fuente").jstree({
                        "plugins":["wholerow", "checkbox"],
@@ -772,7 +773,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                     }
                                   })
                                 })
-                                //console.log(data)
+                                
                                 $('#jtreeVariableBioclim_' + id).jstree("destroy").empty();
                                 $('#treeVariableBioclim_fuente').jstree({
                                     'plugins': ["wholerow", "checkbox"],
