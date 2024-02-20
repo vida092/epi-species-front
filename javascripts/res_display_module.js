@@ -1131,45 +1131,45 @@ var res_display_module = (function (verbose, url_zacatuche) {
         const covariablesCount = body.covariables.length;
 
         // Crear las copias del JSON y actualizar "covariable_filter"
-        const copies = [];
+        // const copies = [];
 
-        if(body.covariables.length === 1 && body.covariables[0] === "snib"  && body.covariable_filter.snib.length > 1){
-            console.log("copias de snib sin mas covariables")
-            body.covariable_filter.snib.forEach((covariableEntry) => {
-                const copia = JSON.parse(JSON.stringify(body));
-                copia.covariable_filter.snib = [covariableEntry];
-                copies.push(copia);
-            });
+        // if(body.covariables.length === 1 && body.covariables[0] === "snib"  && body.covariable_filter.snib.length > 1){
+        //     console.log("copias de snib sin mas covariables")
+        //     body.covariable_filter.snib.forEach((covariableEntry) => {
+        //         const copia = JSON.parse(JSON.stringify(body));
+        //         copia.covariable_filter.snib = [covariableEntry];
+        //         copies.push(copia);
+        //     });
             
 
-        }else{
-            console.log("copias de covariables")
+        // }else{
+        //     console.log("copias de covariables")
 
-            for(var i=0; i < body.covariables.length; i++){
-                var copia = JSON.parse(JSON.stringify(body));
-                copia.covariables = [copia.covariables[i]]
+        //     for(var i=0; i < body.covariables.length; i++){
+        //         var copia = JSON.parse(JSON.stringify(body));
+        //         copia.covariables = [copia.covariables[i]]
 
-                for(var covariable in copia.covariable_filter){
-                    if(covariable!== copia.covariables[0]){
-                        delete copia.covariable_filter[covariable];
-                    }
-                }
-                copies.push(copia)
-            }
-        }
+        //         for(var covariable in copia.covariable_filter){
+        //             if(covariable!== copia.covariables[0]){
+        //                 delete copia.covariable_filter[covariable];
+        //             }
+        //         }
+        //         copies.push(copia)
+        //     }
+        // }
 
-        console.log("------copias de body-----")
-        function compararCovariables(a, b) {
-            const orden = ["snib", "worldclim", "inegi2020"];
+        // console.log("------copias de body-----")
+        // function compararCovariables(a, b) {
+        //     const orden = ["snib", "worldclim", "inegi2020"];
           
-            const indexA = orden.indexOf(a.covariables[0]);
-            const indexB = orden.indexOf(b.covariables[0]);
+        //     const indexA = orden.indexOf(a.covariables[0]);
+        //     const indexB = orden.indexOf(b.covariables[0]);
           
-            return indexA - indexB;
-          }
+        //     return indexA - indexB;
+        //   }
           
-          // Aplicar el método sort al array copies
-          copies.sort(compararCovariables);
+        //   // Aplicar el método sort al array copies
+        //   copies.sort(compararCovariables);
           
           // El array copies ahora está reorganizado según tus criterios
           console.log(copies);

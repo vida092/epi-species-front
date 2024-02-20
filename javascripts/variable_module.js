@@ -1715,8 +1715,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .attr('type', 'button')
                         .addClass('btn btn-primary glyphicon glyphicon-plus pull-left')
                         .click(function (e) {
-                            $("#treeVariableBioclim_fuente").css("cursor", "not-allowed")
-                            $("#treeVariableBioclim_fuente").css("pointer-events", "none")
+                            
                             self.formQuery('jstree_variables_bioclim_' + id, self.arrayBioclimSelected2)
                             self.addOtherGroup('jstree_variables_bioclim_' + id, self.arrayBioclimSelected,  'Raster', 'treeAddedPanel_' + id, _TYPE_ABIO);
                             e.preventDefault();
@@ -2419,7 +2418,9 @@ var variable_module = (function (verbose, url_zacatuche) {
 
         }
         inegi = [];
+        inegi2 = []
         worldclim = [];
+        worldclim2 = []
         //snib = [];
         target_species = []
         //Evento que guarda la selección de (co)variables para el elemento covariable_filter
@@ -2431,13 +2432,17 @@ var variable_module = (function (verbose, url_zacatuche) {
             switch (idTree) {
                 case 'jstree_variables_socio_fuente':
                     inegi=[...arraySelected2]
+                    inegi2.push(arraySelected2)
                     console.log("se agregó información de inegi2020")
                     console.log(inegi)
+                    console.log(inegi2)
                     break;
                 case 'jstree_variables_bioclim_fuente':
                     worldclim=[...arraySelected2]
+                    worldclim2.push(arraySelected2)
                     console.log("se agregó información de worldclim")
-                    console.log(worldclim)   
+                    console.log(worldclim)
+                    console.log(worldclim2)   
                     break;
                 case "jstree_variables_species_fuente" :
                     snib.push(arraySelected2)
@@ -2858,8 +2863,53 @@ var variable_module = (function (verbose, url_zacatuche) {
         }
         self.getBodyElements = function(){
             //se cargan los elementos necesarios para formar el body
+            // let body2={
+            //     "selected_decile": [10],
+            //     "mesh": "mun",
+
+            //     "covariables":[],
+
+            //     "covariable_filter":{},
+
+            //     "target":{"species":{"taxon":"family","value":"Trypanosomatidae"}
+            //     },
+
+            //     "target_attribute_filter":[],
+
+            //     "lim_inf_first": "2021-04-03",
+            //     "lim_sup_first": "2021-05-02",
+            //     "lim_inf_training": "2021-05-03",
+            //     "lim_sup_training": "2021-06-02",
+            //     "lim_inf_validation": "2021-06-03",
+            //     "lim_sup_validation": "2021-07-02",
+            //     "validation": false
+            // }
+            // let copies = []
+
+            covobj2= {"inegi2020": inegi2, "snib": snib, "worldclim":worldclim2}
             covobj= {"inegi2020": inegi, "snib": snib, "worldclim":worldclim}
-            return snib, covobj, inegi, worldclim, target_species
+            // for(let clave in covobj2){
+            //     if(covobj2[clave].length!==0){
+            //         console.log("esta lista es la que se debe copiar")
+            //         console.log(covobj2[clave])
+            //         covobj2[clave].forEach(lista=>{
+            //             let copia = JSON.parse(JSON.stringify(body2));
+            //             copia["covariables"].push(clave)
+            //             copia["covariable_filter"][clave]=[]
+            //             lista.forEach(value=>{
+            //                 copia["covariable_filter"][clave].push(value)
+            //             })
+            //             copies.push(copia)
+            //         })
+            
+
+                    
+                    
+            //     }
+            // }
+            // console.log(copies)
+            return snib, covobj, inegi, worldclim, target_species, covobj2
+            //return covobj2, target_species 
         }
 
         self.getEmisionesElement = function (){
