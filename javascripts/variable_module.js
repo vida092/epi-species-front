@@ -1715,7 +1715,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .attr('type', 'button')
                         .addClass('btn btn-primary glyphicon glyphicon-plus pull-left')
                         .click(function (e) {
-                            if (self.arrayBioclimSelected2.length === 0){
+                            console.log(self.arrayBioclimSelected)
+                            if (self.arrayBioclimSelected.length === 0){
                                 _module_toast.showToast_CenterCenter("Seleccione al menos un elemento", "warning")
                                 return;
                             }
@@ -1784,8 +1785,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .attr('type', 'button')
                         .addClass('btn btn-primary glyphicon glyphicon-plus pull-left')
                         .click(function (e) {
-                            console.log(self.arraySocioSelected2)
-                            if (self.arraySocioSelected2.length === 0){
+                            console.log(self.arraySocioSelected)
+                            if (self.arraySocioSelected.length === 0){
                                 _module_toast.showToast_CenterCenter("Seleccione al menos un elemento", "warning")
                                 return;
                             }
