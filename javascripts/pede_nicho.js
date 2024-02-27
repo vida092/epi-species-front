@@ -1282,10 +1282,16 @@ var module_nicho = (function () {
             _componente_fuente.getBodyElements()
             covariables=[];
             covariables_filter={}
-            //covobj= {"inegi2020": inegi2020, "snib": snib, "worldclim":worldclim}
+            
+            function unionUnique(arr) {
+                return Array.from(new Set(arr.flat()));
+            }
+            
+            // Objeto original
+            var covobj3 = Object.fromEntries(Object.entries(covobj2).map(([key, value]) => [key, unionUnique(value)]));
 
-            Object.keys(covobj).forEach(key=>{
-                if (covobj[key].length > 0){
+            Object.keys(covobj3).forEach(key=>{
+                if (covobj3[key].length > 0){
                     covariables.push(key);
                     covariables_filter[key]=covobj[key]
                 }
@@ -1298,9 +1304,6 @@ var module_nicho = (function () {
                     var agente = agent.normalize('NFD').replace(/[\u0300-\u036f]/g,"").toLowerCase().substring(0, agent.length - 1);
                     break;
             }  
-
-
-            
             
             
             body={
@@ -1330,6 +1333,54 @@ var module_nicho = (function () {
             if ("covariable_filter" in body && "snib" in body.covariable_filter) {
                 covariables_filter.snib.splice(0, snib.length, ...[].concat(...snib));
               } 
+
+            body2={
+                "selected_decile": [10],
+                "mesh": "mun",
+
+                "covariables":[],
+
+                "covariable_filter":{},
+
+                "target":{
+                    "species": target_species[0], //Por el momento el target debe tener un sólo taxon, luego sólo hay que borrar "[0]"
+                    "disease": disease,
+                    "agent": agente
+                },
+
+                "target_attribute_filter":[],
+
+                "lim_inf_first": "2021-04-03",
+                "lim_sup_first": "2021-05-02",
+                "lim_inf_training": "2021-05-03",
+                "lim_sup_training": "2021-06-02",
+                "lim_inf_validation": "2021-06-03",
+                "lim_sup_validation": "2021-07-02",
+                "validation": false
+            }
+            copies = []
+
+            // covobj2= {"inegi2020": inegi2, "snib": snib, "worldclim":worldclim2}
+            // covobj= {"inegi2020": inegi, "snib": snib, "worldclim":worldclim}
+            for(let clave in covobj2){
+                if(covobj2[clave].length!==0){
+                    console.log("esta lista es la que se debe copiar")
+                    console.log(covobj2[clave])
+                    covobj2[clave].forEach(lista=>{
+                        let copia = JSON.parse(JSON.stringify(body2));
+                        copia["covariables"].push(clave)
+                        copia["covariable_filter"][clave]=[]
+                        lista.forEach(value=>{
+                            copia["covariable_filter"][clave].push(value)
+                        })
+                        copies.push(copia)
+                    })
+                    
+                    
+                    
+                }
+            }
+            console.log(copies)
             body.validation = val_process
 
             //console.log(JSON.stringify(body))
