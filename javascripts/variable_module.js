@@ -708,7 +708,6 @@ var variable_module = (function (verbose, url_zacatuche) {
                         // })
 
                     })
-                    
 
                     $("#jstree_variables_socio_fuente").jstree({
                        "plugins":["wholerow", "checkbox"],
@@ -773,7 +772,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                     }
                                   })
                                 })
-                                
+                                //console.log(data)
                                 $('#jtreeVariableBioclim_' + id).jstree("destroy").empty();
                                 $('#treeVariableBioclim_fuente').jstree({
                                     'plugins': ["wholerow", "checkbox"],
@@ -1710,14 +1709,31 @@ var variable_module = (function (verbose, url_zacatuche) {
                 var tree = $('<div/>')
                         .attr('id', "jstree_variables_bioclim_" + id)
                         .appendTo(div_tree);   
+
                 var btn_add = $('<button/>')
                         .attr('id', 'add_group_bioclim' + "_" + id)
                         .attr('type', 'button')
                         .addClass('btn btn-primary glyphicon glyphicon-plus pull-left')
                         .click(function (e) {
+
+//                             console.log(self.arrayBioclimSelected)
+//                             if (self.arrayBioclimSelected.length === 0){
+//                                 _module_toast.showToast_CenterCenter("Seleccione al menos un elemento", "warning")
+//                                 return;
+//                             }
+
+                            // $("#treeVariableBioclim_fuente").css("cursor", "not-allowed")
+                            // $("#treeVariableBioclim_fuente").css("pointer-events", "none")
+
                             
+
                             self.formQuery('jstree_variables_bioclim_' + id, self.arrayBioclimSelected2)
                             self.addOtherGroup('jstree_variables_bioclim_' + id, self.arrayBioclimSelected,  'Raster', 'treeAddedPanel_' + id, _TYPE_ABIO);
+
+                            var jstreeInstance = $("#treeVariableBioclim_fuente").jstree(true);
+                            jstreeInstance.deselect_all();
+                            // self.arrayBioclimSelected = [];
+                        
                             e.preventDefault();
 
                         })
@@ -1729,17 +1745,19 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .addClass('btn btn-primary glyphicon glyphicon-trash pull-left')
                         .click(function (e) {
                             
-                            $("#treeVariableBioclim_fuente").css("pointer-events", "auto")
-                            $("#treeVariableBioclim_fuente").css("cursor", "auto")
+                            // $("#treeVariableBioclim_fuente").css("pointer-events", "auto")
+                            // $("#treeVariableBioclim_fuente").css("cursor", "auto")
 
-                            self.arrayBioclimSelected = [];
+                            // self.arrayBioclimSelected = [];
                             // self.groupbioclimvar_dataset = [];
                             self.cleanVariables('jstree_variables_bioclim_' + id, 'treeAddedPanel_' + id, _TYPE_TERRESTRE);
-                            e.preventDefault();
+                            // e.preventDefault();
+                            var jstreeInstance = $("#treeVariableBioclim_fuente").jstree(true);
+                            jstreeInstance.deselect_all();
+                            
 
                         })
                         .appendTo(tab_pane);
-
 
                 // carga árbol de variables raster
                 //self.loadTreeVarRaster();
@@ -1754,10 +1772,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                         
                 var tree_nav_container = $('<div/>')
                         .addClass('row nav_species_container')
-                        .appendTo(tab_pane)
-                        
+                        .appendTo(tab_pane)         
                 
-
                 var div_tree = $('<div/>')
                         .attr('id', "treeVariableSocio" + id)
                         .addClass('myScrollableBlockVar')
@@ -1768,14 +1784,23 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .appendTo(div_tree);
                 
                         
-                        var btn_add = $('<button/>')
+                var btn_add = $('<button/>')
                         .attr('id', 'add_group_socio' + "_" + id)
                         .attr('type', 'button')
                         .addClass('btn btn-primary glyphicon glyphicon-plus pull-left')
                         .click(function (e) {
-                            console.log(self.arraySocioSelected2)
+                            console.log(self.arraySocioSelected)
+                            if (self.arraySocioSelected.length === 0){
+                                _module_toast.showToast_CenterCenter("Seleccione al menos un elemento", "warning")
+                                return;
+                            }
+
                             self.formQuery("jstree_variables_socio_" + id, self.arraySocioSelected2)
-                            self.addOtherGroup("jstree_variables_socio_" + id, self.arraySocioSelected,  'Socio', 'treeAddedPanel_' + id, _TYPE_ABIO);
+                            self.addOtherGroup("jstree_variables_socio_" + id, self.arraySocioSelected,  'Socio', 'treeAddedPanel_' + id, _TYPE_ABIO);                           
+
+                            var jstreeInstance = $("#jstree_variables_socio_fuente").jstree(true);
+                            jstreeInstance.deselect_all();
+
                             e.preventDefault(); 
                         })
                         .appendTo(tab_pane);
@@ -2275,28 +2300,31 @@ var variable_module = (function (verbose, url_zacatuche) {
         // El cambio de idioma no es identificado para las variables que nos son bioticas.
         // TODO: Hacer reemplazo de label por value cuando son abioticas (type != 4)
         self.existsGroup = function (arraySelected) {
-
             _VERBOSE ? console.log("self.existsGroup") : _VERBOSE;
 
             var arg_labels = arraySelected.map(function (d) {
                 _VERBOSE ? console.log(d) : _VERBOSE;
-                return d.label.split(" ")[0];
+                console.log("Label en arraySelected: ", d.label);
+                console.log("1era palabra de label: ", d.label.split(" ")[0]);
+                //return d.label.split(" ")[0];
+                return d.label; //etiqueta completa
             });
-            // _VERBOSE ? console.log(arg_labels) : _VERBOSE;
 
             var new_element = true;
 
             $.each(self.var_sel_array, function (index, item_sel) {
+                console.log("Longitud de arg_labels: ", arg_labels.length, " | Longitud de item_sel.value: ", item_sel.value.length);
 
                 if (item_sel.value.length == arg_labels.length) {
-
                     var value_labels = item_sel.value.map(function (val) {
                         return val.label.split(" >> ")[1];
                     });
+
+                console.log("Etiquetas para comparación (arg_labels): ", arg_labels);
+                console.log("Etiquetas en item_sel para comparación (value_labels): ", value_labels);
+
                     // _VERBOSE ? console.log(value_labels) : _VERBOSE;
-
                     if (self.isSubset(arg_labels, value_labels)) {
-
                         new_element = false;
                         return false;
 
@@ -2481,6 +2509,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                     subarrays[key].push(objeto);
                 }
             });
+            console.log("--------SUBARRAYS---------")
             console.log(subarrays);
             
             
@@ -2517,10 +2546,14 @@ var variable_module = (function (verbose, url_zacatuche) {
                 
           }
 
-        
+        // ids por variable
+        var groupid_Bio = 0;
+        var groupid_Raster = 0;
+        var groupid_Socio = 0;
         // Evento que es generado cuando se desea agregar un grupo seleccionado previamente, realiza la adición del grupo seleccionado al conjunto de variables con las cuales se realizan los cálculos de épsilon y score en ambos sistemas
         self.addOtherGroup = function (idTree, arraySelected,  gpoName, idDivContainer, typeVar) {
-            
+
+
             switch(idTree){
                 case "jstree_variables_bioclim_fuente":
                     var TreeDivContainer = "treeVariableBioclim_fuente"
@@ -2532,18 +2565,23 @@ var variable_module = (function (verbose, url_zacatuche) {
             }
 
             _VERBOSE ? console.log("self.addOtherGroup") : _VERBOSE;
+            console.log("***** addOtherGroup variables *****");
+            console.log("idTree: ", idTree);
+            console.log("gp: ", gpoName);
+            console.log("idDivContainer: ", idDivContainer);
+            console.log("arraySelected: ", arraySelected);
+            console.log("typeVar: ", typeVar);
 
-           console.log("***** addOtherGroup variables *****")
-            console.log(idTree)
-            console.log(idDivContainer)
-            console.log(arraySelected)
+
             const iterator = arraySelected.values();
 
            _LABEL_MAP = []
-           arraySelected.forEach(element =>{
-            _LABEL_MAP.push(element.label)
-           })
-           console.log(_LABEL_MAP)
+            // Depuración para revisar las etiquetas y otros datos de cada elemento en arraySelected
+            arraySelected.forEach(element => {
+                console.log("Elemento seleccionado: ", element);
+                _LABEL_MAP.push(element.label);
+            });
+            console.log("Mapa de etiquetas (_LABEL_MAP): ", _LABEL_MAP);
 
             for (const value of iterator) {
                 var variable = value
@@ -2554,25 +2592,24 @@ var variable_module = (function (verbose, url_zacatuche) {
                 console.log(_LABEL_VALUE)
             }
 
-
-
             if (arraySelected.length === 0)
                 return;
 
-            // var nivel_reino = self.isKingdomLevel(arraySelected);
-            // if (nivel_reino) {
-            //     _toastr.warning(_iTrans.prop('lb_nivel_reino'));
-            //     return;
-            // }
 
             var new_element = self.existsGroup(arraySelected);
+            console.log("new_element (resultado de self.existsGroup): ", new_element);
             // _VERBOSE ? console.log(new_element) : _VERBOSE;
 
+
             if (!new_element) {
-                // _VERBOSE ? console.log(self.var_sel_array) : _VERBOSE;
+                //_VERBOSE ? console.log(self.var_sel_array) : _VERBOSE;
+                console.log("El grupo YA EXISTE, se muestra la advertencia.");
                 _toastr.warning(_iTrans.prop('lb_existente'));
                 return;
             }
+
+            console.log("ADICIÓN de un nuevo grupo PERMITIDA.")
+
 
             var maxGroup = 0;
 
@@ -2583,7 +2620,6 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             var subgroup = [];
             species_target_array =[]
-            
 
 
             _VERBOSE ? console.log(arraySelected) : _VERBOSE;
@@ -2611,13 +2647,74 @@ var variable_module = (function (verbose, url_zacatuche) {
             console.log(subgroup)
 
             console.log("--------------------------------------------------------------------------------------")
-
+            
             var groupid = parseInt(maxGroup) + 1;
             console.log("maxGroup: " + maxGroup);
             console.log("groupid: " + groupid);
 
-            var temp_grupo = {title: "Gpo " + gpoName + " " + groupid, elements: subgroup, groupid: groupid, close: true, type: typeVar};
-            self.groupDatasetTotal.push(temp_grupo);
+
+            if(gpoName == "Bio"){
+                groupid_Bio = groupid_Bio + 1;
+                var temp_grupo = {title: "Gpo " + gpoName + " " + groupid_Bio, elements: subgroup, groupid: groupid, close: true, type: typeVar};
+
+                self.groupDatasetTotal.push(temp_grupo);
+            }
+
+            else if (gpoName == "Raster"){
+                groupid_Raster = groupid_Raster + 1;
+                var temp_grupo = {title: "Gpo " + gpoName + " " + groupid_Raster, elements: subgroup, groupid: groupid, close: true, type: typeVar};
+
+                self.groupDatasetTotal.push(temp_grupo);
+            }
+
+            else if (gpoName == "Socio"){
+
+                groupid_Socio = groupid_Socio + 1;
+                var temp_grupo = {title: "Gpo " + gpoName + " " + groupid_Socio, elements: subgroup, groupid: groupid, close: true, type: typeVar};
+
+                self.groupDatasetTotal.push(temp_grupo);
+            }
+
+            // var groupid = parseInt(maxGroup) + 1;
+            // console.log("maxGroup: " + maxGroup);
+            // console.log("groupid: " + groupid);
+
+            // var temp_grupo = {title: "Gpo " + gpoName + " " + groupid, elements: subgroup, groupid: groupid, close: true, type: typeVar};
+            // self.groupDatasetTotal.push(temp_grupo);
+
+
+
+            //----------- Evitar que se agreguen mas Gpo por variable ----------//     
+            // Buscamos si ya existe un grupo con el nombre gpoName
+            // var existingGpo = self.groupDatasetTotal.find(function(group) {
+            //     return group.title.startsWith("Gpo " + gpoName);
+            // });
+
+            // if (existingGpo) {
+            //     // El grupo ya existe, así que agregamos los elementos nuevos a ese grupo
+            //     console.log("Reemplazo de elementos en el grupo existente")
+            //     existingGpo.elements = subgroup;
+            //     var temp_grupo = existingGpo
+            //     //self.updateVarSelArray(temp_grupo, _AGREGADO);
+            //     console.log("temp_group", self.groupDatasetTotal)
+            //     console.log("self.groupDatasetTotal", self.groupDatasetTotal)
+            //     console.log("Se modificó el elemento ")
+
+            // } else {
+            //     // El grupo no existe, así que determinamos el siguiente groupid disponible
+            //     var maxGroup = self.groupDatasetTotal.reduce(function(max, group) { return group.groupid > max ? group.groupid : max; }, 0);
+            //     var groupid = maxGroup + 1;
+
+            //     // Creamos un nuevo grupo con los elementos seleccionados
+            //     var temp_grupo = {title: "Gpo " + gpoName + " " + groupid, elements: subgroup, groupid: groupid, close: true, type: typeVar};
+            //     self.groupDatasetTotal.push(temp_grupo); 
+            //     console.log("temp_group", self.groupDatasetTotal)
+            //     console.log("self.groupDatasetTotal", self.groupDatasetTotal)
+
+            //     // se envia solo el elemento agregado
+            //     //self.updateVarSelArray(temp_grupo, _AGREGADO);
+            // }
+            // ------------------------------------------------------------------------------- //
 
 
             // these lines are because when one new elements is added, the previuos elements were duplicated. So the collection is clean and reloaded again
@@ -2625,6 +2722,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             $.each(self.groupDatasetTotal, function (i, item) {
                 item.close = true;
             });
+
 
             // _VERBOSE ? console.log(self.groupDatasetTotal) : _VERBOSE;
 
@@ -2725,10 +2823,14 @@ var variable_module = (function (verbose, url_zacatuche) {
             //     $('#' + idTree + _id).jstree("destroy").empty();
             // }
 
-            // se envia solo el elemento agregado
+            // // se envia solo el elemento agregado
+            //console.log("CAMBIOSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
             self.updateVarSelArray(temp_grupo, _AGREGADO);
-
         }
+/// end addOtherGroup
+
+
+
 
         // Verifica que un grupo previamente seleccionado no sea subgrupo de otro grupo por añadir y viceversa.
         self.isSubset = function (set1, set2) {
@@ -2760,16 +2862,32 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                 });
 
+            // } else if (operacion == _AGREGADO) {
+
+            //     //checar
+
+            //     _VERBOSE ? console.log("elemento añadido") : _VERBOSE;
+                
+                
+            //     self.var_sel_array.push({"value": item.elements, "type": item.type, "groupid": item.groupid, "title": item.title});                
+
+
+            // }
+
             } else if (operacion == _AGREGADO) {
+                var indexExistente = self.var_sel_array.findIndex(gpo_var => gpo_var.groupid == item.groupid && gpo_var.type == item.type);
+                if (indexExistente !== -1) {
+                    // Reemplazamos el grupo existente
+                    self.var_sel_array[indexExistente] = {"value": item.elements, "type": item.type, "groupid": item.groupid, "title": item.title};
+                    console.log("Grupo existente reemplazado");
+                } else {
+                    // Agrega el nuevo grupo
+                    self.var_sel_array.push({"value": item.elements, "type": item.type, "groupid": item.groupid, "title": item.title});
+                    console.log("Grupo nuevo agregado");
 
-                //checar
 
-                _VERBOSE ? console.log("elemento añadido") : _VERBOSE;
-                self.var_sel_array.push({"value": item.elements, "type": item.type, "groupid": item.groupid, "title": item.title});                
-
-
+                }
             }
-
 
             _VERBOSE ? console.log(self.var_sel_array) : _VERBOSE;
             
@@ -2843,7 +2961,8 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             _VERBOSE ? console.log("self.setVarSelArray") : _VERBOSE;
             
-            self.var_sel_array = var_sel_array;
+
+             self.var_sel_array = var_sel_array;
         }
 
         self.getGroupDatasetTotal = function(){
