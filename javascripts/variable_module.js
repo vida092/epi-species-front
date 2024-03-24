@@ -268,7 +268,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                                 }
 
                                 for (let index = 0; index < disease.length; index++){
-                                    //console.log(disease[index]["name"])
+                                    
                                     var opt = document.createElement('option');
                                     opt.setAttribute("class", "disease_opt")
                                     opt.value = disease[index]["name"];
@@ -285,8 +285,220 @@ var variable_module = (function (verbose, url_zacatuche) {
 
             });
 
-            $('#disease_selected').change(function(e){
+            $('#variedad_enfermedad').change(function(e){
+
+                var disease = $('#disease_selected').val()
+                var agent_selected = $('#agent_selected').val()
+                var disease_text_selected = $("#variedad_enfermedad option:selected").text();
                 
+                var tax_root = $("#taxon_tree_root_value").val()
+                console.log(tax_root)
+
+                var _url = "https://covid19.c3.unam.mx/gateway/api/nodes/"
+
+                let nodo = agent_selected.toLowerCase()
+
+                switch(tax_root){
+                    case "familia":
+                        _module_toast.showToast_CenterCenter("El árbol taxonómico se está cargando, espere unos segundos...","info")
+                        var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"variedadenfemedad='"+ disease_text_selected +"'\"){familia genero nombrecientifico}}"
+                        console.log(query)
+                        $.ajax({
+                            url: _url,
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({query: query}),
+                            success: function(resp){
+                                if (agent_selected == 'Hospederos'){
+                                    var species = resp.data.occurrences_by_taxon_hospederos;                                            
+                                }
+                                else if (agent_selected == 'Patogenos'){
+                                    var species = resp.data.occurrences_by_taxon_patogenos;
+                                }else{
+                                    var species = resp.data.occurrences_by_taxon_vectores;
+                                }
+                                var familias = []
+                                var data = []
+                                species.forEach(specie=>{
+                                    if(!familias.includes(specie.familia)){
+                                        familias.push(specie.familia)
+                                        data.push({"id":specie.familia, "parent" :"#", "text": specie.familia, 'state': {'opened': false},
+                                        "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 6, "type": 0}})                                        
+                                    }
+                                })
+                                
+                                var generos =[]
+                                var nombrescientificos=[]
+                                familias.forEach(familia=>{
+                                    species.forEach(specie=>{
+                                        if(!generos.includes(specie.genero)&& specie.familia ==familia){
+                                            generos.push(specie.genero)
+                                            data.push({"id":specie.genero, "parent": specie.familia, "text":specie.genero, 'state': {'opened': false},
+                                            "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 7, "type": 0}})
+                                        }
+                                    })
+                                    generos.forEach(genero=>{
+                                        species.forEach(specie=>{
+                                            if(!nombrescientificos.includes(specie.nombrecientifico) && specie.genero === genero){
+                                                nombrescientificos.push(specie.nombrecientifico)
+                                                data.push({"id":specie.nombrecientifico, "parent": specie.genero, "text":specie.nombrecientifico, 'state': {'opened': false},
+                                                "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 8, "type": 0}})
+
+                                            }
+                                        })
+                                    })
+                                })
+
+                                $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
+                                $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
+                                $("#jstree_variables_species_target").on('loaded.jstree', self.loadNodes);
+                                
+                                var apiResponse = JSON.stringify(data)
+                                apiResponse = apiResponse.replace(/\xa0/g, ' ');
+                                var data2 = JSON.parse(apiResponse);
+
+                                $('#jstree_variables_species_target').jstree({
+                                    'plugins': ["wholerow", "checkbox"],                            
+                                    'core': {
+                                        'data': data2,
+                                        'themes': {
+                                            'name': 'proton',
+                                            'responsive': true
+                                        },
+                                        'check_callback': true
+                                    }
+                                });
+                                _module_toast.showToast_CenterCenter("El árbol taxonómico se cargó adecuadamente","success")
+                            }
+                        })
+                    break;
+                    case "genero":
+                        _module_toast.showToast_CenterCenter("El árbol taxonómico se está cargando, espere unos segundos...","info")
+                        var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"variedadenfemedad='"+ disease_text_selected +"'\"){familia genero nombrecientifico}}"
+                        console.log(query)
+                        $.ajax({
+                            url: _url,
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({query:query}),
+                            success: function(resp){
+                                if (agent_selected == 'Hospederos'){
+                                    var species = resp.data.occurrences_by_taxon_hospederos;                                            
+                                }
+                                else if (agent_selected == 'Patogenos'){
+                                    var species = resp.data.occurrences_by_taxon_patogenos;
+                                }else{
+                                    var species = resp.data.occurrences_by_taxon_vectores;
+                                }
+                                var generos = []
+                                var data = []
+                                var nombrescientificos = []
+                                species.forEach(specie=>{
+                                    if(!generos.includes(specie.genero)){
+                                        generos.push(specie.genero)
+                                        data.push({"id":specie.genero,"parent":"#", "text":specie.genero,  'state': {'opened': false},
+                                        "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 7, "type": 0}})
+                                    }
+                                })
+                                
+                                
+                                generos.forEach(genero=>{
+                                    species.forEach(specie=>{
+                                      if(!nombrescientificos.includes(specie.nombrecientifico) && specie.genero === genero){
+                                        nombrescientificos.push(specie.nombrecientifico)
+                                        data.push({"id":specie.nombrecientifico, "parent": specie.genero, "text":specie.nombrecientifico,  'state': {'opened': false},
+                                        "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 8, "type": 0} })
+                                      }
+                                    })
+                          
+                                })
+                                var apiResponse = JSON.stringify(data)
+                                apiResponse = apiResponse.replace(/\xa0/g, ' ');
+                                var data2 = JSON.parse(apiResponse);
+                                // cambiar data2 cuando se soluciones el problema de codificación 
+                                console.log(data)
+                                $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
+                                $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
+                                $("#jstree_variables_species_target").on('loaded.jstree', self.loadNodes);
+                                
+                                
+                                $('#jstree_variables_species_target').jstree({
+                                    'plugins': ["wholerow", "checkbox"],                            
+                                    'core': {
+                                        'data': data2,
+                                        'themes': {
+                                            'name': 'proton',
+                                            'responsive': true
+                                        },
+                                        'check_callback': true
+                                    }
+                                });
+                                _module_toast.showToast_CenterCenter("El árbol taxonómico se cargó adecuadamente","success")
+                            }
+                        })
+                    break
+                    case "nombrecientifico":
+                        _module_toast.showToast_CenterCenter("El árbol taxonómico se está cargando, espere unos segundos...","info")
+                        var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"variedadenfemedad='"+ disease_text_selected +"'\"){familia genero nombrecientifico}}"
+                        console.log(query)
+                        $.ajax({
+                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({query: query}),
+                            success: function(resp){
+                                if (agent_selected == 'Hospederos'){
+                                    var species = resp.data.occurrences_by_taxon_hospederos;                                            
+                                }
+                                else if (agent_selected == 'Patogenos'){
+                                    var species = resp.data.occurrences_by_taxon_patogenos;
+                                }else{
+                                    var species = resp.data.occurrences_by_taxon_vectores;
+                                }
+                              
+                                var nombrescientificos = []
+                                var data = []
+                                species.forEach(specie=>{
+                                if(!nombrescientificos.includes(specie.nombrecientifico)){
+                                  nombrescientificos.push(specie.nombrecientifico)
+                                }
+                                })
+                              nombrescientificos.forEach(nombre=>{
+                                data.push({"id":nombre, "parent": "#", "text":nombre, 'state': {'opened': false},
+                                "icon": "plugins/jstree/images/dna.png", 'attr': {'nivel': 8, "type": 0}})
+                              })
+                              $('#jstree_variables_species_target').on('open_node.jstree', self.getTreeVar);
+                                $("#jstree_variables_species_target").on('changed.jstree', self.getChangeTreeVarTarget);
+                                $("#jstree_variables_species_target").on('loaded.jstree', self.loadNodes);
+                                
+                                var apiResponse = JSON.stringify(data)
+                                apiResponse = apiResponse.replace(/\xa0/g, ' ');
+                                var data2 = JSON.parse(apiResponse);
+                                $('#jstree_variables_species_target').jstree({
+                                    'plugins': ["wholerow", "checkbox"],                            
+                                    'core': {
+                                        'data': data2,
+                                        'themes': {
+                                            'name': 'proton',
+                                            'responsive': true
+                                        },
+                                        'check_callback': true
+                                    }
+                                });
+                                _module_toast.showToast_CenterCenter("El árbol taxonómico se cargó adecuadamente","success")
+                              
+                            }
+                          })
+                    break
+                    default:
+                        _module_toast.showToast_CenterCenter("Seleccione una Raíz", "error")
+                    break
+                }
+                
+            })
+
+            $('#disease_selected').change(function(e){                
+                var disease = $('#disease_selected').val()
                 var agent_selected = $('#agent_selected').val()
                 var disease_text_selected = $("#disease_selected option:selected").text();
                 var tax_root = $("#taxon_tree_root_value").val()
@@ -295,9 +507,160 @@ var variable_module = (function (verbose, url_zacatuche) {
                 var _url = "https://covid19.c3.unam.mx/gateway/api/nodes/"
 
                 let nodo = agent_selected.toLowerCase()
+                
+                switch (disease){
+                    case 'Fiebre del Dengue':
+                        console.log("elegiste denge")
+                        $('#disease_variedad').css("visibility", "visible")
+                        var query = "query{occurrences_by_taxon_" +nodo +" (query: \"nombreenfermedad ='"+ disease + "'\"){variedadenfemedad}}"
+                        console.log(query)
+                        var selectElement = $('#variedad_enfermedad');
+                        var uniqueVarieties = ["Dengue clásico", "Dengue hemorrágico"]
+                        selectElement.empty(); // Limpiar opciones existentes
+                        selectElement.append($('<option>', { value: "", text: "Seleccione una variedad" })); // Añadir opción por defecto
+                        uniqueVarieties.forEach(function(variety) {
+                            selectElement.append($('<option>', {
+                                value: variety,
+                                text: variety
+                            }));
+                        });
+                        // $.ajax({
+                        //     url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                        //     method: "POST",
+                        //     contentType: "application/json",
+                        //     data: JSON.stringify({query:query}),
+                        //     success: function(resp){
+                        //         if (agent_selected == 'Hospederos'){
+                        //             var species = resp.data.occurrences_by_taxon_hospederos;                                            
+                        //         }
+                        //         else if (agent_selected == 'Patogenos'){
+                        //             var species = resp.data.occurrences_by_taxon_patogenos;
+                        //         }else{
+                        //             var species = resp.data.occurrences_by_taxon_vectores;
+                        //         }
+                        //         console.log(species)
+                        //         var uniqueVarieties = [];
+                        //         species.forEach(function(item) {
+                        //             if (uniqueVarieties.indexOf(item.variedadenfemedad) === -1) {
+                        //                 uniqueVarieties.push(item.variedadenfemedad);
+                        //             }
+                        //         });
+                        //         uniqueVarieties = uniqueVarieties.filter(function(item) {
+                        //             return item !== null;
+                        //         });
+                        //         console.log(uniqueVarieties)
+                        //         var selectElement = $('#variedad_enfermedad');
+                        //         selectElement.empty(); // Limpiar opciones existentes
+                        //         selectElement.append($('<option>', { value: "", text: "seleccione una variedad" })); // Añadir opción por defecto
+                        //         uniqueVarieties.forEach(function(variety) {
+                        //             selectElement.append($('<option>', {
+                        //                 value: variety,
+                        //                 text: variety
+                        //             }));
+                        //         });
+
+                        //     }
+                        // })
+                        break;
+                    case 'Leishmaniasis':
+                        console.log("elegiste Leishmaniasis")
+                        $('#disease_variedad').css("visibility", "visible")
+                        var query = "query{occurrences_by_taxon_"+nodo+" (query: \"nombreenfermedad ='"+ disease + "'\"){variedadenfemedad}}"
+                        console.log(query)
+                        $.ajax({
+                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({query:query}),
+                            success: function(resp){
+                                if (agent_selected == 'Hospederos'){
+                                    var species = resp.data.occurrences_by_taxon_hospederos;                                            
+                                }
+                                else if (agent_selected == 'Patogenos'){
+                                    var species = resp.data.occurrences_by_taxon_patogenos;
+                                }else{
+                                    var species = resp.data.occurrences_by_taxon_vectores;
+                                }
+                                console.log(species)
+                                var uniqueVarieties = [];
+                                species.forEach(function(item) {
+                                    if (uniqueVarieties.indexOf(item.variedadenfemedad) === -1) {
+                                        uniqueVarieties.push(item.variedadenfemedad);
+                                    }
+                                });
+                                uniqueVarieties = uniqueVarieties.filter(function(item) {
+                                    return item !== null;
+                                });
+                                console.log(uniqueVarieties)
+                                var selectElement = $('#variedad_enfermedad');
+                                selectElement.empty(); // Limpiar opciones existentes
+                                selectElement.append($('<option>', { value: "", text: "Seleccione una variedad" })); // Añadir opción por defecto
+                                uniqueVarieties.forEach(function(variety) {
+                                    selectElement.append($('<option>', {
+                                        value: variety,
+                                        text: variety
+                                    }));
+                                });
+
+                            }
+                        })
+                        
+                        break;
+                    case 'Rickettsiosis':
+                        console.log("elegiste rickettsiosis")
+                        $('#disease_variedad').css("visibility", "visible")
+                        
+                        var query = "query{occurrences_by_taxon_hospederos (query: \"nombreenfermedad ='"+ disease + "'\"){variedadenfemedad}}"
+                        console.log(query)
+                        $.ajax({
+                            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({query:query}),
+                            success: function(resp){
+                                if (agent_selected == 'Hospederos'){
+                                    var species = resp.data.occurrences_by_taxon_hospederos;                                            
+                                }
+                                else if (agent_selected == 'Patogenos'){
+                                    var species = resp.data.occurrences_by_taxon_patogenos;
+                                }else{
+                                    var species = resp.data.occurrences_by_taxon_vectores;
+                                }
+                                console.log(species)
+                                var uniqueVarieties = [];
+                                species.forEach(function(item) {
+                                    if (uniqueVarieties.indexOf(item.variedadenfemedad) === -1) {
+                                        uniqueVarieties.push(item.variedadenfemedad);
+                                    }
+                                });
+                                uniqueVarieties = uniqueVarieties.filter(function(item) {
+                                    return item !== null;
+                                });
+                                console.log(uniqueVarieties)
+                                var selectElement = $('#variedad_enfermedad');
+                                selectElement.empty(); // Limpiar opciones existentes
+                                selectElement.append($('<option>', { value: "", text: "Seleccione una variedad" })); // Añadir opción por defecto
+                                uniqueVarieties.forEach(function(variety) {
+                                    selectElement.append($('<option>', {
+                                        value: variety,
+                                        text: variety
+                                    }));
+                                });
+
+                            }
+                        })
+
+
+                        break;   
+                } 
+            
+
+                
+                
+
 
                 //var query = "query{occurrences_by_taxon_"+ nodo + "(query: \"nombreenfermedad='"+ disease_text_selected +"'\"){reino phylum clase orden familia genero nombrecientifico}}"
-                
+
                 
                 switch(tax_root){
                     case "familia":
@@ -498,6 +861,8 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                 
             })
+
+            
 
             $("#taxon_tree_root_value").change(function(e){
                 $('#jstree_variables_species_target').jstree("destroy")                
@@ -1602,6 +1967,7 @@ var variable_module = (function (verbose, url_zacatuche) {
                         .addClass('btn btn-primary glyphicon glyphicon-trash pull-left no-mg-top')
                         .click(function (e) {
                             console.log(id)
+                            $("#disease_variedad").css("visibility", "hidden")
                             if(id === "target"){
                                 $('#agent_selected').val('model_default');
                                 //$('#disease_selected').val("dis_default");

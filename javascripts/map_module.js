@@ -2453,13 +2453,19 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
         var subquery = _LABEL_MAP.map(taxon => `${label_target}= \'${taxon}\'`).join(" OR ") //cambiar label , aparece orden y no nombre científico
         console.log(subquery)       
+        var variedadenfemedadtext = $('#variedad_enfermedad').val()
+        if (variedadenfemedadtext != ''){
+            var subquery2 = "AND (variedadenfemedad = '" + variedadenfemedadtext + "')"            
+        }else{
+            var subquery2 = ""
+        }
+        
+               
 
-
-
-        if ( fecha_ini.length < 3)
-            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND ' + "("+ subquery+")" +' "){numeroindividuos gridid_'+ _grid_res + '}}'
+        if ( fecha_ini.length < 3 )
+            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND ' + "("+ subquery +")" + subquery2 + ' "){numeroindividuos gridid_'+ _grid_res + '}}'
         else
-            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ "("+ subquery+")" +'  AND añocolecta >= \''+ fecha_ini + ' \' AND añocolecta <= \'' + fecha_fin + ' \'"){numeroindividuos gridid_'+ _grid_res + '}}'
+            var query = 'query{occurrences_by_taxon_' + nodo + '(query: "nombreenfermedad = \''+ _DISEASE_SELECTED + '\' AND '+ "("+ subquery+")" + subquery2 +'  AND añocolecta >= \''+ fecha_ini + ' \' AND añocolecta <= \'' + fecha_fin + ' \'"){numeroindividuos gridid_'+ _grid_res + '}}'
 
 
         console.log(query)
