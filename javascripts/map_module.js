@@ -2454,11 +2454,13 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         var subquery = _LABEL_MAP.map(taxon => `${label_target}= \'${taxon}\'`).join(" OR ") //cambiar label , aparece orden y no nombre científico
         console.log(subquery)       
         var variedadenfemedadtext = $('#variedad_enfermedad').val()
-        if (variedadenfemedadtext != ''){
-            var subquery2 = "AND (variedadenfemedad = '" + variedadenfemedadtext + "')"            
+        
+        if (variedadenfemedadtext){
+            var subquery2 = "AND (variedadenfemedad = '" + variedadenfemedadtext + "')"
         }else{
             var subquery2 = ""
         }
+        
         
                
 

@@ -2815,7 +2815,7 @@ var variable_module = (function (verbose, url_zacatuche) {
         inegi2 = []
         worldclim = [];
         worldclim2 = []
-        //snib = [];
+        snib2 = [];
         target_species = []
         //Evento que guarda la selección de (co)variables para el elemento covariable_filter
         self.formQuery = function (idTree, arraySelected2){
@@ -2839,7 +2839,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                     console.log(worldclim2)   
                     break;
                 case "jstree_variables_species_fuente" :
-                    snib.push(arraySelected2)
+                    snib=[...arraySelected2]
+                    snib2.push(arraySelected2)
                     console.log("se agrego información a snib")
                     console.log(snib)
                     break;
@@ -3371,7 +3372,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             // }
             // let copies = []
 
-            covobj2= {"inegi2020": inegi2, "snib": snib, "worldclim":worldclim2}
+            covobj2= {"inegi2020": inegi2, "snib": snib2, "worldclim":worldclim2}
             covobj= {"inegi2020": inegi, "snib": snib, "worldclim":worldclim}
             // for(let clave in covobj2){
             //     if(covobj2[clave].length!==0){

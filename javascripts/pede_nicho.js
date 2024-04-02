@@ -1315,7 +1315,7 @@ var module_nicho = (function () {
                 "covariable_filter":covariables_filter,
 
                 "target":{
-                    "species": target_species[0], //Por el momento el target debe tener un sólo taxon, luego sólo hay que borrar "[0]"
+                    "species": target_species[0], 
                     "disease": disease,
                     "agent": agente
                 },
@@ -1343,7 +1343,7 @@ var module_nicho = (function () {
                 "covariable_filter":{},
 
                 "target":{
-                    "species": target_species[0], //Por el momento el target debe tener un sólo taxon, luego sólo hay que borrar "[0]"
+                    "species": target_species[0], 
                     "disease": disease,
                     "agent": agente
                 },
@@ -1362,6 +1362,7 @@ var module_nicho = (function () {
 
             // covobj2= {"inegi2020": inegi2, "snib": snib, "worldclim":worldclim2}
             // covobj= {"inegi2020": inegi, "snib": snib, "worldclim":worldclim}
+            console.log(covobj2)
             for(let clave in covobj2){
                 if(covobj2[clave].length!==0){
                     console.log("esta lista es la que se debe copiar")
