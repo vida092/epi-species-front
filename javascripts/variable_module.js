@@ -286,6 +286,7 @@ var variable_module = (function (verbose, url_zacatuche) {
             });
 
             $('#variedad_enfermedad').change(function(e){
+                $('#jstree_variables_species_target').jstree('destroy');
 
                 var disease = $('#disease_selected').val()
                 var agent_selected = $('#agent_selected').val()
@@ -497,7 +498,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                 
             })
 
-            $('#disease_selected').change(function(e){                
+            $('#disease_selected').change(function(e){ 
+                $('#jstree_variables_species_target').jstree('destroy')               
                 var disease = $('#disease_selected').val()
                 var agent_selected = $('#agent_selected').val()
                 var disease_text_selected = $("#disease_selected option:selected").text();
