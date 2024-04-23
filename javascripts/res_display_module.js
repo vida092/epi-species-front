@@ -1171,7 +1171,6 @@ var res_display_module = (function (verbose, url_zacatuche) {
         //   // Aplicar el método sort al array copies
         //   copies.sort(compararCovariables);
           
-          // El array copies ahora está reorganizado según tus criterios
           console.log(copies);
 
         // Imprimir las copias
@@ -1198,7 +1197,12 @@ var res_display_module = (function (verbose, url_zacatuche) {
             _createScore_Decil(_REQUESTS_MADE[i], copies[i]);
           }
 
+
+        
+
     }
+
+
 
 
 
@@ -1287,6 +1291,7 @@ var res_display_module = (function (verbose, url_zacatuche) {
             // PROCESANDO PETICIONES INDIVIDUALES
             console.log("<============= PROCESO DE PETICIONES IDIVIDUALES ===============>")
             var data_response = jQuery.extend(true, [], respuesta.data);
+
             //var data_response = respuesta.data
             
             console.log(data_response)

@@ -1103,6 +1103,48 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
 
     }
 
+    function download_maps(copies){
+        let query = 'query{get_mesh(grid_res: "' + _grid_res + '"){cve simplified_geom}}'
+        $.ajax({
+            method: "POST",
+            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+            contentType: "application/json",
+            data: JSON.stringify({query: query}),
+            success:function(resp){
+                let data = resp["data"]
+                let obj = data['get_mesh']
+                let json = {type: "FeatureCollection", crs:{},features:[]}
+
+                for (let i = 0; i < obj.length; i++)
+                    {let prop = new Object();
+                        let geom = new Object();
+                        geom = Object.assign({},obj[i].simplified_geom)
+                        prop = parseInt(obj[i].cve)
+                        let prope = new Object();
+                        prope.gridid =prop
+                        let type = new Object();
+                        type.type = "feature"
+                        type.geometry = geom
+                        type.properties = prope
+                        json.features.push(type)
+                        json.crs =  {
+                            "type": "name",
+                            "properties": {
+                                "name": "urn:ogc:def:crs:EPSG::4326"
+                            }
+                        }
+                    }
+                console.log(json)
+            }
+        })
+
+
+
+
+    }
+
+
+
     // function colorizeDecileFeatures2(decileData, deciles, grid_map = _grid_map_decil, tileLayer = _tileDecilLayer) {
 
     //     _VERBOSE ? console.log("colorizeDecileFeatures2") : _VERBOSE;
@@ -2460,8 +2502,6 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
         }else{
             var subquery2 = ""
         }
-        
-        
                
 
         if ( fecha_ini.length < 3 )

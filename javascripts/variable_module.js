@@ -504,11 +504,13 @@ var variable_module = (function (verbose, url_zacatuche) {
                 var agent_selected = $('#agent_selected').val()
                 var disease_text_selected = $("#disease_selected option:selected").text();
                 var tax_root = $("#taxon_tree_root_value").val()
-                console.log(tax_root)
+                console.log(agent_selected)
 
                 var _url = "https://covid19.c3.unam.mx/gateway/api/nodes/"
 
                 let nodo = agent_selected.toLowerCase()
+                if(agent_selected == 'Hospederos'){
+                   
                 
                 switch (disease){
                     case 'Fiebre del Dengue':
@@ -655,6 +657,7 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                         break;   
                 } 
+                }
             
 
                 
