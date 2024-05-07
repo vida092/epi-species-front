@@ -1144,6 +1144,99 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
     }
 
 
+    function fetchData() {
+        let query = 'query{get_mesh(grid_res: "' + _grid_res + '"){cve simplified_geom}}'
+        
+        $.ajax({
+            method: "POST",
+            url: "https://covid19.c3.unam.mx/gateway/api/nodes/",
+            contentType: "application/json",
+            data: JSON.stringify({query: query}),
+            success: function(resp) {
+                let data = resp["data"];
+                let obj = data['get_mesh'];
+                let json = {type: "FeatureCollection", crs: {}, features: []};
+
+                for (let i = 0; i < obj.length; i++) {
+                    let geom = Object.assign({}, obj[i].simplified_geom);
+                    let prop = parseInt(obj[i].cve);
+                    let prope = {gridid: prop};
+                    let type = {
+                        type: "Feature",
+                        geometry: geom,
+                        properties: prope
+                    };
+                    json.features.push(type);
+                }
+
+                json.crs = {
+                    "type": "name",
+                    "properties": {
+                        "name": "urn:ogc:def:crs:EPSG::4326"
+                    }
+                };
+                console.log(json)
+
+                
+                copies.forEach(element => {
+                    FillGeoJson(element,json)
+                });
+
+                
+            }
+        });
+    }
+
+
+    function FillGeoJson(request, json) {
+        $.ajax({
+            method: "POST",
+            url: "https://covid19.c3.unam.mx/gateway/api/analysis/cells/",
+            contentType: "application/json",
+            data: JSON.stringify(request),
+            success: function(resp) {
+                let scores = resp.data_score_cell;
+                json.features.forEach(feature => {
+                    let score = scores.find(s => parseInt(s.gridid, 10) === feature.properties.gridid);
+
+                    if (score) {
+                        feature.properties.tscore = score.tscore;
+                        feature.properties.bin = score.bin;
+                    }
+                });
+                console.log("json modificado");
+                console.log(json);
+                let name = request.covariables[0]
+                downloadGeoJSON(json,name);
+            }
+        });
+    }
+
+
+    function downloadGeoJSON(json,name) {
+        const jsonString = JSON.stringify(json);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = name + 'score.geojson';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        
+    }
+
+    
+    $('#sp_download').click(function() {
+        fetchData();
+
+    });
+
+
+
 
     // function colorizeDecileFeatures2(decileData, deciles, grid_map = _grid_map_decil, tileLayer = _tileDecilLayer) {
 
