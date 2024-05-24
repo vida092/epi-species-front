@@ -1874,10 +1874,11 @@ var res_display_module = (function (verbose, url_zacatuche) {
                 }
                 else{
                     console.log("se hace la petición a la segunda tabla")
+                    console.log(decil_cells)
                     //fetch("jsons/pintarmapa.json")
                     fetch("https://covid19.c3.unam.mx/gateway/api/analysis/cells/", {
                         method: "POST",
-                        body: JSON.stringify(body),
+                        body: JSON.stringify(decil_cells),
                         headers: {
                             "Content-Type": "application/json"
                         }

@@ -323,7 +323,52 @@ var histogram_module = (function (verbose) {
                 })
 
                 console.log(deciles)
-                console.log(grupos[0])
+                console.log(grupos)
+                function encontrarObjeto(grupos, copies) {
+                    const grupo = grupos[0];
+                    const match = grupo.match(/^Gpo (\w+) (\d+)$/);
+                  
+                    if (match) {
+                      const categoria = match[1];
+                      const numero = parseInt(match[2], 10);
+                      let contador = 0;
+                      let claveBusqueda;
+                  
+                      // clave de búsqueda según la categoría
+                      switch (categoria) {
+                        case 'Socio':
+                          claveBusqueda = 'inegi2020';
+                          break;
+                        case 'Bio':
+                          claveBusqueda = 'snib';
+                          break;
+                        case 'Raster':
+                          claveBusqueda = 'worldclim';
+                          break;
+                        default:
+                          return null; // Categoría no reconocida
+                      }
+                  
+                      // Buscar el n-ésimo objeto en copies 
+                      for (let copy of copies) {
+                        const keys = Object.keys(copy.covariable_filter);
+                        if (keys.length === 1 && keys[0] === claveBusqueda) {
+                          contador++;
+                          if (contador === numero) {
+                            return copy;
+                          }
+                        }
+                      }
+                    }
+                    return null; 
+                  }
+                  
+                  // Llamada a la función y resultado
+                  var resultado = encontrarObjeto(grupos, copies);
+                  console.log(resultado);
+                
+
+
 
                 // TODO: validar que exista almenos un decil y un grupo seleccionado
                 if(deciles.length == 0 || grupos == 0){
@@ -338,7 +383,9 @@ var histogram_module = (function (verbose) {
 
 
                 // _display_module_nicho.loadDecilDataTable(d.decil, d.name, false, [], []);
-                _display_module_nicho.loadDecilDataTable(deciles, grupos[0], false, [], []);
+                console.log(resultado)
+                resultado.selected_decile = deciles
+                _display_module_nicho.loadDecilDataTable(deciles, grupos[0], false, [],  resultado);
                 // pintar mapa con resultado
 
             })

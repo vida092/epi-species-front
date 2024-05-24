@@ -1230,7 +1230,7 @@ var map_module = (function (url_geoserver, workspace, verbose, url_zacatuche) {
     }
 
     
-    $('#sp_download').click(function() {
+    $('#map_download').click(function() {
         fetchData();
 
     });

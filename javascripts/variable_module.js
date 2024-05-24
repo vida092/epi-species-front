@@ -2388,15 +2388,6 @@ var variable_module = (function (verbose, url_zacatuche) {
                         self.arrayVarSelectedFuente.push({label: node_temp.text, level: level, numlevel: node_temp.attr.nivel, type: node_temp.attr.type, parent: parent_node.text});
                         self.arrayVarSelectedFuente2.push({taxon: level, value:node_temp.text })
 
-                    //    if (node_temp.attr.nivel == 8) {
-
-                    //        self.arrayVarSelected.push({label: node_temp.text, level: level, numlevel: node_temp.attr.nivel, type: node_temp.attr.type, parent: parent_node.text});
-
-                    //    }
-                    //    else {
-
-                    //        self.arrayVarSelected.push({label: node_temp.text, level: level, numlevel: node_temp.attr.nivel, type: node_temp.attr.type, parent: parent_node.text});
-                    //    }
 
                     } else {
 
@@ -2407,8 +2398,25 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                 }
 
+
             }
 
+            if (self.arrayVarSelectedFuente.length > 0) {
+                var concatenatedLabels = self.arrayVarSelectedFuente.map(function(item) {
+                    return item.label;
+                }).join(", ");
+        
+                var firstItem = self.arrayVarSelectedFuente[0];
+                self.arrayVarSelectedFuente = [{
+                    label: concatenatedLabels,
+                    level: firstItem.level,
+                    numlevel: firstItem.numlevel,
+                    type: firstItem.type,
+                    parent: firstItem.parent
+                }];
+            }
+
+            
             _VERBOSE ? console.log(self.arrayVarSelectedFuente) : _VERBOSE;
             _VERBOSE ? console.log(self.arrayVarSelectedFuente2) : _VERBOSE;
 
@@ -3002,7 +3010,8 @@ var variable_module = (function (verbose, url_zacatuche) {
 
                 // se elimita el spp del label cuando es tipo BIO
                 if (typeVar == _TYPE_BIO) {
-                    var label_taxon = arraySelected[i].numlevel == 8 ? arraySelected[i].label : arraySelected[i].label.split(" ")[0]
+                    
+                    var label_taxon = arraySelected[i].numlevel == 8 ? arraySelected[i].label : arraySelected[i].label//.split(" ")[0]
                     subgroup.push({label: arraySelected[i].level + " >> " + label_taxon, level: arraySelected[i].numlevel, type: arraySelected[i].type});
                     
                     species_target_array.push({ taxon:arraySelected[i].level, value:label_taxon  })
@@ -3013,6 +3022,8 @@ var variable_module = (function (verbose, url_zacatuche) {
                 }
 
             }
+
+
 
             console.log("--------------------------------------------------------------------------------------")
 
